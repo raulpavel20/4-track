@@ -6,9 +6,6 @@ TapeEngine::TapeEngine()
 {
     for (auto& loopMarkerBeat : loopMarkerBeats)
         loopMarkerBeat.store(-1, std::memory_order_relaxed);
-
-    for (auto& track : tracks)
-        prepareTrack(track);
 }
 
 void TapeEngine::play()
@@ -272,20 +269,20 @@ int TapeEngine::getTrackInputSource(int trackIndex) const noexcept
     return tracks[(size_t) trackIndex].inputSource.load(std::memory_order_acquire);
 }
 
-void TapeEngine::setTrackLowpassEnabled(int trackIndex, bool shouldBeEnabled)
+void TapeEngine::setTrackFilterMorph(int trackIndex, float morph)
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))
         return;
 
-    tracks[(size_t) trackIndex].lowpassEnabled.store(shouldBeEnabled, std::memory_order_release);
+    tracks[(size_t) trackIndex].filterMorph.store(juce::jlimit(-1.0f, 1.0f, morph), std::memory_order_release);
 }
 
-bool TapeEngine::isTrackLowpassEnabled(int trackIndex) const noexcept
+float TapeEngine::getTrackFilterMorph(int trackIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))
-        return false;
+        return 0.0f;
 
-    return tracks[(size_t) trackIndex].lowpassEnabled.load(std::memory_order_acquire);
+    return tracks[(size_t) trackIndex].filterMorph.load(std::memory_order_acquire);
 }
 
 void TapeEngine::setTrackMuted(int trackIndex, bool shouldBeMuted)
@@ -395,7 +392,6 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
 
     for (auto& track : tracks)
     {
-        prepareTrack(track);
         track.reset();
     }
 
@@ -665,11 +661,6 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
     }
 }
 
-void TapeEngine::prepareTrack(Track& track)
-{
-    track.lowpassAlpha = std::exp(-juce::MathConstants<float>::twoPi * (2000.0f / (float) sampleRate));
-}
-
 float TapeEngine::getInputSampleForTrack(const Track& track,
                                          const float* const* inputChannelData,
                                          int numInputChannels,
@@ -700,15 +691,40 @@ float TapeEngine::getInputSampleForTrack(const Track& track,
 float TapeEngine::processInputSample(Track& track, int channel, float sample) noexcept
 {
     auto processed = sample * track.inputGain.load(std::memory_order_relaxed);
+    const auto morph = juce::jlimit(-1.0f, 1.0f, track.filterMorph.load(std::memory_order_relaxed));
+    const auto lowpassCutoff = juce::jmap(-juce::jmin(morph, 0.0f), 16000.0f, 260.0f);
+    const auto highpassCutoff = juce::jmap(juce::jmax(morph, 0.0f), 40.0f, 5200.0f);
+    const auto bandHighpassCutoff = 450.0f;
+    const auto bandLowpassCutoff = 2800.0f;
 
-    if (! track.lowpassEnabled.load(std::memory_order_relaxed))
-        return processed;
+    const auto lowpassAlpha = std::exp(-juce::MathConstants<float>::twoPi * (lowpassCutoff / (float) sampleRate));
+    auto& lowpassState = track.lowpassState[channel];
+    const auto lowpassOutput = ((1.0f - lowpassAlpha) * processed) + (lowpassAlpha * lowpassState);
+    lowpassState = lowpassOutput;
 
-    auto& state = track.lowpassState[channel];
-    const auto alpha = track.lowpassAlpha;
-    const auto output = ((1.0f - alpha) * processed) + (alpha * state);
-    state = output;
-    return output;
+    const auto highpassAlpha = std::exp(-juce::MathConstants<float>::twoPi * (highpassCutoff / (float) sampleRate));
+    auto& highpassOutputState = track.highpassState[channel];
+    auto& highpassInputState = track.highpassInputState[channel];
+    const auto highpassOutput = highpassAlpha * (highpassOutputState + processed - highpassInputState);
+    highpassOutputState = highpassOutput;
+    highpassInputState = processed;
+
+    const auto bandHighpassAlpha = std::exp(-juce::MathConstants<float>::twoPi * (bandHighpassCutoff / (float) sampleRate));
+    auto& bandHighpassOutputState = track.bandHighpassState[channel];
+    auto& bandHighpassInputState = track.bandHighpassInputState[channel];
+    const auto bandHighpassOutput = bandHighpassAlpha * (bandHighpassOutputState + processed - bandHighpassInputState);
+    bandHighpassOutputState = bandHighpassOutput;
+    bandHighpassInputState = processed;
+
+    const auto bandLowpassAlpha = std::exp(-juce::MathConstants<float>::twoPi * (bandLowpassCutoff / (float) sampleRate));
+    auto& bandLowpassState = track.bandLowpassState[channel];
+    const auto bandpassOutput = ((1.0f - bandLowpassAlpha) * bandHighpassOutput) + (bandLowpassAlpha * bandLowpassState);
+    bandLowpassState = bandpassOutput;
+
+    if (morph < 0.0f)
+        return juce::jmap(morph + 1.0f, lowpassOutput, bandpassOutput);
+
+    return juce::jmap(morph, bandpassOutput, highpassOutput);
 }
 
 float TapeEngine::readTrackSample(const Track& track, int channel, int samplePosition) const noexcept

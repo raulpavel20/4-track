@@ -46,7 +46,7 @@ void MainComponent::paint(juce::Graphics& g)
 void MainComponent::resized()
 {
     auto bounds = getLocalBounds().reduced(14);
-    auto chainBounds = bounds.removeFromBottom(230);
+    auto chainBounds = bounds.removeFromBottom(236);
     trackControlChain.setBounds(chainBounds);
     bounds.removeFromBottom(10);
     tapeView.setBounds(bounds);

@@ -26,14 +26,18 @@ struct Track
     std::atomic<int> pendingRecordMode { (int) TrackRecordMode::off };
     std::atomic<int> inputSource { 0 };
     std::atomic<float> inputGain { 1.0f };
-    std::atomic<bool> lowpassEnabled { false };
+    std::atomic<float> filterMorph { 0.0f };
     std::atomic<bool> muted { false };
     std::atomic<float> peakMeter { 0.0f };
     std::atomic<bool> clipping { false };
     std::atomic<int> recordedLength { 0 };
     int writePosition = 0;
     float lowpassState[numChannels] {};
-    float lowpassAlpha = 0.0f;
+    float highpassState[numChannels] {};
+    float highpassInputState[numChannels] {};
+    float bandLowpassState[numChannels] {};
+    float bandHighpassState[numChannels] {};
+    float bandHighpassInputState[numChannels] {};
 
     Track()
     {
@@ -49,8 +53,19 @@ struct Track
         clipping.store(false, std::memory_order_relaxed);
         muted.store(false, std::memory_order_relaxed);
         pendingRecordMode.store((int) TrackRecordMode::off, std::memory_order_relaxed);
+        filterMorph.store(0.0f, std::memory_order_relaxed);
         lowpassState[0] = 0.0f;
         lowpassState[1] = 0.0f;
+        highpassState[0] = 0.0f;
+        highpassState[1] = 0.0f;
+        highpassInputState[0] = 0.0f;
+        highpassInputState[1] = 0.0f;
+        bandLowpassState[0] = 0.0f;
+        bandLowpassState[1] = 0.0f;
+        bandHighpassState[0] = 0.0f;
+        bandHighpassState[1] = 0.0f;
+        bandHighpassInputState[0] = 0.0f;
+        bandHighpassInputState[1] = 0.0f;
 
         for (auto& ownedChunk : ownedChunks)
         {

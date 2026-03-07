@@ -171,6 +171,19 @@ TapeView::TapeView(TapeEngine& engineToUse)
             editor->setInputRestrictions(2, "0123456789");
     };
     addAndMakeVisible(beatsPerBarEditor);
+    zoomSlider.setSliderStyle(juce::Slider::LinearVertical);
+    zoomSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    zoomSlider.setRange(0.0, 1.0, 0.001);
+    zoomSlider.setValue(0.55, juce::dontSendNotification);
+    zoomSlider.setDoubleClickReturnValue(true, 0.55);
+    zoomSlider.setColour(juce::Slider::backgroundColourId, juce::Colours::white.withAlpha(0.1f));
+    zoomSlider.setColour(juce::Slider::trackColourId, getTrackColour(selectedTrack));
+    zoomSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
+    zoomSlider.onValueChange = [this]
+    {
+        repaint();
+    };
+    addAndMakeVisible(zoomSlider);
 
     startTimerHz(30);
 }
@@ -179,7 +192,6 @@ void TapeView::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colours::black);
 
-    const auto displayLengthSamples = engine.getDisplayLengthSamples();
     const auto playheadSample = displayedPlayhead;
     const auto reelSectionBounds = getReelSectionBounds();
     const auto trackSectionBounds = getTrackSectionBounds();
@@ -294,7 +306,7 @@ void TapeView::paint(juce::Graphics& g)
                                                  10.0f);
     g.fillRoundedRectangle(playheadMarker, 3.0f);
 
-    const auto visibleSamples = juce::jmax(1.0, displayLengthSamples / 2.5);
+    const auto visibleSamples = getVisibleSamples();
     const auto startSample = playheadSample - (visibleSamples * 0.5);
     const auto samplesPerPixel = visibleSamples / juce::jmax(1, trackSectionBounds.getWidth());
     const auto currentBpm = juce::jmax(30.0, (double) engine.getBpm());
@@ -440,6 +452,7 @@ void TapeView::resized()
 {
     bpmEditor.setBounds(getBpmEditorBounds());
     beatsPerBarEditor.setBounds(getBeatsPerBarEditorBounds());
+    zoomSlider.setBounds(getZoomSliderBounds());
 }
 
 void TapeView::mouseDown(const juce::MouseEvent& event)
@@ -559,6 +572,7 @@ void TapeView::setSelectedTrack(int trackIndex)
         return;
 
     selectedTrack = newTrack;
+    zoomSlider.setColour(juce::Slider::trackColourId, getTrackColour(selectedTrack));
 
     if (onSelectedTrackChanged != nullptr)
         onSelectedTrackChanged(selectedTrack);
@@ -640,14 +654,14 @@ juce::Rectangle<int> TapeView::getControlClusterBounds(int trackIndex) const
 {
     auto laneBounds = getLaneBounds(trackIndex).reduced(10, 6);
     laneBounds.removeFromLeft(8);
-    return juce::Rectangle<int>(laneBounds.getX(), laneBounds.getCentreY() - 32, 100, 64);
+    return juce::Rectangle<int>(laneBounds.getX(), laneBounds.getCentreY() - 29, 92, 58);
 }
 
 juce::Rectangle<int> TapeView::getModeButtonBounds(int trackIndex, int buttonIndex) const
 {
     auto bounds = getControlClusterBounds(trackIndex);
-    const auto buttonSize = 28;
-    const auto gap = 8;
+    const auto buttonSize = 26;
+    const auto gap = 6;
     return juce::Rectangle<int>(bounds.getX() + (buttonIndex * (buttonSize + gap)),
                                 bounds.getY(),
                                 buttonSize,
@@ -657,8 +671,8 @@ juce::Rectangle<int> TapeView::getModeButtonBounds(int trackIndex, int buttonInd
 juce::Rectangle<int> TapeView::getUtilityButtonBounds(int trackIndex, int buttonIndex) const
 {
     auto bounds = getControlClusterBounds(trackIndex);
-    const auto buttonSize = 28;
-    const auto gap = 8;
+    const auto buttonSize = 26;
+    const auto gap = 6;
     const auto rowWidth = (buttonSize * 2) + gap;
     const auto startX = bounds.getX() + ((bounds.getWidth() - rowWidth) / 2);
     return juce::Rectangle<int>(startX + (buttonIndex * (buttonSize + gap)),
@@ -667,12 +681,18 @@ juce::Rectangle<int> TapeView::getUtilityButtonBounds(int trackIndex, int button
                                 buttonSize);
 }
 
+juce::Rectangle<int> TapeView::getZoomSliderBounds() const
+{
+    auto bounds = getTrackSectionBounds().reduced(0, 18);
+    return juce::Rectangle<int>(bounds.getRight() - 20, bounds.getY(), 20, bounds.getHeight());
+}
+
 juce::Rectangle<int> TapeView::getWaveformBounds(int trackIndex) const
 {
     auto laneBounds = getLaneBounds(trackIndex).reduced(12, 10);
     const auto controlBounds = getControlClusterBounds(trackIndex);
     laneBounds.setX(controlBounds.getRight() + 12);
-    const auto meterX = getTrackSectionBounds().getRight() - 18 - 12;
+    const auto meterX = getZoomSliderBounds().getX() - 22;
     laneBounds.setRight(meterX - 10);
     return laneBounds;
 }
@@ -680,10 +700,21 @@ juce::Rectangle<int> TapeView::getWaveformBounds(int trackIndex) const
 juce::Rectangle<int> TapeView::getMeterBounds(int trackIndex) const
 {
     auto waveformBounds = getWaveformBounds(trackIndex);
-    return juce::Rectangle<int>(getTrackSectionBounds().getRight() - 18 - 12,
+    return juce::Rectangle<int>(getZoomSliderBounds().getX() - 22,
                                 waveformBounds.getY(),
                                 12,
                                 waveformBounds.getHeight());
+}
+
+double TapeView::getVisibleSamples() const
+{
+    const auto currentBpm = juce::jmax(30.0, (double) engine.getBpm());
+    const auto samplesPerBeat = (engine.getSampleRate() * 60.0) / currentBpm;
+    constexpr double minVisibleBeats = 4.0;
+    constexpr double maxVisibleBeats = 64.0;
+    const auto zoomValue = juce::jlimit(0.0, 1.0, zoomSlider.getValue());
+    const auto visibleBeats = minVisibleBeats * std::pow(maxVisibleBeats / minVisibleBeats, 1.0 - zoomValue);
+    return juce::jmax(1.0, visibleBeats * samplesPerBeat);
 }
 
 float TapeView::getWaveformPeak(int trackIndex, double startSample, double endSample) const
@@ -718,8 +749,7 @@ void TapeView::scrubTo(juce::Point<float> position)
     if (! isScrubbing || ! getTrackSectionBounds().contains(position.toInt()))
         return;
 
-    const auto displayLengthSamples = engine.getDisplayLengthSamples();
-    const auto pixelsPerSample = (double) getTapeAreaBounds().getWidth() / juce::jmax(1.0, displayLengthSamples / 2.5);
+    const auto pixelsPerSample = (double) getTrackSectionBounds().getWidth() / getVisibleSamples();
     const auto scrubPixelsPerSample = pixelsPerSample * 4.0;
     const auto sampleOffset = ((double) scrubStartX - (double) position.x) / scrubPixelsPerSample;
     engine.setPlayheadSample(scrubStartPlayhead + sampleOffset);

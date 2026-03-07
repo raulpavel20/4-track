@@ -21,5 +21,10 @@ private:
     int selectedTrack = 0;
     juce::ComboBox inputSourceBox;
     juce::Slider gainSlider;
-    juce::ToggleButton lowpassButton;
+    juce::Slider filterSlider;
+
+    juce::Rectangle<int> getFrameBounds() const;
+    juce::Rectangle<int> getContentBounds() const;
+    juce::Rectangle<int> getInputModuleBounds() const;
+    juce::Rectangle<int> getFilterModuleBounds() const;
 };

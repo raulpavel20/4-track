@@ -37,6 +37,7 @@ private:
     double scrubStartPlayhead = 0.0;
     juce::Label bpmEditor;
     juce::Label beatsPerBarEditor;
+    juce::Slider zoomSlider;
 
     juce::Rectangle<int> getLaneBounds(int trackIndex) const;
     juce::Rectangle<int> getTapeAreaBounds() const;
@@ -51,8 +52,10 @@ private:
     juce::Rectangle<int> getControlClusterBounds(int trackIndex) const;
     juce::Rectangle<int> getModeButtonBounds(int trackIndex, int buttonIndex) const;
     juce::Rectangle<int> getUtilityButtonBounds(int trackIndex, int buttonIndex) const;
+    juce::Rectangle<int> getZoomSliderBounds() const;
     juce::Rectangle<int> getWaveformBounds(int trackIndex) const;
     juce::Rectangle<int> getMeterBounds(int trackIndex) const;
+    double getVisibleSamples() const;
     float getWaveformPeak(int trackIndex, double startSample, double endSample) const;
     void scrubTo(juce::Point<float> position);
     void timerCallback() override;

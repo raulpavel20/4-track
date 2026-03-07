@@ -56,8 +56,8 @@ public:
     void setTrackInputSource(int trackIndex, int inputSource);
     int getTrackInputSource(int trackIndex) const noexcept;
 
-    void setTrackLowpassEnabled(int trackIndex, bool shouldBeEnabled);
-    bool isTrackLowpassEnabled(int trackIndex) const noexcept;
+    void setTrackFilterMorph(int trackIndex, float morph);
+    float getTrackFilterMorph(int trackIndex) const noexcept;
     void setTrackMuted(int trackIndex, bool shouldBeMuted);
     bool isTrackMuted(int trackIndex) const noexcept;
     void setTrackSolo(int trackIndex, bool shouldBeSoloed);
@@ -106,7 +106,6 @@ private:
     double clickPhaseDelta = 0.0;
     float clickAmplitude = 0.0f;
 
-    void prepareTrack(Track& track);
     float getInputSampleForTrack(const Track& track,
                                  const float* const* inputChannelData,
                                  int numInputChannels,
