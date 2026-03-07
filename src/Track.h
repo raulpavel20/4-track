@@ -30,6 +30,29 @@ enum class SaturationMode : int
     heavy
 };
 
+enum class InputSourceType : int
+{
+    hardwareStereo = 0,
+    hardwareMono,
+    trackBus,
+    masterBus
+};
+
+inline constexpr int makeInputSourceId(InputSourceType type, int index = 0) noexcept
+{
+    return (((int) type & 0xff) << 24) | (index & 0x00ffffff);
+}
+
+inline constexpr InputSourceType getInputSourceTypeFromId(int sourceId) noexcept
+{
+    return (InputSourceType) ((sourceId >> 24) & 0xff);
+}
+
+inline constexpr int getInputSourceIndexFromId(int sourceId) noexcept
+{
+    return sourceId & 0x00ffffff;
+}
+
 struct FilterModuleState
 {
     std::array<float, 2> lowpassState {};
@@ -105,6 +128,7 @@ struct Track
     std::array<std::atomic<int>, maxChainModules> moduleTypes;
     std::array<int, maxChainModules> activeModuleTypes {};
     std::array<std::atomic<bool>, maxChainModules> moduleResetRequested;
+    std::array<std::atomic<bool>, maxChainModules> moduleBypassed;
     std::array<std::atomic<float>, maxChainModules> filterMorphs;
     std::array<std::array<std::atomic<float>, maxEqBands>, maxChainModules> eqBandGainsDb;
     std::array<std::array<std::atomic<float>, maxEqBands>, maxChainModules> eqBandQs;
@@ -200,6 +224,7 @@ struct Track
             moduleTypes[(size_t) moduleIndex].store((int) ChainModuleType::none, std::memory_order_relaxed);
             activeModuleTypes[(size_t) moduleIndex] = (int) ChainModuleType::none;
             moduleResetRequested[(size_t) moduleIndex].store(false, std::memory_order_relaxed);
+            moduleBypassed[(size_t) moduleIndex].store(false, std::memory_order_relaxed);
             filterMorphs[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
             compressorThresholdsDb[(size_t) moduleIndex].store(-18.0f, std::memory_order_relaxed);
             compressorRatios[(size_t) moduleIndex].store(4.0f, std::memory_order_relaxed);

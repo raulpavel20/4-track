@@ -17,6 +17,7 @@ MainComponent::MainComponent()
     tapeView.onSelectedTrackChanged = [this](int trackIndex)
     {
         trackControlChain.setSelectedTrack(trackIndex);
+        refreshInputOptions();
     };
     trackControlChain.setSelectedTrack(0);
     setBottomPanelMode(BottomPanelMode::preTape);
@@ -87,30 +88,13 @@ void MainComponent::initialiseAudio()
 
 void MainComponent::refreshInputOptions()
 {
-    juce::StringArray inputOptions;
+    juce::StringArray hardwareInputNames;
 
     if (auto* device = audioDeviceManager.getCurrentAudioDevice())
-    {
-        const auto inputNames = device->getInputChannelNames();
+        hardwareInputNames = device->getInputChannelNames();
 
-        for (int pairIndex = 0; pairIndex + 1 < inputNames.size(); pairIndex += 2)
-            inputOptions.add("Stereo " + juce::String(pairIndex + 1) + "/" + juce::String(pairIndex + 2));
-
-        for (int channelIndex = 0; channelIndex < inputNames.size(); ++channelIndex)
-        {
-            auto label = inputNames[channelIndex].trim();
-
-            if (label.isEmpty())
-                label = "Input " + juce::String(channelIndex + 1);
-
-            inputOptions.add("Mono " + juce::String(channelIndex + 1) + " - " + label);
-        }
-    }
-
-    if (inputOptions.isEmpty())
-        inputOptions.add("No input");
-
-    trackControlChain.setInputOptions(inputOptions);
+    trackControlChain.setInputOptions(tapeEngine.getAvailableInputSources(hardwareInputNames,
+                                                                         trackControlChain.getSelectedTrack()));
 }
 
 void MainComponent::setBottomPanelMode(BottomPanelMode newMode)

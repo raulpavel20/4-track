@@ -29,6 +29,7 @@ constexpr int gainSliderWidth = 18;
 constexpr int meterWidth = 10;
 constexpr int addButtonSize = 32;
 constexpr int closeButtonSize = 18;
+constexpr int bypassCircleSize = 10;
 
 juce::Colour getChainAccentColour(int trackIndex)
 {
@@ -241,6 +242,38 @@ void TrackControlChain::CloseButton::paintButton(juce::Graphics& g, bool isMouse
     g.strokePath(cross, juce::PathStrokeType(1.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 }
 
+TrackControlChain::BypassButton::BypassButton()
+    : juce::Button({})
+{
+    setClickingTogglesState(true);
+}
+
+void TrackControlChain::BypassButton::setAccentColour(juce::Colour newAccentColour)
+{
+    accentColour = newAccentColour;
+    repaint();
+}
+
+void TrackControlChain::BypassButton::paintButton(juce::Graphics& g, bool, bool)
+{
+    const auto bounds = getLocalBounds().toFloat();
+    const auto bypassed = getToggleState();
+    const auto ellipse = bounds.reduced(0.5f);
+
+    if (bypassed)
+    {
+        g.setColour(juce::Colours::black);
+        g.fillEllipse(ellipse);
+        g.setColour(accentColour);
+        g.drawEllipse(ellipse, 1.0f);
+    }
+    else
+    {
+        g.setColour(accentColour);
+        g.fillEllipse(ellipse);
+    }
+}
+
 TrackControlChain::SaturationModeButton::SaturationModeButton()
     : juce::Button({})
 {
@@ -355,6 +388,16 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
 
     for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
     {
+        auto& bypassButton = bypassButtons[(size_t) moduleIndex];
+        bypassButton.onClick = [this, moduleIndex]
+        {
+            engine.setTrackModuleBypassed(selectedTrack,
+                                         moduleIndex,
+                                         bypassButtons[(size_t) moduleIndex].getToggleState());
+            contentComponent.repaint();
+        };
+        contentComponent.addAndMakeVisible(bypassButton);
+
         auto& removeButton = removeButtons[(size_t) moduleIndex];
         removeButton.onClick = [this, moduleIndex]
         {
@@ -513,13 +556,13 @@ void TrackControlChain::timerCallback()
     contentComponent.repaint();
 }
 
-void TrackControlChain::setInputOptions(const juce::StringArray& options)
+void TrackControlChain::setInputOptions(const juce::Array<TapeEngine::InputSourceOption>& options)
 {
     inputOptions = options;
     inputSourceBox.clear(juce::dontSendNotification);
 
-    for (int index = 0; index < inputOptions.size(); ++index)
-        inputSourceBox.addItem(inputOptions[index], index + 1);
+    for (const auto& option : inputOptions)
+        inputSourceBox.addItem(option.label, option.sourceId + 1);
 
     inputSourceBox.setEnabled(inputOptions.isEmpty() == false);
     refreshFromEngine();
@@ -543,12 +586,20 @@ void TrackControlChain::refreshFromEngine()
 
     if (inputSourceBox.getNumItems() > 0)
     {
-        const auto selectedSource = juce::jlimit(0, inputSourceBox.getNumItems() - 1, engine.getTrackInputSource(selectedTrack));
-        inputSourceBox.setSelectedId(selectedSource + 1, juce::dontSendNotification);
+        const auto selectedSourceId = engine.getTrackInputSource(selectedTrack);
+        inputSourceBox.setSelectedId(selectedSourceId + 1, juce::dontSendNotification);
+
+        if (inputSourceBox.getSelectedId() == 0 && inputOptions.isEmpty() == false)
+        {
+            inputSourceBox.setSelectedId(inputOptions[0].sourceId + 1, juce::dontSendNotification);
+            engine.setTrackInputSource(selectedTrack, inputOptions[0].sourceId);
+        }
     }
 
     for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
     {
+        bypassButtons[(size_t) moduleIndex].setToggleState(engine.isTrackModuleBypassed(selectedTrack, moduleIndex),
+                                                           juce::dontSendNotification);
         filterSliders[(size_t) moduleIndex].setValue(engine.getTrackFilterMorph(selectedTrack, moduleIndex), juce::dontSendNotification);
         saturationAmountSliders[(size_t) moduleIndex].setValue(engine.getTrackSaturationAmount(selectedTrack, moduleIndex), juce::dontSendNotification);
         saturationModeButtons[(size_t) moduleIndex].setToggleState(engine.getTrackSaturationMode(selectedTrack, moduleIndex) == SaturationMode::heavy,
@@ -622,6 +673,9 @@ void TrackControlChain::updateAccentColours()
 
     for (auto& button : saturationModeButtons)
         button.setAccentColour(accent);
+
+    for (auto& button : bypassButtons)
+        button.setAccentColour(accent);
 }
 
 void TrackControlChain::updateVisibleModules()
@@ -669,6 +723,7 @@ void TrackControlChain::updateModuleVisibility()
         const auto type = engine.getTrackModuleType(selectedTrack, moduleIndex);
         const auto isVisible = type != ChainModuleType::none;
 
+        bypassButtons[(size_t) moduleIndex].setVisible(isVisible);
         removeButtons[(size_t) moduleIndex].setVisible(isVisible);
         filterSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::filter);
         saturationModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
@@ -723,6 +778,12 @@ void TrackControlChain::layoutContent()
         const auto type = visibleTypes[(size_t) visibleIndex];
         auto moduleArea = moduleBounds[(size_t) visibleIndex].reduced(moduleInnerPadding, moduleVerticalInset);
 
+        const auto titleBarCentreY = moduleArea.getY() + 9;
+        const auto bypassY = titleBarCentreY - (bypassCircleSize / 2);
+        bypassButtons[(size_t) slot].setBounds(moduleArea.getX(),
+                                               bypassY,
+                                               bypassCircleSize,
+                                               bypassCircleSize);
         removeButtons[(size_t) slot].setBounds(moduleArea.getRight() - closeButtonSize,
                                                moduleArea.getY() + 1,
                                                closeButtonSize,
@@ -872,6 +933,7 @@ void TrackControlChain::paintContent(juce::Graphics& g)
         const auto type = visibleTypes[(size_t) visibleIndex];
         const auto bounds = moduleBounds[(size_t) visibleIndex];
         auto titleBounds = bounds.withTrimmedTop(10).removeFromTop(18).reduced(12, 0);
+        titleBounds.removeFromLeft(bypassCircleSize + 4);
         titleBounds.removeFromRight(closeButtonSize + 8);
 
         g.setColour(accent);

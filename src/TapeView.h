@@ -33,6 +33,7 @@ private:
     double lastDisplayedPlayhead = 0.0;
     double lastTimerSeconds = 0.0;
     bool isScrubbing = false;
+    bool reversePreviewPressed = false;
     float scrubStartX = 0.0f;
     double scrubStartPlayhead = 0.0;
     juce::Label bpmEditor;
@@ -45,6 +46,7 @@ private:
     juce::Rectangle<int> getReelSectionBounds() const;
     juce::Rectangle<int> getPlayStopButtonBounds() const;
     juce::Rectangle<int> getRewindButtonBounds() const;
+    juce::Rectangle<int> getReversePreviewButtonBounds() const;
     juce::Rectangle<int> getMetronomeButtonBounds() const;
     juce::Rectangle<int> getLoopButtonBounds() const;
     juce::Rectangle<int> getBpmEditorBounds() const;

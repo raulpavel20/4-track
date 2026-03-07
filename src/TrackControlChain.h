@@ -17,7 +17,7 @@ public:
 
     void setSelectedTrack(int trackIndex);
     int getSelectedTrack() const noexcept;
-    void setInputOptions(const juce::StringArray& options);
+    void setInputOptions(const juce::Array<TapeEngine::InputSourceOption>& options);
 
 private:
     static constexpr int compressorControlCount = 5;
@@ -27,6 +27,17 @@ private:
     public:
         CloseButton();
         void paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown) override;
+    };
+
+    class BypassButton : public juce::Button
+    {
+    public:
+        BypassButton();
+        void setAccentColour(juce::Colour newAccentColour);
+        void paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown) override;
+
+    private:
+        juce::Colour accentColour { juce::Colours::white };
     };
 
     class SaturationModeButton : public juce::Button
@@ -52,12 +63,13 @@ private:
 
     TapeEngine& engine;
     int selectedTrack = 0;
-    juce::StringArray inputOptions;
+    juce::Array<TapeEngine::InputSourceOption> inputOptions;
     juce::Viewport modulesViewport;
     ContentComponent contentComponent;
     juce::ComboBox inputSourceBox;
     juce::Slider inputGainSlider;
     juce::TextButton addModuleButton { "+" };
+    std::array<BypassButton, Track::maxChainModules> bypassButtons;
     std::array<CloseButton, Track::maxChainModules> removeButtons;
     std::array<juce::Slider, Track::maxChainModules> filterSliders;
     std::array<std::array<juce::Slider, Track::maxEqBands>, Track::maxChainModules> eqGainSliders;

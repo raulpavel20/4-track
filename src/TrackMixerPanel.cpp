@@ -15,8 +15,8 @@ constexpr int gainSliderWidth = 20;
 constexpr int gainSliderHeight = 110;
 constexpr int meterWidth = 10;
 constexpr int panKnobSize = 54;
-constexpr int sendKnobSize = 34;
-constexpr int fxKnobSize = 52;
+constexpr int sendKnobSize = 40;
+constexpr int fxKnobSize = 68;
 
 juce::Colour getTrackColour(int index)
 {
@@ -292,7 +292,7 @@ void TrackMixerPanel::paintContent(juce::Graphics& g)
             g.setFont(AppFonts::getFont(10.0f));
             g.drawText(controlLabels[(size_t) controlIndex],
                        cell.getX(),
-                       cell.getY() + 2,
+                       cell.getY() + 10,
                        cell.getWidth(),
                        12,
                        juce::Justification::centred);
@@ -422,7 +422,7 @@ void TrackMixerPanel::layoutContent()
         {
             auto cell = content.removeFromLeft(controlIndex == 2 ? content.getWidth() : controlCellWidth);
             controlSliders[(size_t) controlIndex].setBounds(cell.getCentreX() - (fxKnobSize / 2),
-                                                            cell.getCentreY() - (fxKnobSize / 2),
+                                                            cell.getCentreY() - (fxKnobSize / 2) + 6,
                                                             fxKnobSize,
                                                             fxKnobSize);
         }

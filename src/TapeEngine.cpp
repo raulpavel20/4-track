@@ -85,6 +85,7 @@ TapeEngine::TapeEngine()
 void TapeEngine::play()
 {
     rewinding.store(false, std::memory_order_release);
+    reversePlaying.store(false, std::memory_order_release);
     startRequested.store(true, std::memory_order_release);
     playing.store(true, std::memory_order_release);
 }
@@ -93,6 +94,7 @@ void TapeEngine::stop()
 {
     playing.store(false, std::memory_order_release);
     rewinding.store(false, std::memory_order_release);
+    reversePlaying.store(false, std::memory_order_release);
     clickSamplesRemaining = 0;
     applyPendingRecordModes();
 
@@ -103,7 +105,20 @@ void TapeEngine::stop()
 void TapeEngine::rewind()
 {
     playing.store(false, std::memory_order_release);
+    reversePlaying.store(false, std::memory_order_release);
     rewinding.store(true, std::memory_order_release);
+}
+
+void TapeEngine::startReversePlayback()
+{
+    rewinding.store(false, std::memory_order_release);
+    playing.store(false, std::memory_order_release);
+    reversePlaying.store(true, std::memory_order_release);
+}
+
+void TapeEngine::stopReversePlayback()
+{
+    reversePlaying.store(false, std::memory_order_release);
 }
 
 bool TapeEngine::isPlaying() const noexcept
@@ -114,6 +129,11 @@ bool TapeEngine::isPlaying() const noexcept
 bool TapeEngine::isRewinding() const noexcept
 {
     return rewinding.load(std::memory_order_acquire);
+}
+
+bool TapeEngine::isReversePlaying() const noexcept
+{
+    return reversePlaying.load(std::memory_order_acquire);
 }
 
 double TapeEngine::getSampleRate() const noexcept
@@ -219,7 +239,7 @@ bool TapeEngine::hasLoopMarkerNearPlayhead() const noexcept
 
 bool TapeEngine::canEditLoopMarkers() const noexcept
 {
-    return ! isPlaying() && ! isRewinding();
+    return ! isPlaying() && ! isRewinding() && ! isReversePlaying();
 }
 
 void TapeEngine::setMetronomeEnabled(bool shouldBeEnabled)
@@ -235,6 +255,7 @@ bool TapeEngine::isMetronomeEnabled() const noexcept
 void TapeEngine::setPlayheadSample(double samplePosition)
 {
     rewinding.store(false, std::memory_order_release);
+    reversePlaying.store(false, std::memory_order_release);
     const auto clampedPosition = juce::jmax(0.0, samplePosition);
     displayPlayhead.store(clampedPosition, std::memory_order_release);
     requestedPlayhead.store(clampedPosition, std::memory_order_release);
@@ -338,9 +359,45 @@ void TapeEngine::setTrackInputSource(int trackIndex, int inputSource)
 int TapeEngine::getTrackInputSource(int trackIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))
-        return 0;
+        return makeInputSourceId(InputSourceType::hardwareStereo, 0);
 
     return tracks[(size_t) trackIndex].inputSource.load(std::memory_order_acquire);
+}
+
+juce::Array<TapeEngine::InputSourceOption> TapeEngine::getAvailableInputSources(const juce::StringArray& hardwareInputNames,
+                                                                                int destinationTrackIndex) const
+{
+    juce::Array<InputSourceOption> options;
+
+    for (int pairIndex = 0; pairIndex + 1 < hardwareInputNames.size(); pairIndex += 2)
+    {
+        options.add({ makeInputSourceId(InputSourceType::hardwareStereo, pairIndex / 2),
+                      "Stereo " + juce::String(pairIndex + 1) + "/" + juce::String(pairIndex + 2) });
+    }
+
+    for (int channelIndex = 0; channelIndex < hardwareInputNames.size(); ++channelIndex)
+    {
+        auto label = hardwareInputNames[channelIndex].trim();
+
+        if (label.isEmpty())
+            label = "Input " + juce::String(channelIndex + 1);
+
+        options.add({ makeInputSourceId(InputSourceType::hardwareMono, channelIndex),
+                      "Mono " + juce::String(channelIndex + 1) + " - " + label });
+    }
+
+    for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+    {
+        if (trackIndex == destinationTrackIndex)
+            continue;
+
+        options.add({ makeInputSourceId(InputSourceType::trackBus, trackIndex),
+                      "Track " + juce::String(trackIndex + 1) });
+    }
+
+    options.add({ makeInputSourceId(InputSourceType::masterBus, 0), "Master" });
+
+    return options;
 }
 
 int TapeEngine::addTrackModule(int trackIndex, ChainModuleType type)
@@ -436,6 +493,28 @@ ChainModuleType TapeEngine::getTrackModuleType(int trackIndex, int moduleIndex) 
 bool TapeEngine::isTrackModulePresent(int trackIndex, int moduleIndex) const noexcept
 {
     return getTrackModuleType(trackIndex, moduleIndex) != ChainModuleType::none;
+}
+
+void TapeEngine::setTrackModuleBypassed(int trackIndex, int moduleIndex, bool shouldBeBypassed)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return;
+
+    if (! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].moduleBypassed[(size_t) moduleIndex].store(shouldBeBypassed, std::memory_order_release);
+}
+
+bool TapeEngine::isTrackModuleBypassed(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return false;
+
+    if (! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return false;
+
+    return tracks[(size_t) trackIndex].moduleBypassed[(size_t) moduleIndex].load(std::memory_order_acquire);
 }
 
 void TapeEngine::setTrackFilterMorph(int trackIndex, int moduleIndex, float morph)
@@ -909,6 +988,11 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     delayWritePosition = 0;
     reverb.reset();
     reverb.setSampleRate(sampleRate);
+    lastMasterInputBus.fill(0.0f);
+
+    for (auto& trackBus : lastTrackInputBuses)
+        trackBus.fill(0.0f);
+
     requiredChunkCount.store(initialChunkCount, std::memory_order_release);
     clickSamplesRemaining = 0;
     clickTotalSamples = juce::jmax(1, (int) std::round(sampleRate * 0.035));
@@ -928,10 +1012,15 @@ void TapeEngine::audioDeviceStopped()
 {
     playing.store(false, std::memory_order_release);
     rewinding.store(false, std::memory_order_release);
+    reversePlaying.store(false, std::memory_order_release);
     clickSamplesRemaining = 0;
     delayWritePosition = 0;
     delayBuffer.clear();
     reverb.reset();
+    lastMasterInputBus.fill(0.0f);
+
+    for (auto& trackBus : lastTrackInputBuses)
+        trackBus.fill(0.0f);
 }
 
 void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
@@ -994,6 +1083,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
     const auto shouldPlay = playing.load(std::memory_order_acquire);
     const auto shouldRewind = rewinding.load(std::memory_order_acquire);
+    const auto shouldReversePlay = reversePlaying.load(std::memory_order_acquire);
     const auto currentBpm = juce::jmax(30.0, (double) bpm.load(std::memory_order_acquire));
     const auto samplesPerBeat = (sampleRate * 60.0) / currentBpm;
     const auto currentBeatsPerBar = juce::jmax(1, beatsPerBar.load(std::memory_order_acquire));
@@ -1033,6 +1123,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
     auto* outputRight = numOutputChannels > 1 ? outputChannelData[1] : nullptr;
 
     auto transportSample = localPlayhead;
+    auto reachedTransportStart = false;
 
     for (int sampleIndex = 0; sampleIndex < numSamples; ++sampleIndex)
     {
@@ -1070,6 +1161,9 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         auto delayBusRight = 0.0f;
         auto reverbBusLeft = 0.0f;
         auto reverbBusRight = 0.0f;
+        std::array<std::array<float, Track::numChannels>, numTracks> trackDryContributions {};
+        std::array<std::array<float, Track::numChannels>, numTracks> trackDelayContributions {};
+        std::array<std::array<float, Track::numChannels>, numTracks> trackReverbContributions {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
         {
@@ -1078,8 +1172,9 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
             const auto isMuted = track.muted.load(std::memory_order_acquire);
             const auto isAudible = (soloedTrack < 0 || soloedTrack == trackIndex) && ! isMuted;
 
-            auto trackLeft = shouldPlay ? readTrackSample(track, 0, tapeSample) : 0.0f;
-            auto trackRight = shouldPlay ? readTrackSample(track, 1, tapeSample) : 0.0f;
+            const auto transportReadsTape = shouldPlay || shouldReversePlay;
+            auto trackLeft = transportReadsTape ? readTrackSample(track, 0, tapeSample) : 0.0f;
+            auto trackRight = transportReadsTape ? readTrackSample(track, 1, tapeSample) : 0.0f;
             auto monitorLeft = 0.0f;
             auto monitorRight = 0.0f;
             auto hasProcessedInput = false;
@@ -1090,14 +1185,16 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
             {
                 processedLeft = processInputSample(track,
                                                    0,
-                                                   getInputSampleForTrack(track,
+                                                   getInputSampleForTrack(trackIndex,
+                                                                          track,
                                                                           inputChannelData,
                                                                           numInputChannels,
                                                                           0,
                                                                           sampleIndex));
                 processedRight = processInputSample(track,
                                                     1,
-                                                    getInputSampleForTrack(track,
+                                                    getInputSampleForTrack(trackIndex,
+                                                                           track,
                                                                            inputChannelData,
                                                                            numInputChannels,
                                                                            1,
@@ -1143,12 +1240,20 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
             if (isAudible)
             {
+                const auto delaySendAmount = track.delaySend.load(std::memory_order_relaxed);
+                const auto reverbSendAmount = track.reverbSend.load(std::memory_order_relaxed);
                 mixedLeft += postMixerLeft;
                 mixedRight += postMixerRight;
-                delayBusLeft += postMixerLeft * track.delaySend.load(std::memory_order_relaxed);
-                delayBusRight += postMixerRight * track.delaySend.load(std::memory_order_relaxed);
-                reverbBusLeft += postMixerLeft * track.reverbSend.load(std::memory_order_relaxed);
-                reverbBusRight += postMixerRight * track.reverbSend.load(std::memory_order_relaxed);
+                delayBusLeft += postMixerLeft * delaySendAmount;
+                delayBusRight += postMixerRight * delaySendAmount;
+                reverbBusLeft += postMixerLeft * reverbSendAmount;
+                reverbBusRight += postMixerRight * reverbSendAmount;
+                trackDryContributions[(size_t) trackIndex][0] = postMixerLeft;
+                trackDryContributions[(size_t) trackIndex][1] = postMixerRight;
+                trackDelayContributions[(size_t) trackIndex][0] = postMixerLeft * delaySendAmount;
+                trackDelayContributions[(size_t) trackIndex][1] = postMixerRight * delaySendAmount;
+                trackReverbContributions[(size_t) trackIndex][0] = postMixerLeft * reverbSendAmount;
+                trackReverbContributions[(size_t) trackIndex][1] = postMixerRight * reverbSendAmount;
             }
 
             const auto peak = juce::jmax(std::abs(audibleLeft), std::abs(audibleRight));
@@ -1169,6 +1274,32 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         processReverbReturn(reverbBusLeft, reverbBusRight, reverbReturnLeft, reverbReturnRight);
         mixedLeft += reverbReturnLeft;
         mixedRight += reverbReturnRight;
+
+        auto totalDelayWeight = 0.0f;
+        auto totalReverbWeight = 0.0f;
+        std::array<std::array<float, Track::numChannels>, numTracks> currentTrackInputBuses {};
+
+        for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+        {
+            totalDelayWeight += std::abs(trackDelayContributions[(size_t) trackIndex][0]) + std::abs(trackDelayContributions[(size_t) trackIndex][1]);
+            totalReverbWeight += std::abs(trackReverbContributions[(size_t) trackIndex][0]) + std::abs(trackReverbContributions[(size_t) trackIndex][1]);
+        }
+
+        for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+        {
+            const auto delayWeight = std::abs(trackDelayContributions[(size_t) trackIndex][0]) + std::abs(trackDelayContributions[(size_t) trackIndex][1]);
+            const auto reverbWeight = std::abs(trackReverbContributions[(size_t) trackIndex][0]) + std::abs(trackReverbContributions[(size_t) trackIndex][1]);
+            const auto delayShare = totalDelayWeight > 0.0f ? delayWeight / totalDelayWeight : 0.0f;
+            const auto reverbShare = totalReverbWeight > 0.0f ? reverbWeight / totalReverbWeight : 0.0f;
+            currentTrackInputBuses[(size_t) trackIndex][0] = trackDryContributions[(size_t) trackIndex][0] + (delayReturnLeft * delayShare) + (reverbReturnLeft * reverbShare);
+            currentTrackInputBuses[(size_t) trackIndex][1] = trackDryContributions[(size_t) trackIndex][1] + (delayReturnRight * delayShare) + (reverbReturnRight * reverbShare);
+        }
+
+        lastMasterInputBus[0] = mixedLeft;
+        lastMasterInputBus[1] = mixedRight;
+
+        for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+            lastTrackInputBuses[(size_t) trackIndex] = currentTrackInputBuses[(size_t) trackIndex];
 
         if (shouldPlay && metronomeOn)
         {
@@ -1201,7 +1332,22 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         else if (outputLeft != nullptr && numOutputChannels == 1)
             outputLeft[sampleIndex] = 0.5f * (mixedLeft + mixedRight);
 
-        transportSample = tapeSample + 1;
+        if (shouldReversePlay)
+        {
+            if (tapeSample <= 0)
+            {
+                transportSample = 0;
+                reachedTransportStart = true;
+            }
+            else
+            {
+                transportSample = tapeSample - 1;
+            }
+        }
+        else
+        {
+            transportSample = tapeSample + 1;
+        }
     }
 
     for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
@@ -1226,6 +1372,18 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
     if (! shouldPlay)
     {
+        if (shouldReversePlay)
+        {
+            const auto reversePlayhead = juce::jmax(0, transportSample);
+            playhead.store((double) reversePlayhead, std::memory_order_release);
+            displayPlayhead.store((double) reversePlayhead, std::memory_order_release);
+
+            if (reachedTransportStart || reversePlayhead == 0)
+                reversePlaying.store(false, std::memory_order_release);
+
+            return;
+        }
+
         if (shouldRewind)
         {
             const auto rewindAmount = juce::jmax((int) std::round(numSamples * rewindSpeedMultiplier), 512);
@@ -1262,29 +1420,44 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
     }
 }
 
-float TapeEngine::getInputSampleForTrack(const Track& track,
+float TapeEngine::getInputSampleForTrack(int destinationTrackIndex,
+                                         const Track& track,
                                          const float* const* inputChannelData,
                                          int numInputChannels,
                                          int outputChannel,
                                          int sampleIndex) const noexcept
 {
+    const auto selectedSource = juce::jmax(0, track.inputSource.load(std::memory_order_relaxed));
+    const auto sourceType = getInputSourceTypeFromId(selectedSource);
+    const auto sourceIndex = getInputSourceIndexFromId(selectedSource);
+
+    if (sourceType == InputSourceType::trackBus)
+    {
+        if (! juce::isPositiveAndBelow(sourceIndex, numTracks) || sourceIndex == destinationTrackIndex)
+            return 0.0f;
+
+        return lastTrackInputBuses[(size_t) sourceIndex][(size_t) juce::jlimit(0, Track::numChannels - 1, outputChannel)];
+    }
+
+    if (sourceType == InputSourceType::masterBus)
+    {
+        const auto channelIndex = (size_t) juce::jlimit(0, Track::numChannels - 1, outputChannel);
+        return lastMasterInputBus[channelIndex] - lastTrackInputBuses[(size_t) juce::jlimit(0, numTracks - 1, destinationTrackIndex)][channelIndex];
+    }
+
     if (numInputChannels <= 0 || inputChannelData == nullptr)
         return 0.0f;
 
-    const auto stereoPairCount = numInputChannels / 2;
-    const auto selectedSource = juce::jmax(0, track.inputSource.load(std::memory_order_relaxed));
-
-    if (stereoPairCount > 0 && selectedSource < stereoPairCount)
+    if (sourceType == InputSourceType::hardwareStereo)
     {
-        const auto leftChannel = selectedSource * 2;
+        const auto leftChannel = juce::jlimit(0, juce::jmax(0, numInputChannels - 1), sourceIndex * 2);
         const auto rightChannel = juce::jmin(leftChannel + 1, numInputChannels - 1);
         const auto channelIndex = outputChannel == 0 ? leftChannel : rightChannel;
         const auto* source = inputChannelData[channelIndex];
         return source != nullptr ? source[sampleIndex] : 0.0f;
     }
 
-    const auto monoSourceIndex = selectedSource - stereoPairCount;
-    const auto monoChannel = juce::jlimit(0, numInputChannels - 1, monoSourceIndex);
+    const auto monoChannel = juce::jlimit(0, numInputChannels - 1, sourceIndex);
     const auto* source = inputChannelData[monoChannel];
     return source != nullptr ? source[sampleIndex] : 0.0f;
 }
@@ -1325,6 +1498,7 @@ void TapeEngine::resetModuleState(Track& track, int moduleIndex, ChainModuleType
 
 void TapeEngine::resetModuleParameters(Track& track, int moduleIndex, ChainModuleType type) noexcept
 {
+    track.moduleBypassed[(size_t) moduleIndex].store(false, std::memory_order_relaxed);
     track.filterMorphs[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
     track.compressorThresholdsDb[(size_t) moduleIndex].store(-18.0f, std::memory_order_relaxed);
     track.compressorRatios[(size_t) moduleIndex].store(4.0f, std::memory_order_relaxed);
@@ -1367,6 +1541,12 @@ float TapeEngine::processChainModule(Track& track, int moduleIndex, int channel,
 {
     const auto inputPeak = std::abs(sample);
     track.moduleBlockInputPeaks[(size_t) moduleIndex] = juce::jmax(track.moduleBlockInputPeaks[(size_t) moduleIndex], inputPeak);
+
+    if (track.moduleBypassed[(size_t) moduleIndex].load(std::memory_order_relaxed))
+    {
+        track.moduleBlockOutputPeaks[(size_t) moduleIndex] = juce::jmax(track.moduleBlockOutputPeaks[(size_t) moduleIndex], inputPeak);
+        return sample;
+    }
 
     auto output = sample;
 

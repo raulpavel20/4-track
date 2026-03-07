@@ -67,6 +67,16 @@ juce::Path createRewindIcon(juce::Rectangle<float> bounds)
     return path;
 }
 
+juce::Path createReversePreviewIcon(juce::Rectangle<float> bounds)
+{
+    juce::Path path;
+    path.startNewSubPath(bounds.getRight(), bounds.getY());
+    path.lineTo(bounds.getX(), bounds.getCentreY());
+    path.lineTo(bounds.getRight(), bounds.getBottom());
+    path.closeSubPath();
+    return path;
+}
+
 juce::Path createMetronomeIcon(juce::Rectangle<float> bounds)
 {
     juce::Path path;
@@ -197,7 +207,7 @@ void TapeView::paint(juce::Graphics& g)
     const auto trackSectionBounds = getTrackSectionBounds();
     const auto accent = getTrackColour(selectedTrack);
     const auto motionDelta = std::abs(playheadSample - lastDisplayedPlayhead);
-    const auto isMoving = engine.isPlaying() || engine.isRewinding() || isScrubbing || motionDelta > 1.0;
+    const auto isMoving = engine.isPlaying() || engine.isRewinding() || engine.isReversePlaying() || isScrubbing || motionDelta > 1.0;
 
     g.setColour(juce::Colours::white.withAlpha(0.16f));
     g.drawRoundedRectangle(getTapeAreaBounds().toFloat(), 18.0f, 1.0f);
@@ -248,14 +258,18 @@ void TapeView::paint(juce::Graphics& g)
     g.fillEllipse(statusCircle);
 
     const auto rewindButtonBounds = getRewindButtonBounds().toFloat();
+    const auto reversePreviewButtonBounds = getReversePreviewButtonBounds().toFloat();
     const auto playStopButtonBounds = getPlayStopButtonBounds().toFloat();
     const auto metronomeButtonBounds = getMetronomeButtonBounds().toFloat();
     const auto loopButtonBounds = getLoopButtonBounds().toFloat();
     const auto rewindActive = engine.isRewinding();
+    const auto reversePreviewActive = engine.isReversePlaying();
     const auto metronomeActive = engine.isMetronomeEnabled();
     const auto loopEditable = engine.canEditLoopMarkers();
     const auto loopActive = engine.hasLoopMarkerNearPlayhead();
 
+    g.setColour(reversePreviewActive ? accent : juce::Colours::black);
+    g.fillRoundedRectangle(reversePreviewButtonBounds, 9.0f);
     g.setColour(rewindActive ? accent : juce::Colours::black);
     g.fillRoundedRectangle(rewindButtonBounds, 9.0f);
     g.setColour(engine.isPlaying() ? accent : juce::Colours::black);
@@ -266,11 +280,14 @@ void TapeView::paint(juce::Graphics& g)
     g.fillRoundedRectangle(loopButtonBounds, 9.0f);
 
     g.setColour(juce::Colours::white.withAlpha(0.22f));
+    g.drawRoundedRectangle(reversePreviewButtonBounds, 9.0f, 1.0f);
     g.drawRoundedRectangle(rewindButtonBounds, 9.0f, 1.0f);
     g.drawRoundedRectangle(playStopButtonBounds, 9.0f, 1.0f);
     g.drawRoundedRectangle(metronomeButtonBounds, 9.0f, 1.0f);
     g.drawRoundedRectangle(loopButtonBounds, 9.0f, 1.0f);
 
+    g.setColour(reversePreviewActive ? juce::Colours::black : juce::Colours::white);
+    g.fillPath(createReversePreviewIcon(reversePreviewButtonBounds.reduced(19.0f, 15.0f)));
     g.setColour(rewindActive ? juce::Colours::black : juce::Colours::white);
     g.fillPath(createRewindIcon(rewindButtonBounds.reduced(16.0f, 14.0f)));
     g.setColour(engine.isPlaying() ? juce::Colours::black : juce::Colours::white);
@@ -461,6 +478,14 @@ void TapeView::resized()
 
 void TapeView::mouseDown(const juce::MouseEvent& event)
 {
+    if (getReversePreviewButtonBounds().contains(event.position.toInt()))
+    {
+        reversePreviewPressed = true;
+        engine.startReversePlayback();
+        repaint();
+        return;
+    }
+
     if (getPlayStopButtonBounds().contains(event.position.toInt()))
     {
         if (engine.isPlaying())
@@ -565,6 +590,13 @@ void TapeView::mouseDrag(const juce::MouseEvent& event)
 void TapeView::mouseUp(const juce::MouseEvent& event)
 {
     juce::ignoreUnused(event);
+
+    if (reversePreviewPressed)
+    {
+        reversePreviewPressed = false;
+        engine.stopReversePlayback();
+    }
+
     isScrubbing = false;
 }
 
@@ -628,6 +660,12 @@ juce::Rectangle<int> TapeView::getRewindButtonBounds() const
 {
     auto playBounds = getPlayStopButtonBounds();
     return playBounds.translated(-76, 0);
+}
+
+juce::Rectangle<int> TapeView::getReversePreviewButtonBounds() const
+{
+    auto rewindBounds = getRewindButtonBounds();
+    return rewindBounds.translated(-76, 0);
 }
 
 juce::Rectangle<int> TapeView::getMetronomeButtonBounds() const
@@ -807,6 +845,12 @@ void TapeView::timerCallback()
         displayedPlayhead = juce::jmax(0.0,
                                        juce::jmin(displayedPlayhead,
                                                   currentPlayhead - (elapsedSeconds * sampleRate * TapeEngine::rewindSpeedMultiplier)));
+    }
+    else if (engine.isReversePlaying())
+    {
+        displayedPlayhead = juce::jmax(0.0,
+                                       juce::jmin(displayedPlayhead,
+                                                  currentPlayhead - (elapsedSeconds * sampleRate)));
     }
     else
     {

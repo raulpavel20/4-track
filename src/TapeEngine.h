@@ -11,6 +11,12 @@
 class TapeEngine : public juce::AudioIODeviceCallback
 {
 public:
+    struct InputSourceOption
+    {
+        int sourceId = makeInputSourceId(InputSourceType::hardwareStereo, 0);
+        juce::String label;
+    };
+
     static constexpr int numTracks = 4;
     static constexpr int initialChunkCount = 8;
     static constexpr int allocationLeadChunks = 8;
@@ -24,8 +30,11 @@ public:
     void play();
     void stop();
     void rewind();
+    void startReversePlayback();
+    void stopReversePlayback();
     bool isPlaying() const noexcept;
     bool isRewinding() const noexcept;
+    bool isReversePlaying() const noexcept;
     double getSampleRate() const noexcept;
     void setBpm(float newBpm);
     float getBpm() const noexcept;
@@ -55,12 +64,16 @@ public:
 
     void setTrackInputSource(int trackIndex, int inputSource);
     int getTrackInputSource(int trackIndex) const noexcept;
+    juce::Array<InputSourceOption> getAvailableInputSources(const juce::StringArray& hardwareInputNames,
+                                                            int destinationTrackIndex) const;
 
     int addTrackModule(int trackIndex, ChainModuleType type);
     void removeTrackModule(int trackIndex, int moduleIndex);
     int getTrackModuleCount(int trackIndex) const noexcept;
     ChainModuleType getTrackModuleType(int trackIndex, int moduleIndex) const noexcept;
     bool isTrackModulePresent(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackModuleBypassed(int trackIndex, int moduleIndex, bool shouldBeBypassed);
+    bool isTrackModuleBypassed(int trackIndex, int moduleIndex) const noexcept;
     void setTrackFilterMorph(int trackIndex, int moduleIndex, float morph);
     float getTrackFilterMorph(int trackIndex, int moduleIndex) const noexcept;
     void setTrackEqBandGainDb(int trackIndex, int moduleIndex, int bandIndex, float gainDb);
@@ -135,6 +148,7 @@ private:
     std::array<Track, numTracks> tracks;
     std::atomic<bool> playing { false };
     std::atomic<bool> rewinding { false };
+    std::atomic<bool> reversePlaying { false };
     std::atomic<bool> startRequested { false };
     std::atomic<float> bpm { 120.0f };
     std::atomic<int> beatsPerBar { defaultBeatsPerBar };
@@ -160,13 +174,16 @@ private:
     juce::Reverb reverb;
     int delayWritePosition = 0;
     int maxDelaySamples = 1;
+    std::array<std::array<float, Track::numChannels>, numTracks> lastTrackInputBuses {};
+    std::array<float, Track::numChannels> lastMasterInputBus {};
     int clickSamplesRemaining = 0;
     int clickTotalSamples = 1;
     double clickPhase = 0.0;
     double clickPhaseDelta = 0.0;
     float clickAmplitude = 0.0f;
 
-    float getInputSampleForTrack(const Track& track,
+    float getInputSampleForTrack(int destinationTrackIndex,
+                                 const Track& track,
                                  const float* const* inputChannelData,
                                  int numInputChannels,
                                  int outputChannel,
