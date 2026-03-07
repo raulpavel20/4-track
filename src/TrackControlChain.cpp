@@ -7,7 +7,7 @@
 namespace
 {
 constexpr int moduleGap = 10;
-constexpr int inputModuleWidth = 154;
+constexpr int inputModuleWidth = 120;
 constexpr int filterModuleWidth = 166;
 constexpr int eqModuleWidth = 280;
 constexpr int compressorModuleWidth = 260;
@@ -709,7 +709,7 @@ void TrackControlChain::layoutContent()
     contentComponent.setSize(juce::jmax(viewportBounds.getWidth(), requiredWidth), contentHeight);
 
     auto inputLayout = inputBounds.reduced(moduleInnerPadding, moduleVerticalInset);
-    inputLayout.removeFromTop(18);
+    inputLayout.removeFromTop(26);
     inputSourceBox.setBounds(inputLayout.removeFromTop(28));
     inputLayout.removeFromTop(6);
     inputGainSlider.setBounds(inputLayout.getCentreX() - (inputKnobSize / 2),

@@ -307,12 +307,9 @@ void TapeView::paint(juce::Graphics& g)
     g.fillRoundedRectangle(playheadMarker, 3.0f);
 
     const auto visibleSamples = getVisibleSamples();
-    const auto startSample = playheadSample - (visibleSamples * 0.5);
     const auto samplesPerPixel = visibleSamples / juce::jmax(1, trackSectionBounds.getWidth());
     const auto currentBpm = juce::jmax(30.0, (double) engine.getBpm());
     const auto samplesPerBeat = (engine.getSampleRate() * 60.0) / currentBpm;
-    const auto firstBeatIndex = juce::jmax<int64_t>(0, (int64_t) std::floor(startSample / samplesPerBeat));
-    const auto lastBeatIndex = juce::jmax<int64_t>(firstBeatIndex, (int64_t) std::ceil((startSample + visibleSamples) / samplesPerBeat));
     const auto currentBeatsPerBar = juce::jmax(1, engine.getBeatsPerBar());
     const auto blinkOn = ((juce::Time::getMillisecondCounter() / 220) % 2) == 0;
 
@@ -337,11 +334,36 @@ void TapeView::paint(juce::Graphics& g)
                    (float) waveformBounds.getCentreY(),
                    1.0f);
 
+        g.setColour(isSelected ? colour.withAlpha(0.92f) : colour.withAlpha(0.55f));
+        const auto leftSample = playheadSample - (((double) fixedPlayheadX - (double) waveformBounds.getX()) * samplesPerPixel);
+        const auto rightSample = leftSample + ((double) waveformBounds.getWidth() * samplesPerPixel);
+
+        for (int x = 0; x < waveformBounds.getWidth(); ++x)
+        {
+            const auto drawX = waveformBounds.getX() + x;
+            const auto bucketStart = (int) std::floor(leftSample + ((double) x * samplesPerPixel));
+            const auto bucketEnd = (int) std::ceil(leftSample + ((double) (x + 1) * samplesPerPixel));
+            const auto extents = getWaveformExtents(trackIndex, bucketStart, bucketEnd);
+
+            if (std::abs(extents.getStart()) <= 0.0001f && std::abs(extents.getEnd()) <= 0.0001f)
+                continue;
+
+            const auto halfHeight = (float) waveformBounds.getHeight() * 0.42f;
+            const auto top = (float) waveformBounds.getCentreY() - (extents.getEnd() * halfHeight);
+            const auto bottom = (float) waveformBounds.getCentreY() - (extents.getStart() * halfHeight);
+            g.drawVerticalLine(drawX,
+                               juce::jlimit((float) waveformBounds.getY() + 1.0f, (float) waveformBounds.getBottom() - 1.0f, top),
+                               juce::jlimit((float) waveformBounds.getY() + 1.0f, (float) waveformBounds.getBottom() - 1.0f, bottom));
+        }
+
+        const auto firstBeatIndex = juce::jmax<int64_t>(0, (int64_t) std::floor(leftSample / samplesPerBeat));
+        const auto lastBeatIndex = juce::jmax<int64_t>(firstBeatIndex, (int64_t) std::ceil(rightSample / samplesPerBeat));
+
         for (int64_t beatIndex = firstBeatIndex; beatIndex <= lastBeatIndex; ++beatIndex)
         {
             const auto beatSample = (double) beatIndex * samplesPerBeat;
-            const auto drawX = (int) std::round((double) trackSectionBounds.getX()
-                                                + ((beatSample - startSample) / samplesPerPixel));
+            const auto drawX = (int) std::round((double) waveformBounds.getX()
+                                                + ((beatSample - leftSample) / samplesPerPixel));
 
             if (drawX < waveformBounds.getX() || drawX > waveformBounds.getRight())
                 continue;
@@ -363,24 +385,6 @@ void TapeView::paint(juce::Graphics& g)
                 g.setColour(isSelected ? colour : juce::Colours::white.withAlpha(0.75f));
                 g.drawEllipse(markerBounds, 1.2f);
             }
-        }
-
-        g.setColour(isSelected ? colour.withAlpha(0.92f) : colour.withAlpha(0.55f));
-        for (int x = 0; x < waveformBounds.getWidth(); ++x)
-        {
-            const auto drawX = waveformBounds.getX() + x;
-            const auto screenOffset = drawX - trackSectionBounds.getX();
-            const auto bucketStart = startSample + ((double) screenOffset * samplesPerPixel);
-            const auto bucketEnd = bucketStart + samplesPerPixel;
-            const auto peak = getWaveformPeak(trackIndex, bucketStart, bucketEnd);
-
-            if (peak <= 0.0001f)
-                continue;
-
-            const auto halfHeight = peak * ((float) waveformBounds.getHeight() * 0.42f);
-            g.drawVerticalLine(drawX,
-                               (float) waveformBounds.getCentreY() - halfHeight,
-                               (float) waveformBounds.getCentreY() + halfHeight);
         }
 
         g.setColour(juce::Colours::white.withAlpha(0.12f));
@@ -717,31 +721,45 @@ double TapeView::getVisibleSamples() const
     return juce::jmax(1.0, visibleBeats * samplesPerBeat);
 }
 
-float TapeView::getWaveformPeak(int trackIndex, double startSample, double endSample) const
+juce::Range<float> TapeView::getWaveformExtents(int trackIndex, int startSample, int endSample) const
 {
     const auto recordedLength = engine.getTrackRecordedLength(trackIndex);
 
     if (recordedLength <= 0)
-        return 0.0f;
+        return {};
 
-    const auto clampedStart = juce::jlimit(0, recordedLength - 1, (int) std::floor(startSample));
-    const auto clampedEnd = juce::jlimit(0, recordedLength, (int) std::ceil(endSample));
+    if (endSample <= 0 || startSample >= recordedLength)
+        return {};
+
+    const auto clampedStart = juce::jlimit(0, recordedLength, startSample);
+    const auto clampedEnd = juce::jlimit(0, recordedLength, endSample);
 
     if (clampedEnd <= clampedStart)
-        return 0.0f;
+        return {};
 
     const auto range = clampedEnd - clampedStart;
-    const auto step = juce::jmax(1, range / 8);
-    auto peak = 0.0f;
+    const auto step = juce::jmax(1, range / 32);
+    auto minSample = 1.0f;
+    auto maxSample = -1.0f;
 
     for (int sample = clampedStart; sample < clampedEnd; sample += step)
     {
-        const auto left = std::abs(engine.getTrackSample(trackIndex, 0, sample));
-        const auto right = std::abs(engine.getTrackSample(trackIndex, 1, sample));
-        peak = juce::jmax(peak, juce::jmax(left, right));
+        const auto left = juce::jlimit(-1.0f, 1.0f, engine.getTrackSample(trackIndex, 0, sample));
+        const auto right = juce::jlimit(-1.0f, 1.0f, engine.getTrackSample(trackIndex, 1, sample));
+        minSample = juce::jmin(minSample, juce::jmin(left, right));
+        maxSample = juce::jmax(maxSample, juce::jmax(left, right));
     }
 
-    return juce::jlimit(0.0f, 1.0f, peak);
+    const auto finalSample = clampedEnd - 1;
+    const auto finalLeft = juce::jlimit(-1.0f, 1.0f, engine.getTrackSample(trackIndex, 0, finalSample));
+    const auto finalRight = juce::jlimit(-1.0f, 1.0f, engine.getTrackSample(trackIndex, 1, finalSample));
+    minSample = juce::jmin(minSample, juce::jmin(finalLeft, finalRight));
+    maxSample = juce::jmax(maxSample, juce::jmax(finalLeft, finalRight));
+
+    if (maxSample < minSample)
+        return {};
+
+    return { minSample, maxSample };
 }
 
 void TapeView::scrubTo(juce::Point<float> position)

@@ -56,7 +56,7 @@ private:
     juce::Rectangle<int> getWaveformBounds(int trackIndex) const;
     juce::Rectangle<int> getMeterBounds(int trackIndex) const;
     double getVisibleSamples() const;
-    float getWaveformPeak(int trackIndex, double startSample, double endSample) const;
+    juce::Range<float> getWaveformExtents(int trackIndex, int startSample, int endSample) const;
     void scrubTo(juce::Point<float> position);
     void timerCallback() override;
 };
