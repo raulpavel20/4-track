@@ -203,12 +203,12 @@ CMakeFiles/FourTrackAssets.dir/clean:
 CMakeFiles/FourTrackTape.dir/all: CMakeFiles/FourTrackAssets.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29 "Built target FourTrackTape"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30 "Built target FourTrackTape"
 .PHONY : CMakeFiles/FourTrackTape.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/FourTrackTape.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/pavel/Documents/Projects/4-track/build/CMakeFiles 29
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/pavel/Documents/Projects/4-track/build/CMakeFiles 30
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/FourTrackTape.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/pavel/Documents/Projects/4-track/build/CMakeFiles 0
 .PHONY : CMakeFiles/FourTrackTape.dir/rule
@@ -220,7 +220,7 @@ FourTrackTape: CMakeFiles/FourTrackTape.dir/rule
 # codegen rule for target.
 CMakeFiles/FourTrackTape.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29 "Finished codegen for target FourTrackTape"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30 "Finished codegen for target FourTrackTape"
 .PHONY : CMakeFiles/FourTrackTape.dir/codegen
 
 # clean rule for target.

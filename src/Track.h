@@ -119,6 +119,11 @@ struct Track
     std::array<std::atomic<float>, maxChainModules> gainModuleGainsDb;
     std::array<std::atomic<float>, maxChainModules> moduleInputMeters;
     std::array<std::atomic<float>, maxChainModules> moduleOutputMeters;
+    std::atomic<float> mixerGainDb { 0.0f };
+    std::atomic<float> mixerPan { 0.0f };
+    std::atomic<float> delaySend { 0.0f };
+    std::atomic<float> reverbSend { 0.0f };
+    std::atomic<float> mixerMeter { 0.0f };
     std::atomic<bool> muted { false };
     std::atomic<float> peakMeter { 0.0f };
     std::atomic<bool> clipping { false };
@@ -129,6 +134,7 @@ struct Track
     std::array<CompressorModuleState, maxChainModules> compressorStates;
     std::array<float, maxChainModules> moduleBlockInputPeaks {};
     std::array<float, maxChainModules> moduleBlockOutputPeaks {};
+    float mixerBlockPeak = 0.0f;
 
     Track()
     {
@@ -148,6 +154,12 @@ struct Track
         pendingRecordMode.store((int) TrackRecordMode::off, std::memory_order_relaxed);
         inputGain.store(1.0f, std::memory_order_relaxed);
         inputSource.store(0, std::memory_order_relaxed);
+        mixerGainDb.store(0.0f, std::memory_order_relaxed);
+        mixerPan.store(0.0f, std::memory_order_relaxed);
+        delaySend.store(0.0f, std::memory_order_relaxed);
+        reverbSend.store(0.0f, std::memory_order_relaxed);
+        mixerMeter.store(0.0f, std::memory_order_relaxed);
+        mixerBlockPeak = 0.0f;
         resetModuleConfiguration();
 
         for (auto& ownedChunk : ownedChunks)

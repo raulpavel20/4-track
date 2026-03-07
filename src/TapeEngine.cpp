@@ -19,6 +19,21 @@ float clampDbGain(float gainDb, float minimum, float maximum) noexcept
     return juce::jlimit(minimum, maximum, gainDb);
 }
 
+float clampUnit(float value) noexcept
+{
+    return juce::jlimit(0.0f, 1.0f, value);
+}
+
+float clampPan(float value) noexcept
+{
+    return juce::jlimit(-1.0f, 1.0f, value);
+}
+
+float clampDelayTimeMs(float value) noexcept
+{
+    return juce::jlimit(20.0f, 2000.0f, value);
+}
+
 float calculatePeakFilterSample(float input, EqBandState& state, size_t channelIndex) noexcept
 {
     const auto output = (state.b0 * input) + state.z1[channelIndex];
@@ -695,6 +710,138 @@ int TapeEngine::getSoloTrack() const noexcept
     return soloTrack.load(std::memory_order_acquire);
 }
 
+void TapeEngine::setTrackMixerGainDb(int trackIndex, float gainDb)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return;
+
+    tracks[(size_t) trackIndex].mixerGainDb.store(clampDbGain(gainDb, -24.0f, 12.0f), std::memory_order_release);
+}
+
+float TapeEngine::getTrackMixerGainDb(int trackIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return 0.0f;
+
+    return tracks[(size_t) trackIndex].mixerGainDb.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackMixerPan(int trackIndex, float pan)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return;
+
+    tracks[(size_t) trackIndex].mixerPan.store(clampPan(pan), std::memory_order_release);
+}
+
+float TapeEngine::getTrackMixerPan(int trackIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return 0.0f;
+
+    return tracks[(size_t) trackIndex].mixerPan.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackDelaySend(int trackIndex, float amount)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return;
+
+    tracks[(size_t) trackIndex].delaySend.store(clampUnit(amount), std::memory_order_release);
+}
+
+float TapeEngine::getTrackDelaySend(int trackIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return 0.0f;
+
+    return tracks[(size_t) trackIndex].delaySend.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackReverbSend(int trackIndex, float amount)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return;
+
+    tracks[(size_t) trackIndex].reverbSend.store(clampUnit(amount), std::memory_order_release);
+}
+
+float TapeEngine::getTrackReverbSend(int trackIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return 0.0f;
+
+    return tracks[(size_t) trackIndex].reverbSend.load(std::memory_order_acquire);
+}
+
+float TapeEngine::getTrackMixerMeter(int trackIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return 0.0f;
+
+    return tracks[(size_t) trackIndex].mixerMeter.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setDelayTimeMs(float timeMs)
+{
+    delayTimeMs.store(clampDelayTimeMs(timeMs), std::memory_order_release);
+}
+
+float TapeEngine::getDelayTimeMs() const noexcept
+{
+    return delayTimeMs.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setDelayFeedback(float feedback)
+{
+    delayFeedback.store(juce::jlimit(0.0f, 0.95f, feedback), std::memory_order_release);
+}
+
+float TapeEngine::getDelayFeedback() const noexcept
+{
+    return delayFeedback.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setDelayMix(float mix)
+{
+    delayMix.store(clampUnit(mix), std::memory_order_release);
+}
+
+float TapeEngine::getDelayMix() const noexcept
+{
+    return delayMix.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setReverbSize(float size)
+{
+    reverbSize.store(clampUnit(size), std::memory_order_release);
+}
+
+float TapeEngine::getReverbSize() const noexcept
+{
+    return reverbSize.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setReverbDamping(float damping)
+{
+    reverbDamping.store(clampUnit(damping), std::memory_order_release);
+}
+
+float TapeEngine::getReverbDamping() const noexcept
+{
+    return reverbDamping.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setReverbMix(float mix)
+{
+    reverbMix.store(clampUnit(mix), std::memory_order_release);
+}
+
+float TapeEngine::getReverbMix() const noexcept
+{
+    return reverbMix.load(std::memory_order_acquire);
+}
+
 float TapeEngine::getTrackPeakMeter(int trackIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))
@@ -756,6 +903,12 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     preparedBlockSize = juce::jmax(256, device->getCurrentBufferSizeSamples());
     inputScratch.setSize(Track::numChannels, preparedBlockSize, false, false, true);
     inputScratch.clear();
+    maxDelaySamples = juce::jmax(1, (int) std::ceil(sampleRate * 2.0));
+    delayBuffer.setSize(Track::numChannels, maxDelaySamples, false, false, true);
+    delayBuffer.clear();
+    delayWritePosition = 0;
+    reverb.reset();
+    reverb.setSampleRate(sampleRate);
     requiredChunkCount.store(initialChunkCount, std::memory_order_release);
     clickSamplesRemaining = 0;
     clickTotalSamples = juce::jmax(1, (int) std::round(sampleRate * 0.035));
@@ -776,6 +929,9 @@ void TapeEngine::audioDeviceStopped()
     playing.store(false, std::memory_order_release);
     rewinding.store(false, std::memory_order_release);
     clickSamplesRemaining = 0;
+    delayWritePosition = 0;
+    delayBuffer.clear();
+    reverb.reset();
 }
 
 void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
@@ -857,11 +1013,20 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
     std::array<float, numTracks> blockPeaks {};
     std::array<bool, numTracks> blockClips {};
+    juce::Reverb::Parameters reverbParameters;
+    reverbParameters.roomSize = reverbSize.load(std::memory_order_acquire);
+    reverbParameters.damping = reverbDamping.load(std::memory_order_acquire);
+    reverbParameters.wetLevel = 1.0f;
+    reverbParameters.dryLevel = 0.0f;
+    reverbParameters.width = 1.0f;
+    reverbParameters.freezeMode = 0.0f;
+    reverb.setParameters(reverbParameters);
 
     for (auto& track : tracks)
     {
         track.moduleBlockInputPeaks.fill(0.0f);
         track.moduleBlockOutputPeaks.fill(0.0f);
+        track.mixerBlockPeak = 0.0f;
     }
 
     auto* outputLeft = numOutputChannels > 0 ? outputChannelData[0] : nullptr;
@@ -901,6 +1066,10 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
         auto mixedLeft = 0.0f;
         auto mixedRight = 0.0f;
+        auto delayBusLeft = 0.0f;
+        auto delayBusRight = 0.0f;
+        auto reverbBusLeft = 0.0f;
+        auto reverbBusRight = 0.0f;
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
         {
@@ -966,18 +1135,40 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 monitorRight = processedRight;
             }
 
-            if (isAudible)
-            {
-                mixedLeft += trackLeft + monitorLeft;
-                mixedRight += trackRight + monitorRight;
-            }
-
             const auto audibleLeft = trackLeft + monitorLeft;
             const auto audibleRight = trackRight + monitorRight;
+            auto postMixerLeft = audibleLeft * juce::Decibels::decibelsToGain(track.mixerGainDb.load(std::memory_order_relaxed));
+            auto postMixerRight = audibleRight * juce::Decibels::decibelsToGain(track.mixerGainDb.load(std::memory_order_relaxed));
+            applyTrackMixer(track.mixerPan.load(std::memory_order_relaxed), postMixerLeft, postMixerRight);
+
+            if (isAudible)
+            {
+                mixedLeft += postMixerLeft;
+                mixedRight += postMixerRight;
+                delayBusLeft += postMixerLeft * track.delaySend.load(std::memory_order_relaxed);
+                delayBusRight += postMixerRight * track.delaySend.load(std::memory_order_relaxed);
+                reverbBusLeft += postMixerLeft * track.reverbSend.load(std::memory_order_relaxed);
+                reverbBusRight += postMixerRight * track.reverbSend.load(std::memory_order_relaxed);
+            }
+
             const auto peak = juce::jmax(std::abs(audibleLeft), std::abs(audibleRight));
             blockPeaks[(size_t) trackIndex] = juce::jmax(blockPeaks[(size_t) trackIndex], peak);
             blockClips[(size_t) trackIndex] = blockClips[(size_t) trackIndex] || peak > 1.0f;
+            track.mixerBlockPeak = juce::jmax(track.mixerBlockPeak,
+                                              juce::jmax(std::abs(postMixerLeft), std::abs(postMixerRight)));
         }
+
+        auto delayReturnLeft = 0.0f;
+        auto delayReturnRight = 0.0f;
+        processDelayReturn(delayBusLeft, delayBusRight, delayReturnLeft, delayReturnRight);
+        mixedLeft += delayReturnLeft;
+        mixedRight += delayReturnRight;
+
+        auto reverbReturnLeft = 0.0f;
+        auto reverbReturnRight = 0.0f;
+        processReverbReturn(reverbBusLeft, reverbBusRight, reverbReturnLeft, reverbReturnRight);
+        mixedLeft += reverbReturnLeft;
+        mixedRight += reverbReturnRight;
 
         if (shouldPlay && metronomeOn)
         {
@@ -1017,7 +1208,9 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
     {
         auto& track = tracks[(size_t) trackIndex];
         const auto previousPeak = track.peakMeter.load(std::memory_order_relaxed) * 0.82f;
+        const auto previousMixerPeak = track.mixerMeter.load(std::memory_order_relaxed) * 0.82f;
         track.peakMeter.store(juce::jmax(blockPeaks[(size_t) trackIndex], previousPeak), std::memory_order_relaxed);
+        track.mixerMeter.store(juce::jmax(track.mixerBlockPeak, previousMixerPeak), std::memory_order_relaxed);
         track.clipping.store(blockClips[(size_t) trackIndex], std::memory_order_relaxed);
 
         for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
@@ -1304,6 +1497,49 @@ float TapeEngine::processGainModule(Track& track, int moduleIndex, int channel, 
 {
     juce::ignoreUnused(channel);
     return sample * juce::Decibels::decibelsToGain(track.gainModuleGainsDb[(size_t) moduleIndex].load(std::memory_order_relaxed));
+}
+
+void TapeEngine::applyTrackMixer(float pan, float& left, float& right) const noexcept
+{
+    const auto clampedPan = clampPan(pan);
+
+    if (clampedPan < 0.0f)
+        right *= 1.0f + clampedPan;
+    else if (clampedPan > 0.0f)
+        left *= 1.0f - clampedPan;
+}
+
+void TapeEngine::processDelayReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept
+{
+    outputLeft = 0.0f;
+    outputRight = 0.0f;
+
+    if (delayBuffer.getNumSamples() <= 0)
+        return;
+
+    const auto delaySamples = juce::jlimit(1,
+                                           juce::jmax(1, maxDelaySamples - 1),
+                                           (int) std::round((sampleRate * clampDelayTimeMs(delayTimeMs.load(std::memory_order_relaxed))) * 0.001));
+    const auto readPosition = (delayWritePosition - delaySamples + maxDelaySamples) % maxDelaySamples;
+    const auto delayedLeft = delayBuffer.getSample(0, readPosition);
+    const auto delayedRight = delayBuffer.getSample(1, readPosition);
+    const auto feedback = delayFeedback.load(std::memory_order_relaxed);
+    delayBuffer.setSample(0, delayWritePosition, inputLeft + (delayedLeft * feedback));
+    delayBuffer.setSample(1, delayWritePosition, inputRight + (delayedRight * feedback));
+    delayWritePosition = (delayWritePosition + 1) % maxDelaySamples;
+    const auto wet = delayMix.load(std::memory_order_relaxed);
+    outputLeft = delayedLeft * wet;
+    outputRight = delayedRight * wet;
+}
+
+void TapeEngine::processReverbReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept
+{
+    outputLeft = inputLeft;
+    outputRight = inputRight;
+    reverb.processStereo(&outputLeft, &outputRight, 1);
+    const auto wet = reverbMix.load(std::memory_order_relaxed);
+    outputLeft *= wet;
+    outputRight *= wet;
 }
 
 float TapeEngine::readTrackSample(const Track& track, int channel, int samplePosition) const noexcept

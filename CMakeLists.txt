@@ -27,6 +27,7 @@ target_sources(FourTrackTape
         src/TapeEngine.cpp
         src/TapeView.cpp
         src/TrackControlChain.cpp
+        src/TrackMixerPanel.cpp
         src/TransportControls.cpp
 )
 

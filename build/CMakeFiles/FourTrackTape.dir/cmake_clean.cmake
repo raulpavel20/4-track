@@ -41,6 +41,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o.d"
+  "CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o"
+  "CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/main.cpp.o"

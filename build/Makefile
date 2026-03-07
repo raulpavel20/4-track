@@ -716,6 +716,30 @@ src/TrackControlChain.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.s
 .PHONY : src/TrackControlChain.cpp.s
 
+src/TrackMixerPanel.o: src/TrackMixerPanel.cpp.o
+.PHONY : src/TrackMixerPanel.o
+
+# target to build an object file
+src/TrackMixerPanel.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o
+.PHONY : src/TrackMixerPanel.cpp.o
+
+src/TrackMixerPanel.i: src/TrackMixerPanel.cpp.i
+.PHONY : src/TrackMixerPanel.i
+
+# target to preprocess a source file
+src/TrackMixerPanel.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.i
+.PHONY : src/TrackMixerPanel.cpp.i
+
+src/TrackMixerPanel.s: src/TrackMixerPanel.cpp.s
+.PHONY : src/TrackMixerPanel.s
+
+# target to generate assembly for a file
+src/TrackMixerPanel.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.s
+.PHONY : src/TrackMixerPanel.cpp.s
+
 src/TransportControls.o: src/TransportControls.cpp.o
 .PHONY : src/TransportControls.o
 
@@ -844,6 +868,9 @@ help:
 	@echo "... src/TrackControlChain.o"
 	@echo "... src/TrackControlChain.i"
 	@echo "... src/TrackControlChain.s"
+	@echo "... src/TrackMixerPanel.o"
+	@echo "... src/TrackMixerPanel.i"
+	@echo "... src/TrackMixerPanel.s"
 	@echo "... src/TransportControls.o"
 	@echo "... src/TransportControls.i"
 	@echo "... src/TransportControls.s"

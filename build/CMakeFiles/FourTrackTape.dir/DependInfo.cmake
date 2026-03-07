@@ -29,6 +29,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/Users/pavel/Documents/Projects/4-track/src/TapeEngine.cpp" "CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o" "gcc" "CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o.d"
   "/Users/pavel/Documents/Projects/4-track/src/TapeView.cpp" "CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o" "gcc" "CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o.d"
   "/Users/pavel/Documents/Projects/4-track/src/TrackControlChain.cpp" "CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o" "gcc" "CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o.d"
+  "/Users/pavel/Documents/Projects/4-track/src/TrackMixerPanel.cpp" "CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o" "gcc" "CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o.d"
   "/Users/pavel/Documents/Projects/4-track/src/TransportControls.cpp" "CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o" "gcc" "CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o.d"
   "/Users/pavel/Documents/Projects/4-track/src/main.cpp" "CMakeFiles/FourTrackTape.dir/src/main.cpp.o" "gcc" "CMakeFiles/FourTrackTape.dir/src/main.cpp.o.d"
   )
