@@ -1,0 +1,2 @@
+/usr/bin/ar qc libFourTrackAssets.a CMakeFiles/FourTrackAssets.dir/juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.cpp.o
+/usr/bin/ranlib libFourTrackAssets.a

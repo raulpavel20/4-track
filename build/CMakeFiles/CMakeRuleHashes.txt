@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+ae4ea469648dc29fa65739e445b75a5f FourTrackTape_artefacts/JuceLibraryCode/FourTrackTape/PkgInfo
+b7f318872bfd2d4c5c065d6ade9df81b FourTrackTape_artefacts/JuceLibraryCode/JuceHeader.h
+f2157edc514be5554c5995da17470156 juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.cpp

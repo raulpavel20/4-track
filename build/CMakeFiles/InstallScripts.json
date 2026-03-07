@@ -1,0 +1,11 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/pavel/Documents/Projects/4-track/build/cmake_install.cmake",
+		"/Users/pavel/Documents/Projects/4-track/build/external/JUCE/cmake_install.cmake",
+		"/Users/pavel/Documents/Projects/4-track/build/external/JUCE/modules/cmake_install.cmake",
+		"/Users/pavel/Documents/Projects/4-track/build/external/JUCE/extras/Build/cmake_install.cmake",
+		"/Users/pavel/Documents/Projects/4-track/build/external/JUCE/extras/Build/juceaide/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
