@@ -19,6 +19,7 @@ struct Track
     static constexpr int numChannels = 2;
     static constexpr int chunkSize = 16384;
     static constexpr int maxChunks = 2048;
+    static constexpr int maxFilterModules = 8;
 
     std::array<std::unique_ptr<juce::AudioBuffer<float>>, maxChunks> ownedChunks;
     std::array<std::atomic<juce::AudioBuffer<float>*>, maxChunks> chunkPointers;
@@ -26,23 +27,30 @@ struct Track
     std::atomic<int> pendingRecordMode { (int) TrackRecordMode::off };
     std::atomic<int> inputSource { 0 };
     std::atomic<float> inputGain { 1.0f };
-    std::atomic<float> filterMorph { 0.0f };
+    std::array<std::atomic<bool>, maxFilterModules> filterEnabled;
+    std::array<std::atomic<float>, maxFilterModules> filterMorphs;
     std::atomic<bool> muted { false };
     std::atomic<float> peakMeter { 0.0f };
     std::atomic<bool> clipping { false };
     std::atomic<int> recordedLength { 0 };
     int writePosition = 0;
-    float lowpassState[numChannels] {};
-    float highpassState[numChannels] {};
-    float highpassInputState[numChannels] {};
-    float bandLowpassState[numChannels] {};
-    float bandHighpassState[numChannels] {};
-    float bandHighpassInputState[numChannels] {};
+    std::array<std::array<float, numChannels>, maxFilterModules> lowpassStates {};
+    std::array<std::array<float, numChannels>, maxFilterModules> highpassStates {};
+    std::array<std::array<float, numChannels>, maxFilterModules> highpassInputStates {};
+    std::array<std::array<float, numChannels>, maxFilterModules> bandLowpassStates {};
+    std::array<std::array<float, numChannels>, maxFilterModules> bandHighpassStates {};
+    std::array<std::array<float, numChannels>, maxFilterModules> bandHighpassInputStates {};
 
     Track()
     {
         for (auto& chunkPointer : chunkPointers)
             chunkPointer.store(nullptr, std::memory_order_relaxed);
+
+        for (auto& enabled : filterEnabled)
+            enabled.store(false, std::memory_order_relaxed);
+
+        for (auto& morph : filterMorphs)
+            morph.store(0.0f, std::memory_order_relaxed);
     }
 
     void reset()
@@ -53,19 +61,30 @@ struct Track
         clipping.store(false, std::memory_order_relaxed);
         muted.store(false, std::memory_order_relaxed);
         pendingRecordMode.store((int) TrackRecordMode::off, std::memory_order_relaxed);
-        filterMorph.store(0.0f, std::memory_order_relaxed);
-        lowpassState[0] = 0.0f;
-        lowpassState[1] = 0.0f;
-        highpassState[0] = 0.0f;
-        highpassState[1] = 0.0f;
-        highpassInputState[0] = 0.0f;
-        highpassInputState[1] = 0.0f;
-        bandLowpassState[0] = 0.0f;
-        bandLowpassState[1] = 0.0f;
-        bandHighpassState[0] = 0.0f;
-        bandHighpassState[1] = 0.0f;
-        bandHighpassInputState[0] = 0.0f;
-        bandHighpassInputState[1] = 0.0f;
+
+        for (auto& enabled : filterEnabled)
+            enabled.store(false, std::memory_order_relaxed);
+
+        for (auto& morph : filterMorphs)
+            morph.store(0.0f, std::memory_order_relaxed);
+
+        for (auto& states : lowpassStates)
+            states.fill(0.0f);
+
+        for (auto& states : highpassStates)
+            states.fill(0.0f);
+
+        for (auto& states : highpassInputStates)
+            states.fill(0.0f);
+
+        for (auto& states : bandLowpassStates)
+            states.fill(0.0f);
+
+        for (auto& states : bandHighpassStates)
+            states.fill(0.0f);
+
+        for (auto& states : bandHighpassInputStates)
+            states.fill(0.0f);
 
         for (auto& ownedChunk : ownedChunks)
         {

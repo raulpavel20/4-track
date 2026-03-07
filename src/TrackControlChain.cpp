@@ -4,6 +4,16 @@
 
 namespace
 {
+constexpr int moduleGap = 10;
+constexpr int inputModuleWidth = 154;
+constexpr int filterModuleWidth = 166;
+constexpr int moduleVerticalInset = 10;
+constexpr int moduleInnerPadding = 10;
+constexpr int inputKnobSize = 80;
+constexpr int filterKnobSize = 72;
+constexpr int addButtonSize = 32;
+constexpr int closeButtonSize = 18;
+
 juce::Colour getChainAccentColour(int trackIndex)
 {
     static const std::array<juce::Colour, TapeEngine::numTracks> colours
@@ -51,9 +61,58 @@ float getFilterVisualizerResponse(float frequency, float morph)
 }
 }
 
-TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
-    : engine(engineToUse)
+TrackControlChain::CloseButton::CloseButton()
+    : juce::Button({})
 {
+}
+
+void TrackControlChain::CloseButton::paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown)
+{
+    const auto bounds = getLocalBounds().toFloat();
+    auto background = juce::Colours::black;
+
+    if (isButtonDown)
+        background = juce::Colours::white.withAlpha(0.18f);
+    else if (isMouseOverButton)
+        background = juce::Colours::white.withAlpha(0.08f);
+
+    g.setColour(background);
+    g.fillRoundedRectangle(bounds, 6.0f);
+    g.setColour(juce::Colours::white.withAlpha(0.26f));
+    g.drawRoundedRectangle(bounds.reduced(0.5f), 6.0f, 1.0f);
+
+    const auto iconBounds = bounds.reduced(5.0f);
+    juce::Path cross;
+    cross.startNewSubPath(iconBounds.getTopLeft());
+    cross.lineTo(iconBounds.getBottomRight());
+    cross.startNewSubPath(iconBounds.getTopRight());
+    cross.lineTo(iconBounds.getBottomLeft());
+
+    g.setColour(juce::Colours::white);
+    g.strokePath(cross, juce::PathStrokeType(1.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+}
+
+TrackControlChain::ContentComponent::ContentComponent(TrackControlChain& ownerToUse)
+    : owner(ownerToUse)
+{
+}
+
+void TrackControlChain::ContentComponent::paint(juce::Graphics& g)
+{
+    owner.paintContent(g);
+}
+
+TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
+    : engine(engineToUse),
+      contentComponent(*this)
+{
+    addAndMakeVisible(modulesViewport);
+    modulesViewport.setViewedComponent(&contentComponent, false);
+    modulesViewport.setScrollBarsShown(false, true);
+    modulesViewport.setScrollBarThickness(8);
+    modulesViewport.getHorizontalScrollBar().setColour(juce::ScrollBar::thumbColourId, juce::Colours::white.withAlpha(0.32f));
+    modulesViewport.getHorizontalScrollBar().setColour(juce::ScrollBar::trackColourId, juce::Colours::white.withAlpha(0.08f));
+
     inputSourceBox.setColour(juce::ComboBox::backgroundColourId, juce::Colours::black);
     inputSourceBox.setColour(juce::ComboBox::outlineColourId, juce::Colours::white.withAlpha(0.18f));
     inputSourceBox.setColour(juce::ComboBox::textColourId, juce::Colours::white);
@@ -65,6 +124,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         if (selectedId > 0)
             engine.setTrackInputSource(selectedTrack, selectedId - 1);
     };
+    contentComponent.addAndMakeVisible(inputSourceBox);
 
     gainSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     gainSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
@@ -73,159 +133,190 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                    juce::MathConstants<float>::pi * 2.8f,
                                    true);
     gainSlider.setDoubleClickReturnValue(true, 1.0);
-    gainSlider.setColour(juce::Slider::rotarySliderFillColourId, getChainAccentColour(selectedTrack));
     gainSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white.withAlpha(0.18f));
     gainSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
-    gainSlider.setValue(engine.getTrackInputGain(selectedTrack), juce::dontSendNotification);
     gainSlider.onValueChange = [this]
     {
         engine.setTrackInputGain(selectedTrack, (float) gainSlider.getValue());
-        repaint();
+        contentComponent.repaint();
     };
+    contentComponent.addAndMakeVisible(gainSlider);
 
-    filterSlider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
-    filterSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-    filterSlider.setRange(-1.0, 1.0, 0.01);
-    filterSlider.setRotaryParameters(juce::MathConstants<float>::pi * 1.2f,
-                                     juce::MathConstants<float>::pi * 2.8f,
-                                     true);
-    filterSlider.setDoubleClickReturnValue(true, 0.0);
-    filterSlider.setColour(juce::Slider::rotarySliderFillColourId, getChainAccentColour(selectedTrack));
-    filterSlider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white.withAlpha(0.18f));
-    filterSlider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
-    filterSlider.setValue(engine.getTrackFilterMorph(selectedTrack), juce::dontSendNotification);
-    filterSlider.onValueChange = [this]
+    addModuleButton.setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    addModuleButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    addModuleButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::black);
+    addModuleButton.onClick = [safeThis = juce::Component::SafePointer<TrackControlChain>(this)]
     {
-        engine.setTrackFilterMorph(selectedTrack, (float) filterSlider.getValue());
-        repaint();
-    };
+        if (safeThis == nullptr)
+            return;
 
-    addAndMakeVisible(inputSourceBox);
-    addAndMakeVisible(gainSlider);
-    addAndMakeVisible(filterSlider);
+        juce::PopupMenu menu;
+        menu.addItem(1, "Filter");
+        menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
+                           [safeThis](int result)
+                           {
+                               if (safeThis == nullptr || result != 1)
+                                   return;
+
+                               safeThis->engine.addTrackFilterModule(safeThis->selectedTrack);
+                               safeThis->refreshFromEngine();
+                           });
+    };
+    contentComponent.addAndMakeVisible(addModuleButton);
+
+    for (int moduleIndex = 0; moduleIndex < Track::maxFilterModules; ++moduleIndex)
+    {
+        auto& slider = filterSliders[(size_t) moduleIndex];
+        slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+        slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+        slider.setRange(-1.0, 1.0, 0.01);
+        slider.setRotaryParameters(juce::MathConstants<float>::pi * 1.2f,
+                                   juce::MathConstants<float>::pi * 2.8f,
+                                   true);
+        slider.setDoubleClickReturnValue(true, 0.0);
+        slider.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white.withAlpha(0.18f));
+        slider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
+        slider.onValueChange = [this, moduleIndex]
+        {
+            engine.setTrackFilterMorph(selectedTrack, moduleIndex, (float) filterSliders[(size_t) moduleIndex].getValue());
+            contentComponent.repaint();
+        };
+        contentComponent.addAndMakeVisible(slider);
+
+        auto& button = removeButtons[(size_t) moduleIndex];
+        button.onClick = [this, moduleIndex]
+        {
+            engine.removeTrackFilterModule(selectedTrack, moduleIndex);
+            refreshFromEngine();
+        };
+        contentComponent.addAndMakeVisible(button);
+    }
+
+    updateSliderColours();
+    refreshFromEngine();
 }
 
 void TrackControlChain::paint(juce::Graphics& g)
 {
-    const auto frameBounds = getFrameBounds();
-    const auto bounds = frameBounds.toFloat();
-    const auto accent = getChainAccentColour(selectedTrack);
-    const auto inputModule = getInputModuleBounds();
-    const auto filterModule = getFilterModuleBounds();
-
     g.fillAll(juce::Colours::black);
     g.setColour(juce::Colours::white.withAlpha(0.22f));
-    g.drawRoundedRectangle(bounds, 18.0f, 1.0f);
+    g.drawRoundedRectangle(getFrameBounds().toFloat(), 18.0f, 1.0f);
+}
+
+void TrackControlChain::paintContent(juce::Graphics& g)
+{
+    g.fillAll(juce::Colours::black);
+
+    const auto accent = getChainAccentColour(selectedTrack);
+    const auto inputModule = getInputModuleBounds();
 
     g.setColour(accent);
     g.drawRoundedRectangle(inputModule.toFloat(), 14.0f, 2.0f);
-    g.drawRoundedRectangle(filterModule.toFloat(), 14.0f, 2.0f);
 
     g.setColour(juce::Colours::white);
     g.setFont(AppFonts::getFont(16.0f));
     g.drawText("Input",
-               inputModule.withTrimmedTop(10).removeFromTop(20).reduced(14, 0),
-               juce::Justification::centredLeft,
-               false);
-    g.drawText("Filter",
-               filterModule.withTrimmedTop(10).removeFromTop(20).reduced(14, 0),
+               inputModule.withTrimmedTop(10).removeFromTop(18).reduced(12, 0),
                juce::Justification::centredLeft,
                false);
 
-    const auto gainBounds = gainSlider.getBounds();
-    const auto filterBounds = filterSlider.getBounds();
     g.setFont(AppFonts::getFont(13.0f));
-    g.setColour(juce::Colours::white.withAlpha(0.7f));
+    g.setColour(juce::Colours::white.withAlpha(0.72f));
     g.drawText(formatGainValue((float) gainSlider.getValue()),
-               juce::Rectangle<int>(inputModule.getX() + 16, gainBounds.getBottom() - 6, inputModule.getWidth() - 32, 16),
+               juce::Rectangle<int>(inputModule.getX() + 12,
+                                    gainSlider.getBounds().getBottom() - 8,
+                                    inputModule.getWidth() - 24,
+                                    16),
                juce::Justification::centred,
                false);
-    g.drawText(formatFilterValue((float) filterSlider.getValue()),
-               juce::Rectangle<int>(filterModule.getX() + 16, filterBounds.getBottom() - 6, filterModule.getWidth() - 32, 16),
-               juce::Justification::centred,
-               false);
 
-    auto visualizerBounds = filterModule.reduced(14);
-    visualizerBounds.removeFromTop(24);
-    visualizerBounds.setHeight((int) std::round((float) filterModule.getHeight() * 0.38f));
-    g.setColour(juce::Colours::white.withAlpha(0.14f));
-    g.drawRoundedRectangle(visualizerBounds.toFloat(), 10.0f, 1.0f);
+    const auto activeFilterCount = getActiveFilterModuleCount();
 
-    juce::Path responsePath;
-    const auto morph = engine.getTrackFilterMorph(selectedTrack);
-
-    for (int x = 0; x < visualizerBounds.getWidth(); ++x)
+    for (int visibleIndex = 0; visibleIndex < activeFilterCount; ++visibleIndex)
     {
-        const auto t = visualizerBounds.getWidth() > 1 ? (float) x / (float) (visualizerBounds.getWidth() - 1) : 0.0f;
-        const auto response = getFilterVisualizerResponse(t, morph);
+        const auto slot = getActiveFilterSlot(visibleIndex);
 
-        const auto point = juce::Point<float>((float) visualizerBounds.getX() + (float) x,
-                                              (float) visualizerBounds.getBottom() - ((float) visualizerBounds.getHeight() * response));
+        if (slot < 0)
+            continue;
 
-        if (x == 0)
-            responsePath.startNewSubPath(point);
-        else
-            responsePath.lineTo(point);
+        const auto filterModule = getFilterModuleBounds(visibleIndex);
+        g.setColour(accent);
+        g.drawRoundedRectangle(filterModule.toFloat(), 14.0f, 2.0f);
+
+        g.setColour(juce::Colours::white);
+        g.setFont(AppFonts::getFont(16.0f));
+        auto titleBounds = filterModule.withTrimmedTop(10).removeFromTop(18).reduced(12, 0);
+        titleBounds.removeFromRight(closeButtonSize + 8);
+        g.drawText("Filter",
+                   titleBounds,
+                   juce::Justification::centredLeft,
+                   false);
+
+        g.setFont(AppFonts::getFont(13.0f));
+        g.setColour(juce::Colours::white.withAlpha(0.72f));
+        g.drawText(formatFilterValue((float) filterSliders[(size_t) slot].getValue()),
+                   juce::Rectangle<int>(filterModule.getX() + 12,
+                                        filterSliders[(size_t) slot].getBounds().getBottom() - 8,
+                                        filterModule.getWidth() - 24,
+                                        16),
+                   juce::Justification::centred,
+                   false);
+
+        auto visualizerBounds = filterModule.reduced(moduleInnerPadding);
+        visualizerBounds.removeFromTop(24);
+        visualizerBounds.setHeight((int) std::round((float) filterModule.getHeight() * 0.33f));
+
+        g.setColour(juce::Colours::white.withAlpha(0.14f));
+        g.drawRoundedRectangle(visualizerBounds.toFloat(), 10.0f, 1.0f);
+
+        juce::Path responsePath;
+        const auto morph = engine.getTrackFilterMorph(selectedTrack, slot);
+
+        for (int x = 0; x < visualizerBounds.getWidth(); ++x)
+        {
+            const auto t = visualizerBounds.getWidth() > 1 ? (float) x / (float) (visualizerBounds.getWidth() - 1) : 0.0f;
+            const auto response = getFilterVisualizerResponse(t, morph);
+            const auto point = juce::Point<float>((float) visualizerBounds.getX() + (float) x,
+                                                  (float) visualizerBounds.getBottom()
+                                                      - ((float) visualizerBounds.getHeight() * response));
+
+            if (x == 0)
+                responsePath.startNewSubPath(point);
+            else
+                responsePath.lineTo(point);
+        }
+
+        g.setColour(accent);
+        g.strokePath(responsePath, juce::PathStrokeType(2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     }
 
-    g.setColour(accent);
-    g.strokePath(responsePath, juce::PathStrokeType(2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+    const auto addBounds = getAddButtonBounds().toFloat();
+    g.setColour(juce::Colours::white.withAlpha(0.22f));
+    g.drawRoundedRectangle(addBounds, 10.0f, 1.0f);
 }
 
 void TrackControlChain::resized()
 {
-    auto inputModule = getInputModuleBounds().reduced(12);
-    auto filterModule = getFilterModuleBounds().reduced(12);
-    constexpr int knobSize = 64;
-
-    inputModule.removeFromTop(20);
-    inputSourceBox.setBounds(inputModule.removeFromTop(28));
-    inputModule.removeFromTop(6);
-    const auto gainKnobSize = (int) std::round(knobSize * 1.2f);
-    gainSlider.setBounds(juce::Rectangle<int>(inputModule.getCentreX() - (gainKnobSize / 2),
-                                              inputModule.getY() + 10,
-                                              gainKnobSize,
-                                              gainKnobSize));
-
-    filterModule.removeFromTop(20);
-    const auto visualizerHeight = (int) std::round((float) filterModule.getHeight() * 0.34f);
-    filterModule.removeFromTop(visualizerHeight + 10);
-    filterSlider.setBounds(juce::Rectangle<int>(filterModule.getCentreX() - (knobSize / 2),
-                                                filterModule.getBottom() - knobSize - 10,
-                                                knobSize,
-                                                knobSize));
+    modulesViewport.setBounds(getViewportBounds());
+    layoutContent();
 }
 
 void TrackControlChain::setInputOptions(const juce::StringArray& options)
 {
+    inputOptions = options;
     inputSourceBox.clear(juce::dontSendNotification);
 
-    for (int index = 0; index < options.size(); ++index)
-        inputSourceBox.addItem(options[index], index + 1);
+    for (int index = 0; index < inputOptions.size(); ++index)
+        inputSourceBox.addItem(inputOptions[index], index + 1);
 
-    inputSourceBox.setEnabled(options.isEmpty() == false);
-
-    if (options.isEmpty())
-        return;
-
-    const auto selectedSource = juce::jlimit(0, options.size() - 1, engine.getTrackInputSource(selectedTrack));
-    inputSourceBox.setSelectedId(selectedSource + 1, juce::dontSendNotification);
+    inputSourceBox.setEnabled(inputOptions.isEmpty() == false);
+    refreshFromEngine();
 }
 
 void TrackControlChain::setSelectedTrack(int trackIndex)
 {
     selectedTrack = juce::jlimit(0, TapeEngine::numTracks - 1, trackIndex);
-    const auto accent = getChainAccentColour(selectedTrack);
-    gainSlider.setColour(juce::Slider::rotarySliderFillColourId, accent);
-    filterSlider.setColour(juce::Slider::rotarySliderFillColourId, accent);
-    gainSlider.setValue(engine.getTrackInputGain(selectedTrack), juce::dontSendNotification);
-    filterSlider.setValue(engine.getTrackFilterMorph(selectedTrack), juce::dontSendNotification);
-    const auto selectedSource = juce::jmax(0, engine.getTrackInputSource(selectedTrack));
-
-    if (inputSourceBox.getNumItems() > 0)
-        inputSourceBox.setSelectedId(juce::jlimit(1, inputSourceBox.getNumItems(), selectedSource + 1), juce::dontSendNotification);
-
-    repaint();
+    refreshFromEngine();
 }
 
 int TrackControlChain::getSelectedTrack() const noexcept
@@ -233,31 +324,156 @@ int TrackControlChain::getSelectedTrack() const noexcept
     return selectedTrack;
 }
 
+void TrackControlChain::refreshFromEngine()
+{
+    updateSliderColours();
+    gainSlider.setValue(engine.getTrackInputGain(selectedTrack), juce::dontSendNotification);
+
+    for (int moduleIndex = 0; moduleIndex < Track::maxFilterModules; ++moduleIndex)
+        filterSliders[(size_t) moduleIndex].setValue(engine.getTrackFilterMorph(selectedTrack, moduleIndex), juce::dontSendNotification);
+
+    if (inputSourceBox.getNumItems() > 0)
+    {
+        const auto selectedSource = juce::jlimit(0, inputSourceBox.getNumItems() - 1, engine.getTrackInputSource(selectedTrack));
+        inputSourceBox.setSelectedId(selectedSource + 1, juce::dontSendNotification);
+    }
+
+    updateModuleVisibility();
+    layoutContent();
+    repaint();
+    contentComponent.repaint();
+}
+
+void TrackControlChain::updateSliderColours()
+{
+    const auto accent = getChainAccentColour(selectedTrack);
+    gainSlider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+
+    for (auto& slider : filterSliders)
+        slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+}
+
+void TrackControlChain::updateModuleVisibility()
+{
+    const auto canAddModule = engine.getTrackFilterModuleCount(selectedTrack) < Track::maxFilterModules;
+    addModuleButton.setEnabled(canAddModule);
+    addModuleButton.setVisible(true);
+
+    for (int moduleIndex = 0; moduleIndex < Track::maxFilterModules; ++moduleIndex)
+    {
+        const auto isEnabled = engine.isTrackFilterModuleEnabled(selectedTrack, moduleIndex);
+        filterSliders[(size_t) moduleIndex].setVisible(isEnabled);
+        removeButtons[(size_t) moduleIndex].setVisible(isEnabled);
+    }
+}
+
+void TrackControlChain::layoutContent()
+{
+    const auto viewportBounds = modulesViewport.getBounds();
+    const auto contentHeight = juce::jmax(1, viewportBounds.getHeight());
+    contentComponent.setSize(juce::jmax(1, viewportBounds.getWidth()), contentHeight);
+
+    const auto requiredWidth = getAddButtonBounds().getRight();
+    contentComponent.setSize(juce::jmax(viewportBounds.getWidth(), requiredWidth), contentHeight);
+
+    auto inputModule = getInputModuleBounds().reduced(moduleInnerPadding, moduleVerticalInset);
+    inputModule.removeFromTop(18);
+    inputSourceBox.setBounds(inputModule.removeFromTop(28));
+    inputModule.removeFromTop(6);
+    gainSlider.setBounds(juce::Rectangle<int>(inputModule.getCentreX() - (inputKnobSize / 2),
+                                              inputModule.getY() + 16,
+                                              inputKnobSize,
+                                              inputKnobSize));
+
+    for (int moduleIndex = 0; moduleIndex < Track::maxFilterModules; ++moduleIndex)
+    {
+        const auto visibleIndex = getVisibleIndexForSlot(moduleIndex);
+
+        if (visibleIndex < 0)
+            continue;
+
+        auto filterModule = getFilterModuleBounds(visibleIndex).reduced(moduleInnerPadding, moduleVerticalInset);
+        removeButtons[(size_t) moduleIndex].setBounds(filterModule.getRight() - closeButtonSize,
+                                                      filterModule.getY() + 1,
+                                                      closeButtonSize,
+                                                      closeButtonSize);
+        filterModule.removeFromTop(18);
+        const auto visualizerHeight = (int) std::round((float) filterModule.getHeight() * 0.33f);
+        filterModule.removeFromTop(visualizerHeight + 10);
+        filterSliders[(size_t) moduleIndex].setBounds(juce::Rectangle<int>(filterModule.getCentreX() - (filterKnobSize / 2),
+                                                                           filterModule.getBottom() - filterKnobSize - 8,
+                                                                           filterKnobSize,
+                                                                           filterKnobSize));
+    }
+
+    addModuleButton.setBounds(getAddButtonBounds());
+}
+
+int TrackControlChain::getActiveFilterModuleCount() const noexcept
+{
+    return engine.getTrackFilterModuleCount(selectedTrack);
+}
+
+int TrackControlChain::getActiveFilterSlot(int visibleIndex) const noexcept
+{
+    auto currentVisibleIndex = 0;
+
+    for (int slot = 0; slot < Track::maxFilterModules; ++slot)
+    {
+        if (! engine.isTrackFilterModuleEnabled(selectedTrack, slot))
+            continue;
+
+        if (currentVisibleIndex == visibleIndex)
+            return slot;
+
+        ++currentVisibleIndex;
+    }
+
+    return -1;
+}
+
+int TrackControlChain::getVisibleIndexForSlot(int slot) const noexcept
+{
+    auto visibleIndex = 0;
+
+    for (int currentSlot = 0; currentSlot < Track::maxFilterModules; ++currentSlot)
+    {
+        if (! engine.isTrackFilterModuleEnabled(selectedTrack, currentSlot))
+            continue;
+
+        if (currentSlot == slot)
+            return visibleIndex;
+
+        ++visibleIndex;
+    }
+
+    return -1;
+}
+
 juce::Rectangle<int> TrackControlChain::getFrameBounds() const
 {
     return getLocalBounds().reduced(6);
 }
 
-juce::Rectangle<int> TrackControlChain::getContentBounds() const
+juce::Rectangle<int> TrackControlChain::getViewportBounds() const
 {
     return getFrameBounds().reduced(8);
 }
 
 juce::Rectangle<int> TrackControlChain::getInputModuleBounds() const
 {
-    auto content = getContentBounds();
-    const auto availableWidth = content.getWidth();
-    const auto inputWidth = juce::jmin(180, juce::jmax(146, availableWidth / 3));
-    return juce::Rectangle<int>(content.getX(), content.getY(), inputWidth, content.getHeight());
+    return juce::Rectangle<int>(0, 0, inputModuleWidth, contentComponent.getHeight());
 }
 
-juce::Rectangle<int> TrackControlChain::getFilterModuleBounds() const
+juce::Rectangle<int> TrackControlChain::getFilterModuleBounds(int visibleIndex) const
 {
-    auto content = getContentBounds();
-    const auto gap = 10;
-    const auto availableWidth = content.getWidth();
-    const auto inputWidth = juce::jmin(180, juce::jmax(146, availableWidth / 3));
-    const auto remainingWidth = juce::jmax(172, availableWidth - inputWidth - gap);
-    const auto filterWidth = juce::jmin(212, juce::jmax(182, juce::jmin(remainingWidth, availableWidth / 2)));
-    return juce::Rectangle<int>(content.getX() + inputWidth + gap, content.getY(), filterWidth, content.getHeight());
+    const auto x = inputModuleWidth + moduleGap + (visibleIndex * (filterModuleWidth + moduleGap));
+    return juce::Rectangle<int>(x, 0, filterModuleWidth, contentComponent.getHeight());
+}
+
+juce::Rectangle<int> TrackControlChain::getAddButtonBounds() const
+{
+    const auto x = inputModuleWidth + moduleGap + (getActiveFilterModuleCount() * (filterModuleWidth + moduleGap));
+    const auto y = (contentComponent.getHeight() - addButtonSize) / 2;
+    return juce::Rectangle<int>(x, y, addButtonSize, addButtonSize);
 }

@@ -56,8 +56,12 @@ public:
     void setTrackInputSource(int trackIndex, int inputSource);
     int getTrackInputSource(int trackIndex) const noexcept;
 
-    void setTrackFilterMorph(int trackIndex, float morph);
-    float getTrackFilterMorph(int trackIndex) const noexcept;
+    int addTrackFilterModule(int trackIndex);
+    void removeTrackFilterModule(int trackIndex, int moduleIndex);
+    int getTrackFilterModuleCount(int trackIndex) const noexcept;
+    bool isTrackFilterModuleEnabled(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackFilterMorph(int trackIndex, int moduleIndex, float morph);
+    float getTrackFilterMorph(int trackIndex, int moduleIndex) const noexcept;
     void setTrackMuted(int trackIndex, bool shouldBeMuted);
     bool isTrackMuted(int trackIndex) const noexcept;
     void setTrackSolo(int trackIndex, bool shouldBeSoloed);
@@ -112,6 +116,7 @@ private:
                                  int outputChannel,
                                  int sampleIndex) const noexcept;
     float processInputSample(Track& track, int channel, float sample) noexcept;
+    float processFilterModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float readTrackSample(const Track& track, int channel, int samplePosition) const noexcept;
     bool writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept;
     int getMaxRecordedLength() const noexcept;
