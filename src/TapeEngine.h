@@ -56,12 +56,37 @@ public:
     void setTrackInputSource(int trackIndex, int inputSource);
     int getTrackInputSource(int trackIndex) const noexcept;
 
-    int addTrackFilterModule(int trackIndex);
-    void removeTrackFilterModule(int trackIndex, int moduleIndex);
-    int getTrackFilterModuleCount(int trackIndex) const noexcept;
-    bool isTrackFilterModuleEnabled(int trackIndex, int moduleIndex) const noexcept;
+    int addTrackModule(int trackIndex, ChainModuleType type);
+    void removeTrackModule(int trackIndex, int moduleIndex);
+    int getTrackModuleCount(int trackIndex) const noexcept;
+    ChainModuleType getTrackModuleType(int trackIndex, int moduleIndex) const noexcept;
+    bool isTrackModulePresent(int trackIndex, int moduleIndex) const noexcept;
     void setTrackFilterMorph(int trackIndex, int moduleIndex, float morph);
     float getTrackFilterMorph(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackEqBandGainDb(int trackIndex, int moduleIndex, int bandIndex, float gainDb);
+    float getTrackEqBandGainDb(int trackIndex, int moduleIndex, int bandIndex) const noexcept;
+    void setTrackEqBandQ(int trackIndex, int moduleIndex, int bandIndex, float q);
+    float getTrackEqBandQ(int trackIndex, int moduleIndex, int bandIndex) const noexcept;
+    void setTrackEqBandFrequency(int trackIndex, int moduleIndex, int bandIndex, float frequencyHz);
+    float getTrackEqBandFrequency(int trackIndex, int moduleIndex, int bandIndex) const noexcept;
+    void setTrackCompressorThresholdDb(int trackIndex, int moduleIndex, float thresholdDb);
+    float getTrackCompressorThresholdDb(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackCompressorRatio(int trackIndex, int moduleIndex, float ratio);
+    float getTrackCompressorRatio(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackCompressorAttackMs(int trackIndex, int moduleIndex, float attackMs);
+    float getTrackCompressorAttackMs(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackCompressorReleaseMs(int trackIndex, int moduleIndex, float releaseMs);
+    float getTrackCompressorReleaseMs(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackCompressorMakeupGainDb(int trackIndex, int moduleIndex, float gainDb);
+    float getTrackCompressorMakeupGainDb(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackSaturationMode(int trackIndex, int moduleIndex, SaturationMode mode);
+    SaturationMode getTrackSaturationMode(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackSaturationAmount(int trackIndex, int moduleIndex, float amount);
+    float getTrackSaturationAmount(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackGainModuleGainDb(int trackIndex, int moduleIndex, float gainDb);
+    float getTrackGainModuleGainDb(int trackIndex, int moduleIndex) const noexcept;
+    float getTrackModuleInputMeter(int trackIndex, int moduleIndex) const noexcept;
+    float getTrackModuleOutputMeter(int trackIndex, int moduleIndex) const noexcept;
     void setTrackMuted(int trackIndex, bool shouldBeMuted);
     bool isTrackMuted(int trackIndex) const noexcept;
     void setTrackSolo(int trackIndex, bool shouldBeSoloed);
@@ -115,8 +140,16 @@ private:
                                  int numInputChannels,
                                  int outputChannel,
                                  int sampleIndex) const noexcept;
+    void applyPendingModuleChanges() noexcept;
+    void resetModuleState(Track& track, int moduleIndex, ChainModuleType type) noexcept;
+    void resetModuleParameters(Track& track, int moduleIndex, ChainModuleType type) noexcept;
     float processInputSample(Track& track, int channel, float sample) noexcept;
+    float processChainModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processFilterModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
+    float processEqModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
+    float processCompressorModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
+    float processSaturationModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
+    float processGainModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float readTrackSample(const Track& track, int channel, int samplePosition) const noexcept;
     bool writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept;
     int getMaxRecordedLength() const noexcept;

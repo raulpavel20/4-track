@@ -273,7 +273,7 @@ void TapeView::paint(juce::Graphics& g)
 
     g.setColour(rewindActive ? juce::Colours::black : juce::Colours::white);
     g.fillPath(createRewindIcon(rewindButtonBounds.reduced(16.0f, 14.0f)));
-    g.setColour(juce::Colours::white);
+    g.setColour(engine.isPlaying() ? juce::Colours::black : juce::Colours::white);
     g.fillPath(createPlayIcon(playStopButtonBounds.reduced(18.0f, 15.0f)));
     g.setColour(metronomeActive ? juce::Colours::black : juce::Colours::white);
     g.strokePath(createMetronomeIcon(metronomeButtonBounds.reduced(18.0f, 16.0f)),
