@@ -49,6 +49,7 @@ target_sources(FourTrackTape
         src/ui/pre_tape/TrackControlChainSaturationModule.cpp
         src/ui/pre_tape/TrackControlChainDelayModule.cpp
         src/ui/pre_tape/TrackControlChainReverbModule.cpp
+        src/ui/pre_tape/TrackControlChainSpectrumModule.cpp
         src/ui/pre_tape/TrackControlChainGainModule.cpp
         src/ui/pre_tape/TrackControlChainPaint.cpp
         src/ui/pre_tape/TrackControlChainWidgets.cpp
@@ -71,6 +72,7 @@ target_compile_definitions(FourTrackTape
 target_link_libraries(FourTrackTape
     PRIVATE
         FourTrackAssets
+        juce::juce_dsp
         juce::juce_audio_utils
         juce::juce_gui_extra
         juce::juce_recommended_config_flags
