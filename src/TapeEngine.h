@@ -56,6 +56,8 @@ public:
     int getBeatsPerBar() const noexcept;
     void setMetronomeEnabled(bool shouldBeEnabled);
     bool isMetronomeEnabled() const noexcept;
+    bool isCountInActive() const noexcept;
+    int getMetronomePulseRevision() const noexcept;
     void toggleLoopMarkerAtNearestBeat();
     bool hasLoopMarkerAtBeat(int64_t beatIndex) const noexcept;
     bool hasLoopMarkerNearPlayhead() const noexcept;
@@ -175,6 +177,11 @@ private:
     std::atomic<float> bpm { 120.0f };
     std::atomic<int> beatsPerBar { defaultBeatsPerBar };
     std::atomic<bool> metronomeEnabled { false };
+    std::atomic<bool> countInRequested { false };
+    std::atomic<bool> countInActive { false };
+    std::atomic<bool> countInAudible { false };
+    std::atomic<bool> transportStartPulsePending { false };
+    std::atomic<int> metronomePulseRevision { 0 };
     std::atomic<double> playhead { 0.0 };
     std::atomic<double> displayPlayhead { 0.0 };
     std::atomic<double> requestedPlayhead { -1.0 };
@@ -205,6 +212,8 @@ private:
     double clickPhase = 0.0;
     double clickPhaseDelta = 0.0;
     float clickAmplitude = 0.0f;
+    double countInSamplePosition = 0.0;
+    int countInTotalBeats = 0;
 
     float getInputSampleForTrack(int destinationTrackIndex,
                                  const Track& track,
@@ -226,6 +235,9 @@ private:
     void processDelayReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
     void processReverbReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
     float getResolvedDelayTimeMs() const noexcept;
+    bool shouldStartCountIn() const noexcept;
+    void resetCountInState() noexcept;
+    void triggerMetronomePulse(bool isBarStart) noexcept;
     float readTrackSample(const Track& track, int channel, int samplePosition) const noexcept;
     float readTrackSampleInterpolated(const Track& track, int channel, double samplePosition) const noexcept;
     bool writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept;

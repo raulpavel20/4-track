@@ -264,17 +264,23 @@ void TapeView::paint(juce::Graphics& g)
     const auto loopButtonBounds = getLoopButtonBounds().toFloat();
     const auto rewindActive = engine.isRewinding();
     const auto reversePreviewActive = engine.isReversePlaying();
+    const auto countInActive = engine.isCountInActive();
+    const auto transportActive = engine.isPlaying() || countInActive;
     const auto metronomeActive = engine.isMetronomeEnabled();
     const auto loopEditable = engine.canEditLoopMarkers();
     const auto loopActive = engine.hasLoopMarkerNearPlayhead();
+    const auto metronomeFill = countInActive && metronomeActive ? juce::Colours::black.interpolatedWith(accent, (float) metronomeBlinkLevel)
+                                                                : (metronomeActive ? accent : juce::Colours::black);
+    const auto metronomeIconColour = countInActive && metronomeActive ? juce::Colours::white.interpolatedWith(juce::Colours::black, (float) metronomeBlinkLevel)
+                                                                      : (metronomeActive ? juce::Colours::black : juce::Colours::white);
 
     g.setColour(reversePreviewActive ? accent : juce::Colours::black);
     g.fillRoundedRectangle(reversePreviewButtonBounds, 9.0f);
     g.setColour(rewindActive ? accent : juce::Colours::black);
     g.fillRoundedRectangle(rewindButtonBounds, 9.0f);
-    g.setColour(engine.isPlaying() ? accent : juce::Colours::black);
+    g.setColour(transportActive ? accent : juce::Colours::black);
     g.fillRoundedRectangle(playStopButtonBounds, 9.0f);
-    g.setColour(metronomeActive ? accent : juce::Colours::black);
+    g.setColour(metronomeFill);
     g.fillRoundedRectangle(metronomeButtonBounds, 9.0f);
     g.setColour(loopActive && loopEditable ? accent : juce::Colours::black);
     g.fillRoundedRectangle(loopButtonBounds, 9.0f);
@@ -290,9 +296,9 @@ void TapeView::paint(juce::Graphics& g)
     g.fillPath(createReversePreviewIcon(reversePreviewButtonBounds.reduced(19.0f, 15.0f)));
     g.setColour(rewindActive ? juce::Colours::black : juce::Colours::white);
     g.fillPath(createRewindIcon(rewindButtonBounds.reduced(16.0f, 14.0f)));
-    g.setColour(engine.isPlaying() ? juce::Colours::black : juce::Colours::white);
+    g.setColour(transportActive ? juce::Colours::black : juce::Colours::white);
     g.fillPath(createPlayIcon(playStopButtonBounds.reduced(18.0f, 15.0f)));
-    g.setColour(metronomeActive ? juce::Colours::black : juce::Colours::white);
+    g.setColour(metronomeIconColour);
     g.strokePath(createMetronomeIcon(metronomeButtonBounds.reduced(18.0f, 16.0f)),
                  juce::PathStrokeType(2.0f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     g.setColour(loopEditable ? (loopActive ? juce::Colours::black : juce::Colours::white)
@@ -488,7 +494,7 @@ void TapeView::mouseDown(const juce::MouseEvent& event)
 
     if (getPlayStopButtonBounds().contains(event.position.toInt()))
     {
-        if (engine.isPlaying())
+        if (engine.isPlaying() || engine.isCountInActive())
             engine.stop();
         else
             engine.play();
@@ -893,6 +899,18 @@ void TapeView::timerCallback()
     else
     {
         displayedPlayhead = currentPlayhead;
+    }
+
+    const auto metronomePulseRevision = engine.getMetronomePulseRevision();
+
+    if (metronomePulseRevision != lastMetronomePulseRevision)
+    {
+        lastMetronomePulseRevision = metronomePulseRevision;
+        metronomeBlinkLevel = 1.0;
+    }
+    else
+    {
+        metronomeBlinkLevel = juce::jmax(0.0, metronomeBlinkLevel - (elapsedSeconds / 0.14));
     }
 
     lastTimerSeconds = nowSeconds;

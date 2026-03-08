@@ -162,12 +162,26 @@ void TapeEngine::play()
 {
     rewinding.store(false, std::memory_order_release);
     reversePlaying.store(false, std::memory_order_release);
+
+    if (shouldStartCountIn())
+    {
+        resetCountInState();
+        countInRequested.store(true, std::memory_order_release);
+        countInActive.store(true, std::memory_order_release);
+        countInAudible.store(true, std::memory_order_release);
+        startRequested.store(false, std::memory_order_release);
+        playing.store(false, std::memory_order_release);
+        return;
+    }
+
+    resetCountInState();
     startRequested.store(true, std::memory_order_release);
     playing.store(true, std::memory_order_release);
 }
 
 void TapeEngine::stop()
 {
+    resetCountInState();
     playing.store(false, std::memory_order_release);
     rewinding.store(false, std::memory_order_release);
     reversePlaying.store(false, std::memory_order_release);
@@ -180,6 +194,7 @@ void TapeEngine::stop()
 
 void TapeEngine::rewind()
 {
+    resetCountInState();
     playing.store(false, std::memory_order_release);
     reversePlaying.store(false, std::memory_order_release);
     rewinding.store(true, std::memory_order_release);
@@ -187,6 +202,7 @@ void TapeEngine::rewind()
 
 void TapeEngine::startReversePlayback()
 {
+    resetCountInState();
     rewinding.store(false, std::memory_order_release);
     playing.store(false, std::memory_order_release);
     reversePlaying.store(true, std::memory_order_release);
@@ -210,6 +226,16 @@ bool TapeEngine::isRewinding() const noexcept
 bool TapeEngine::isReversePlaying() const noexcept
 {
     return reversePlaying.load(std::memory_order_acquire);
+}
+
+bool TapeEngine::isCountInActive() const noexcept
+{
+    return countInActive.load(std::memory_order_acquire);
+}
+
+int TapeEngine::getMetronomePulseRevision() const noexcept
+{
+    return metronomePulseRevision.load(std::memory_order_acquire);
 }
 
 double TapeEngine::getSampleRate() const noexcept
@@ -315,7 +341,7 @@ bool TapeEngine::hasLoopMarkerNearPlayhead() const noexcept
 
 bool TapeEngine::canEditLoopMarkers() const noexcept
 {
-    return ! isPlaying() && ! isRewinding() && ! isReversePlaying();
+    return ! isPlaying() && ! isCountInActive() && ! isRewinding() && ! isReversePlaying();
 }
 
 bool TapeEngine::getAdjacentLoopMarkerSample(bool forward, double fromSample, double& targetSample) const noexcept
@@ -368,6 +394,7 @@ bool TapeEngine::isMetronomeEnabled() const noexcept
 
 void TapeEngine::setPlayheadSample(double samplePosition)
 {
+    resetCountInState();
     rewinding.store(false, std::memory_order_release);
     reversePlaying.store(false, std::memory_order_release);
     const auto clampedPosition = juce::jmax(0.0, samplePosition);
@@ -1297,6 +1324,13 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     clickPhase = 0.0;
     clickPhaseDelta = 0.0;
     clickAmplitude = 0.0f;
+    countInSamplePosition = 0.0;
+    countInTotalBeats = 0;
+    countInRequested.store(false, std::memory_order_release);
+    countInActive.store(false, std::memory_order_release);
+    countInAudible.store(false, std::memory_order_release);
+    transportStartPulsePending.store(false, std::memory_order_release);
+    metronomePulseRevision.store(0, std::memory_order_release);
 
     for (auto& track : tracks)
     {
@@ -1308,10 +1342,15 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
 
 void TapeEngine::audioDeviceStopped()
 {
+    resetCountInState();
     playing.store(false, std::memory_order_release);
     rewinding.store(false, std::memory_order_release);
     reversePlaying.store(false, std::memory_order_release);
     clickSamplesRemaining = 0;
+    countInSamplePosition = 0.0;
+    countInTotalBeats = 0;
+    countInAudible.store(false, std::memory_order_release);
+    transportStartPulsePending.store(false, std::memory_order_release);
     delayWritePosition = 0;
     delayBuffer.clear();
     reverb.reset();
@@ -1372,6 +1411,20 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         syncWritePositionsToPlayhead(localPlayhead);
     }
 
+    const auto currentBpm = juce::jmax(30.0, (double) bpm.load(std::memory_order_acquire));
+    const auto samplesPerBeat = (sampleRate * 60.0) / currentBpm;
+    const auto currentBeatsPerBar = juce::jmax(1, beatsPerBar.load(std::memory_order_acquire));
+    const auto metronomeOn = metronomeEnabled.load(std::memory_order_acquire);
+
+    if (countInRequested.exchange(false, std::memory_order_acq_rel))
+    {
+        countInSamplePosition = 0.0;
+        countInTotalBeats = currentBeatsPerBar;
+        clickSamplesRemaining = 0;
+        countInActive.store(true, std::memory_order_release);
+        countInAudible.store(true, std::memory_order_release);
+    }
+
     if (startRequested.exchange(false, std::memory_order_acq_rel))
         syncWritePositionsToPlayhead(localPlayhead);
 
@@ -1379,18 +1432,16 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
     displayPlayhead.store((double) localPlayhead, std::memory_order_release);
 
-    const auto shouldPlay = playing.load(std::memory_order_acquire);
+    auto transportRunning = playing.load(std::memory_order_acquire);
+    auto countInRunning = countInActive.load(std::memory_order_acquire);
+    const auto countInHasClicks = countInAudible.load(std::memory_order_acquire);
     const auto shouldRewind = rewinding.load(std::memory_order_acquire);
     const auto shouldReversePlay = reversePlaying.load(std::memory_order_acquire);
-    const auto currentBpm = juce::jmax(30.0, (double) bpm.load(std::memory_order_acquire));
-    const auto samplesPerBeat = (sampleRate * 60.0) / currentBpm;
-    const auto currentBeatsPerBar = juce::jmax(1, beatsPerBar.load(std::memory_order_acquire));
-    const auto metronomeOn = metronomeEnabled.load(std::memory_order_acquire);
     const auto soloedTrack = soloTrack.load(std::memory_order_acquire);
     std::array<int64_t, maxLoopMarkers> loopMarkers {};
     const auto loopMarkerCountSnapshot = readLoopMarkers(loopMarkers);
 
-    if (shouldPlay)
+    if (transportRunning || countInRunning)
     {
         const auto endSample = localPlayhead + numSamples;
         const auto neededChunks = juce::jlimit(initialChunkCount,
@@ -1430,7 +1481,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         const auto rawCurrentBeatIndex = (int64_t) std::floor((double) tapeSample / samplesPerBeat);
         int64_t loopStartBeat = 0;
 
-        if (shouldPlay && rawCurrentBeatIndex != rawPreviousBeatIndex
+        if (transportRunning && rawCurrentBeatIndex != rawPreviousBeatIndex
             && getLoopStartBeat(rawCurrentBeatIndex, loopMarkers, loopMarkerCountSnapshot, loopStartBeat))
         {
             for (auto& track : tracks)
@@ -1450,7 +1501,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         const auto previousBeatIndex = (int64_t) std::floor(((double) tapeSample - 1.0) / samplesPerBeat);
         const auto currentBeatIndex = (int64_t) std::floor((double) tapeSample / samplesPerBeat);
 
-        if (currentBeatIndex != previousBeatIndex && currentBeatIndex % currentBeatsPerBar == 0)
+        if (transportRunning && currentBeatIndex != previousBeatIndex && currentBeatIndex % currentBeatsPerBar == 0)
             applyPendingRecordModes();
 
         auto mixedLeft = 0.0f;
@@ -1470,7 +1521,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
             const auto isMuted = track.muted.load(std::memory_order_acquire);
             const auto isAudible = (soloedTrack < 0 || soloedTrack == trackIndex) && ! isMuted;
 
-            const auto transportReadsTape = shouldPlay || shouldReversePlay;
+            const auto transportReadsTape = transportRunning || shouldReversePlay;
             auto trackLeft = transportReadsTape ? readTrackSample(track, 0, tapeSample) : 0.0f;
             auto trackRight = transportReadsTape ? readTrackSample(track, 1, tapeSample) : 0.0f;
             auto monitorLeft = 0.0f;
@@ -1500,7 +1551,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 hasProcessedInput = true;
             }
 
-            if (shouldPlay && recordMode != TrackRecordMode::off)
+            if (transportRunning && recordMode != TrackRecordMode::off)
             {
                 if (recordMode == TrackRecordMode::erase)
                 {
@@ -1599,16 +1650,20 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
             lastTrackInputBuses[(size_t) trackIndex] = currentTrackInputBuses[(size_t) trackIndex];
 
-        if (shouldPlay && metronomeOn)
+        if (transportStartPulsePending.exchange(false, std::memory_order_acq_rel) && metronomeOn)
+            triggerMetronomePulse(true);
+
+        if (metronomeOn || (countInRunning && countInHasClicks))
         {
-            if (currentBeatIndex != previousBeatIndex)
+            if (transportRunning && currentBeatIndex != previousBeatIndex)
+                triggerMetronomePulse(currentBeatIndex % currentBeatsPerBar == 0);
+            else if (countInRunning && countInHasClicks)
             {
-                const auto isBarStart = currentBeatIndex % currentBeatsPerBar == 0;
-                clickTotalSamples = juce::jmax(1, (int) std::round(sampleRate * (isBarStart ? 0.045 : 0.03)));
-                clickSamplesRemaining = clickTotalSamples;
-                clickPhase = 0.0;
-                clickPhaseDelta = juce::MathConstants<double>::twoPi * (isBarStart ? 1760.0 : 1320.0) / sampleRate;
-                clickAmplitude = isBarStart ? 0.24f : 0.16f;
+                const auto previousCountInBeat = (int64_t) std::floor((countInSamplePosition - 1.0) / samplesPerBeat);
+                const auto currentCountInBeat = (int64_t) std::floor(countInSamplePosition / samplesPerBeat);
+
+                if (currentCountInBeat != previousCountInBeat && currentCountInBeat < countInTotalBeats)
+                    triggerMetronomePulse(currentCountInBeat == 0);
             }
 
             if (clickSamplesRemaining > 0)
@@ -1619,6 +1674,25 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 --clickSamplesRemaining;
                 mixedLeft += clickSample;
                 mixedRight += clickSample;
+            }
+        }
+
+        if (countInRunning)
+        {
+            countInSamplePosition += 1.0;
+
+            if (countInSamplePosition >= (double) countInTotalBeats * samplesPerBeat)
+            {
+                countInRunning = false;
+                countInSamplePosition = 0.0;
+                countInTotalBeats = 0;
+                countInActive.store(false, std::memory_order_release);
+                countInAudible.store(false, std::memory_order_release);
+                transportStartPulsePending.store(true, std::memory_order_release);
+                syncWritePositionsToPlayhead(localPlayhead);
+                playing.store(true, std::memory_order_release);
+                transportRunning = true;
+                transportSample = localPlayhead;
             }
         }
 
@@ -1642,7 +1716,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 transportSample = tapeSample - 1;
             }
         }
-        else
+        else if (transportRunning)
         {
             transportSample = tapeSample + 1;
         }
@@ -1668,7 +1742,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         }
     }
 
-    if (! shouldPlay)
+    if (! transportRunning)
     {
         if (shouldReversePlay)
         {
@@ -1716,6 +1790,42 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 track.recordedLength.store(newPlayhead, std::memory_order_release);
         }
     }
+}
+
+bool TapeEngine::shouldStartCountIn() const noexcept
+{
+    if (! metronomeEnabled.load(std::memory_order_acquire))
+        return false;
+
+    for (const auto& track : tracks)
+    {
+        const auto mode = (TrackRecordMode) track.recordMode.load(std::memory_order_acquire);
+
+        if (mode == TrackRecordMode::overdub || mode == TrackRecordMode::replace)
+            return true;
+    }
+
+    return false;
+}
+
+void TapeEngine::resetCountInState() noexcept
+{
+    countInRequested.store(false, std::memory_order_release);
+    countInActive.store(false, std::memory_order_release);
+    countInAudible.store(false, std::memory_order_release);
+    transportStartPulsePending.store(false, std::memory_order_release);
+    countInSamplePosition = 0.0;
+    countInTotalBeats = 0;
+}
+
+void TapeEngine::triggerMetronomePulse(bool isBarStart) noexcept
+{
+    clickTotalSamples = juce::jmax(1, (int) std::round(sampleRate * (isBarStart ? 0.045 : 0.03)));
+    clickSamplesRemaining = clickTotalSamples;
+    clickPhase = 0.0;
+    clickPhaseDelta = juce::MathConstants<double>::twoPi * (isBarStart ? 1760.0 : 1320.0) / sampleRate;
+    clickAmplitude = isBarStart ? 0.24f : 0.16f;
+    metronomePulseRevision.fetch_add(1, std::memory_order_acq_rel);
 }
 
 float TapeEngine::getInputSampleForTrack(int destinationTrackIndex,

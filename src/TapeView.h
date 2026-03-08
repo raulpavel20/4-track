@@ -33,6 +33,8 @@ private:
     double displayedPlayhead = 0.0;
     double lastDisplayedPlayhead = 0.0;
     double lastTimerSeconds = 0.0;
+    double metronomeBlinkLevel = 0.0;
+    int lastMetronomePulseRevision = 0;
     bool isScrubbing = false;
     bool reversePreviewPressed = false;
     float scrubStartX = 0.0f;

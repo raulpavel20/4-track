@@ -290,7 +290,7 @@ void MainComponent::removeKeyListenerRecursive(juce::Component& component)
 
 void MainComponent::togglePlayStop()
 {
-    if (tapeEngine.isPlaying())
+    if (tapeEngine.isPlaying() || tapeEngine.isCountInActive())
         tapeEngine.stop();
     else
         tapeEngine.play();
