@@ -192,7 +192,8 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
 
         for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
         {
-            const auto type = (ChainModuleType) sourceSendBus.moduleTypes[(size_t) moduleIndex].load(std::memory_order_acquire);
+            const auto sourceType = (ChainModuleType) sourceSendBus.moduleTypes[(size_t) moduleIndex].load(std::memory_order_acquire);
+            const auto type = sourceType == ChainModuleType::spectrumAnalyzer ? ChainModuleType::none : sourceType;
             localSendBus.moduleTypes[(size_t) moduleIndex].store((int) type, std::memory_order_relaxed);
             localSendBus.activeModuleTypes[(size_t) moduleIndex] = (int) type;
             localSendBus.moduleBypassed[(size_t) moduleIndex].store(sourceSendBus.moduleBypassed[(size_t) moduleIndex].load(std::memory_order_acquire),

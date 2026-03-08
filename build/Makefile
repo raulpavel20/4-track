@@ -452,6 +452,30 @@ external/JUCE/modules/juce_data_structures/juce_data_structures.mm.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.s
 .PHONY : external/JUCE/modules/juce_data_structures/juce_data_structures.mm.s
 
+external/JUCE/modules/juce_dsp/juce_dsp.o: external/JUCE/modules/juce_dsp/juce_dsp.mm.o
+.PHONY : external/JUCE/modules/juce_dsp/juce_dsp.o
+
+# target to build an object file
+external/JUCE/modules/juce_dsp/juce_dsp.mm.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_dsp/juce_dsp.mm.o
+.PHONY : external/JUCE/modules/juce_dsp/juce_dsp.mm.o
+
+external/JUCE/modules/juce_dsp/juce_dsp.i: external/JUCE/modules/juce_dsp/juce_dsp.mm.i
+.PHONY : external/JUCE/modules/juce_dsp/juce_dsp.i
+
+# target to preprocess a source file
+external/JUCE/modules/juce_dsp/juce_dsp.mm.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_dsp/juce_dsp.mm.i
+.PHONY : external/JUCE/modules/juce_dsp/juce_dsp.mm.i
+
+external/JUCE/modules/juce_dsp/juce_dsp.s: external/JUCE/modules/juce_dsp/juce_dsp.mm.s
+.PHONY : external/JUCE/modules/juce_dsp/juce_dsp.s
+
+# target to generate assembly for a file
+external/JUCE/modules/juce_dsp/juce_dsp.mm.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_dsp/juce_dsp.mm.s
+.PHONY : external/JUCE/modules/juce_dsp/juce_dsp.mm.s
+
 external/JUCE/modules/juce_events/juce_events.o: external/JUCE/modules/juce_events/juce_events.mm.o
 .PHONY : external/JUCE/modules/juce_events/juce_events.o
 
@@ -1244,6 +1268,30 @@ src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s
 .PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s
 
+src/ui/pre_tape/TrackControlChainSpectrumModule.o: src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainSpectrumModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainSpectrumModule.i: src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainSpectrumModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainSpectrumModule.s: src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainSpectrumModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainSpectrumModule.cpp.s
+
 src/ui/pre_tape/TrackControlChainWidgets.o: src/ui/pre_tape/TrackControlChainWidgets.cpp.o
 .PHONY : src/ui/pre_tape/TrackControlChainWidgets.o
 
@@ -1459,6 +1507,9 @@ help:
 	@echo "... external/JUCE/modules/juce_data_structures/juce_data_structures.o"
 	@echo "... external/JUCE/modules/juce_data_structures/juce_data_structures.i"
 	@echo "... external/JUCE/modules/juce_data_structures/juce_data_structures.s"
+	@echo "... external/JUCE/modules/juce_dsp/juce_dsp.o"
+	@echo "... external/JUCE/modules/juce_dsp/juce_dsp.i"
+	@echo "... external/JUCE/modules/juce_dsp/juce_dsp.s"
 	@echo "... external/JUCE/modules/juce_events/juce_events.o"
 	@echo "... external/JUCE/modules/juce_events/juce_events.i"
 	@echo "... external/JUCE/modules/juce_events/juce_events.s"
@@ -1558,6 +1609,9 @@ help:
 	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.o"
 	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.i"
 	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainSpectrumModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainSpectrumModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainSpectrumModule.s"
 	@echo "... src/ui/pre_tape/TrackControlChainWidgets.o"
 	@echo "... src/ui/pre_tape/TrackControlChainWidgets.i"
 	@echo "... src/ui/pre_tape/TrackControlChainWidgets.s"

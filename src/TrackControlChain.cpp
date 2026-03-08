@@ -130,6 +130,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         menu.addItem(5, "Delay");
         menu.addItem(6, "Reverb");
         menu.addItem(7, "Utility");
+        menu.addItem(8, "Spectrum Analyzer");
         menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
                            [safeThis](int result)
                            {
@@ -152,6 +153,8 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                    moduleType = ChainModuleType::reverb;
                                else if (result == 7)
                                    moduleType = ChainModuleType::gain;
+                               else if (result == 8)
+                                   moduleType = ChainModuleType::spectrumAnalyzer;
 
                                safeThis->addModule(moduleType);
                                safeThis->refreshFromEngine();
@@ -821,6 +824,12 @@ float TrackControlChain::getModuleOutputMeter(int moduleIndex) const noexcept
 {
     return isTrackTarget() ? engine.getTrackModuleOutputMeter(selectedTrack, moduleIndex)
                            : engine.getSendBusModuleOutputMeter(selectedSendBus, moduleIndex);
+}
+
+std::array<float, ModuleChain::spectrumAnalyzerBinCount> TrackControlChain::getSpectrumAnalyzerData(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackSpectrumAnalyzerData(selectedTrack, moduleIndex)
+                           : engine.getSendBusSpectrumAnalyzerData(selectedSendBus, moduleIndex);
 }
 
 void TrackControlChain::refreshFromEngine()

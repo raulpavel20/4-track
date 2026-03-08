@@ -160,6 +160,7 @@ private:
     void setGainModulePan(int moduleIndex, float value);
     float getModuleInputMeter(int moduleIndex) const noexcept;
     float getModuleOutputMeter(int moduleIndex) const noexcept;
+    std::array<float, ModuleChain::spectrumAnalyzerBinCount> getSpectrumAnalyzerData(int moduleIndex) const noexcept;
     void updateAccentColours();
     void updateVisibleModules();
     void updateModuleVisibility();
@@ -171,6 +172,7 @@ private:
     void layoutSaturationModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutDelayModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutReverbModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutSpectrumAnalyzerModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutGainModule(int slot, juce::Rectangle<int> moduleArea);
     void paintInputModule(juce::Graphics& g, juce::Colour accent, juce::Rectangle<int> inputBounds);
     void paintFilterModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
@@ -179,6 +181,7 @@ private:
     void paintSaturationModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintDelayModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintReverbModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintSpectrumAnalyzerModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintGainModule(juce::Graphics& g, int slot, juce::Rectangle<int> bounds);
     void syncFrequencyEditorsFromEngine(bool force);
     juce::Rectangle<int> getFrameBounds() const;

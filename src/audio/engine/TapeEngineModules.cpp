@@ -1,5 +1,6 @@
 #include "../../TapeEngine.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace
@@ -86,6 +87,72 @@ void updatePeakFilterCoefficients(EqBandState& state, double sampleRate, float f
     state.lastFrequency = clampedFrequency;
     state.lastQ = clampedQ;
     state.lastGainDb = gainDb;
+}
+
+std::array<float, ModuleChain::spectrumAnalyzerBinCount> loadSpectrumAnalyzerData(const SpectrumAnalyzerState& state) noexcept
+{
+    std::array<float, ModuleChain::spectrumAnalyzerBinCount> data {};
+
+    for (int binIndex = 0; binIndex < ModuleChain::spectrumAnalyzerBinCount; ++binIndex)
+        data[(size_t) binIndex] = state.publishedBins[(size_t) binIndex].load(std::memory_order_acquire);
+
+    return data;
+}
+
+float normalizeSpectrumMagnitude(float magnitude) noexcept
+{
+    constexpr auto floorDb = -72.0f;
+    const auto normalizedMagnitude = juce::jmax(1.0e-5f, magnitude / (float) SpectrumAnalyzerState::fftSize);
+    const auto magnitudeDb = juce::Decibels::gainToDecibels(normalizedMagnitude, floorDb);
+    return juce::jlimit(0.0f, 1.0f, juce::jmap(magnitudeDb, floorDb, 0.0f, 0.0f, 1.0f));
+}
+
+void publishSpectrumAnalyzerFrame(SpectrumAnalyzerState& state, double sampleRate) noexcept
+{
+    if (sampleRate <= 0.0)
+        return;
+
+    std::copy(state.fifo.begin(), state.fifo.end(), state.fftData.begin());
+    std::fill(state.fftData.begin() + SpectrumAnalyzerState::fftSize, state.fftData.end(), 0.0f);
+    state.window.multiplyWithWindowingTable(state.fftData.data(), SpectrumAnalyzerState::fftSize);
+    state.fft.performFrequencyOnlyForwardTransform(state.fftData.data());
+
+    const auto nyquist = juce::jmax(60.0, juce::jmin(20000.0, sampleRate * 0.5));
+    const auto binLimit = SpectrumAnalyzerState::fftSize / 2;
+
+    for (int displayBin = 0; displayBin < ModuleChain::spectrumAnalyzerBinCount; ++displayBin)
+    {
+        const auto startRatio = (double) displayBin / (double) ModuleChain::spectrumAnalyzerBinCount;
+        const auto endRatio = (double) (displayBin + 1) / (double) ModuleChain::spectrumAnalyzerBinCount;
+        const auto startFrequency = 30.0 * std::pow(nyquist / 30.0, startRatio);
+        const auto endFrequency = 30.0 * std::pow(nyquist / 30.0, endRatio);
+        const auto startIndex = juce::jlimit(1,
+                                             binLimit - 1,
+                                             (int) std::floor(startFrequency * (double) SpectrumAnalyzerState::fftSize / sampleRate));
+        const auto endIndex = juce::jlimit(startIndex,
+                                           binLimit - 1,
+                                           (int) std::ceil(endFrequency * (double) SpectrumAnalyzerState::fftSize / sampleRate));
+        auto peakMagnitude = 0.0f;
+
+        for (int fftIndex = startIndex; fftIndex <= endIndex; ++fftIndex)
+            peakMagnitude = juce::jmax(peakMagnitude, state.fftData[(size_t) fftIndex]);
+
+        const auto normalized = normalizeSpectrumMagnitude(peakMagnitude);
+        const auto previous = state.publishedBins[(size_t) displayBin].load(std::memory_order_relaxed);
+        state.publishedBins[(size_t) displayBin].store(juce::jmax(normalized, previous * 0.86f), std::memory_order_release);
+    }
+}
+
+void pushSpectrumAnalyzerSample(SpectrumAnalyzerState& state, float sample, double sampleRate) noexcept
+{
+    state.fifo[(size_t) state.fifoIndex] = sample;
+    ++state.fifoIndex;
+
+    if (state.fifoIndex < SpectrumAnalyzerState::fftSize)
+        return;
+
+    publishSpectrumAnalyzerFrame(state, sampleRate);
+    state.fifoIndex = 0;
 }
 }
 
@@ -1190,6 +1257,22 @@ float TapeEngine::getSendBusModuleOutputMeter(int sendIndex, int moduleIndex) co
     return sendBuses[(size_t) sendIndex].moduleOutputMeters[(size_t) moduleIndex].load(std::memory_order_acquire);
 }
 
+std::array<float, ModuleChain::spectrumAnalyzerBinCount> TapeEngine::getTrackSpectrumAnalyzerData(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return {};
+
+    return loadSpectrumAnalyzerData(tracks[(size_t) trackIndex].spectrumAnalyzerStates[(size_t) moduleIndex]);
+}
+
+std::array<float, ModuleChain::spectrumAnalyzerBinCount> TapeEngine::getSendBusSpectrumAnalyzerData(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return {};
+
+    return loadSpectrumAnalyzerData(sendBuses[(size_t) sendIndex].spectrumAnalyzerStates[(size_t) moduleIndex]);
+}
+
 float TapeEngine::getSendBusOutputMeter(int sendIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(sendIndex, numSendBuses))
@@ -1252,6 +1335,7 @@ void TapeEngine::resetModuleState(ModuleChain& track, int moduleIndex, ChainModu
     track.compressorStates[(size_t) moduleIndex].reset();
     track.delayStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].reset();
+    track.spectrumAnalyzerStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
     track.moduleBlockInputPeaks[(size_t) moduleIndex] = 0.0f;
     track.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
@@ -1346,6 +1430,9 @@ float TapeEngine::processChainModule(ModuleChain& track, int moduleIndex, int ch
             break;
         case ChainModuleType::reverb:
             output = processReverbModule(track, moduleIndex, channel, sample);
+            break;
+        case ChainModuleType::spectrumAnalyzer:
+            output = processSpectrumAnalyzerModule(track, moduleIndex, channel, sample);
             break;
         case ChainModuleType::gain:
             output = processGainModule(track, moduleIndex, channel, sample);
@@ -1508,6 +1595,26 @@ float TapeEngine::processReverbModule(ModuleChain& track, int moduleIndex, int c
     return wet * mix + sample * (1.0f - mix);
 }
 
+float TapeEngine::processSpectrumAnalyzerModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
+{
+    auto& state = track.spectrumAnalyzerStates[(size_t) moduleIndex];
+
+    if (channel <= 0)
+    {
+        state.pendingLeftSample = sample;
+        state.hasPendingLeftSample = true;
+        return sample;
+    }
+
+    if (state.hasPendingLeftSample)
+    {
+        pushSpectrumAnalyzerSample(state, 0.5f * (state.pendingLeftSample + sample), sampleRate);
+        state.hasPendingLeftSample = false;
+    }
+
+    return sample;
+}
+
 float TapeEngine::processGainModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
 {
     auto output = sample * juce::Decibels::decibelsToGain(track.gainModuleGainsDb[(size_t) moduleIndex].load(std::memory_order_relaxed));
@@ -1541,6 +1648,7 @@ void TapeEngine::resetTrackRuntimeState(Track& track) noexcept
         track.delayStates[(size_t) moduleIndex].reset();
         track.reverbStates[(size_t) moduleIndex].reset();
         track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
+        track.spectrumAnalyzerStates[(size_t) moduleIndex].reset();
 
         for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
             track.eqStates[(size_t) moduleIndex][(size_t) bandIndex].reset();
@@ -1564,6 +1672,7 @@ void TapeEngine::resetSendBusRuntimeState(SendBus& sendBus) noexcept
         sendBus.delayStates[(size_t) moduleIndex].reset();
         sendBus.reverbStates[(size_t) moduleIndex].reset();
         sendBus.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
+        sendBus.spectrumAnalyzerStates[(size_t) moduleIndex].reset();
 
         for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
             sendBus.eqStates[(size_t) moduleIndex][(size_t) bandIndex].reset();

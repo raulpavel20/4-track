@@ -2,9 +2,8 @@ CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/src/TapeView.cpp \
   /Users/pavel/Documents/Projects/4-track/src/TapeView.h \
   /Users/pavel/Documents/Projects/4-track/build/FourTrackTape_artefacts/JuceLibraryCode/JuceHeader.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_utils/juce_audio_utils.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_basics/juce_gui_basics.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/juce_dsp.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/juce_audio_basics.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/juce_core.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/system/juce_TargetPlatform.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/TargetConditionals.h \
@@ -1156,6 +1155,133 @@ CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/detail/juce_CallbackListenerList.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/detail/juce_LruCache.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/detail/juce_IncrementRef.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioDataConverters.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_FloatVectorOperations.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioSampleBuffer.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioChannelSet.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioProcessLoadMeasurer.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_Decibels.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_IIRFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_GenericInterpolator.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_Interpolators.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_SmoothedValue.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_Reverb.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_ADSR.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiMessage.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiBuffer.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiMessageSequence.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiFile.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiKeyboardState.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiRPN.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiDataConcatenator.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEValue.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPENote.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEZoneLayout.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEInstrument.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEMessages.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiserBase.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiserVoice.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiser.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEUtils.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_AudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_PositionableAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_BufferingAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ChannelRemappingAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_IIRFilterAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_MemoryAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_MixerAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ResamplingAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ReverbAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ToneGeneratorAudioSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/audio_play_head/juce_AudioPlayHead.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_AudioWorkgroup.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPBytesOnGroup.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPDeviceInfo.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMP.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPProtocols.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPUtils.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPacket.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPSysEx7.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPView.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPIterator.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPackets.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPFactory.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPConversion.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPMidi1ToBytestreamTranslator.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPMidi1ToMidi2DefaultTranslator.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPConverters.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPDispatcher.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPStringUtils.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_neon.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_bf16.h \
+  /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/complex \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/native/juce_SIMDNativeOps_fallback.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/native/juce_SIMDNativeOps_neon.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/containers/juce_SIMDRegister.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/containers/juce_SIMDRegister_Impl.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/maths/juce_SpecialFunctions.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/maths/juce_Matrix.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/maths/juce_Phase.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/maths/juce_Polynomial.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/maths/juce_FastMathApproximations.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/maths/juce_LookupTable.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/maths/juce_LogRampedValue.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/containers/juce_AudioBlock.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_ProcessContext.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_ProcessorWrapper.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_ProcessorChain.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_ProcessorDuplicator.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_IIRFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_IIRFilter_Impl.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_FIRFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_StateVariableFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_FirstOrderTPTFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_Panner.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_DelayLine.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_Oversampling.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_BallisticsFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_LinkwitzRileyFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_DryWetMixer.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/processors/juce_StateVariableTPTFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/frequency/juce_FFT.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/frequency/juce_Convolution.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/frequency/juce_Windowing.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/filter_design/juce_FilterDesign.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Reverb.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Bias.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Gain.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_WaveShaper.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Oscillator.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_LadderFilter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Compressor.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_NoiseGate.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Limiter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Phaser.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_dsp/widgets/juce_Chorus.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/juce_audio_formats.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatReader.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatWriterOptions.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatWriter.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_MemoryMappedAudioFormatReader.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatManager.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatReaderSource.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioSubsectionReader.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_BufferingAudioFormatReader.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_AiffAudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_CoreAudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_LAMEEncoderAudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_MP3AudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_WavAudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_WindowsMediaAudioFormat.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/sampler/juce_Sampler.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_utils/juce_audio_utils.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_basics/juce_gui_basics.h \
+  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_events/juce_events.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_events/messages/juce_MessageManager.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_events/messages/juce_Message.h \
@@ -1391,65 +1517,6 @@ CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_basics/layout/juce_Grid.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_basics/native/juce_ScopedDPIAwarenessDisabler.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/juce_audio_devices.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/juce_audio_basics.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioDataConverters.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_FloatVectorOperations.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioSampleBuffer.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioChannelSet.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/buffers/juce_AudioProcessLoadMeasurer.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_Decibels.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_IIRFilter.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_GenericInterpolator.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_Interpolators.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_SmoothedValue.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_Reverb.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_ADSR.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiMessage.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiBuffer.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiMessageSequence.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiFile.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiKeyboardState.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiRPN.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/juce_MidiDataConcatenator.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEValue.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPENote.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEZoneLayout.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEInstrument.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEMessages.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiserBase.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiserVoice.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiser.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/mpe/juce_MPEUtils.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_AudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_PositionableAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_BufferingAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ChannelRemappingAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_IIRFilterAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_MemoryAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_MixerAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ResamplingAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ReverbAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/sources/juce_ToneGeneratorAudioSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/audio_play_head/juce_AudioPlayHead.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/utilities/juce_AudioWorkgroup.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPBytesOnGroup.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPDeviceInfo.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMP.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPProtocols.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPUtils.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPacket.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPSysEx7.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPView.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPIterator.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPackets.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPFactory.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPConversion.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPMidi1ToBytestreamTranslator.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPMidi1ToMidi2DefaultTranslator.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPConverters.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPDispatcher.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/midi/ump/juce_UMPStringUtils.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/midi_io/juce_ScheduledEventThread.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/midi_io/ump/juce_UMPEndpointId.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/midi_io/ump/juce_UMPStaticDeviceInfo.h \
@@ -1471,25 +1538,6 @@ CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/sources/juce_AudioSourcePlayer.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/sources/juce_AudioTransportSource.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/juce_audio_formats.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatReader.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatWriterOptions.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatWriter.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_MemoryMappedAudioFormatReader.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatManager.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioFormatReaderSource.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_AudioSubsectionReader.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/format/juce_BufferingAudioFormatReader.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_AiffAudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_CoreAudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_LAMEEncoderAudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_MP3AudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_WavAudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/codecs/juce_WindowsMediaAudioFormat.h \
-  /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/sampler/juce_Sampler.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors/juce_audio_processors.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/format/juce_PluginFormatDefs.h \

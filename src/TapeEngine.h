@@ -143,6 +143,7 @@ public:
     float getTrackGainModulePan(int trackIndex, int moduleIndex) const noexcept;
     float getTrackModuleInputMeter(int trackIndex, int moduleIndex) const noexcept;
     float getTrackModuleOutputMeter(int trackIndex, int moduleIndex) const noexcept;
+    std::array<float, ModuleChain::spectrumAnalyzerBinCount> getTrackSpectrumAnalyzerData(int trackIndex, int moduleIndex) const noexcept;
 
     int addSendBusModule(int sendIndex, ChainModuleType type);
     void removeSendBusModule(int sendIndex, int moduleIndex);
@@ -196,6 +197,7 @@ public:
     float getSendBusGainModulePan(int sendIndex, int moduleIndex) const noexcept;
     float getSendBusModuleInputMeter(int sendIndex, int moduleIndex) const noexcept;
     float getSendBusModuleOutputMeter(int sendIndex, int moduleIndex) const noexcept;
+    std::array<float, ModuleChain::spectrumAnalyzerBinCount> getSendBusSpectrumAnalyzerData(int sendIndex, int moduleIndex) const noexcept;
     float getSendBusOutputMeter(int sendIndex) const noexcept;
 
     void setTrackMuted(int trackIndex, bool shouldBeMuted);
@@ -281,6 +283,7 @@ private:
     float processSaturationModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     float processDelayModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     float processReverbModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processSpectrumAnalyzerModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     float processGainModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     void applyTrackMixer(float pan, float& left, float& right) const noexcept;
     bool shouldStartCountIn() const noexcept;

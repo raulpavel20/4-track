@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <juce_dsp/juce_dsp.h>
 
 #include <array>
 #include <atomic>
@@ -24,6 +25,7 @@ enum class ChainModuleType : int
     saturation,
     delay,
     reverb,
+    spectrumAnalyzer,
     gain
 };
 
@@ -206,10 +208,40 @@ struct ReverbModuleState
     }
 };
 
+struct SpectrumAnalyzerState
+{
+    static constexpr int fftOrder = 9;
+    static constexpr int fftSize = 1 << fftOrder;
+    static constexpr int fftDataSize = fftSize * 2;
+    static constexpr int publishedBinCount = 48;
+
+    juce::dsp::FFT fft { fftOrder };
+    juce::dsp::WindowingFunction<float> window { fftSize, juce::dsp::WindowingFunction<float>::hann, true };
+    std::array<float, fftSize> fifo {};
+    std::array<float, fftDataSize> fftData {};
+    std::array<std::atomic<float>, publishedBinCount> publishedBins;
+    int fifoIndex = 0;
+    float pendingLeftSample = 0.0f;
+    bool hasPendingLeftSample = false;
+
+    void reset() noexcept
+    {
+        fifo.fill(0.0f);
+        fftData.fill(0.0f);
+        fifoIndex = 0;
+        pendingLeftSample = 0.0f;
+        hasPendingLeftSample = false;
+
+        for (auto& value : publishedBins)
+            value.store(0.0f, std::memory_order_relaxed);
+    }
+};
+
 struct ModuleChain
 {
     static constexpr int maxChainModules = 8;
     static constexpr int maxEqBands = 6;
+    static constexpr int spectrumAnalyzerBinCount = SpectrumAnalyzerState::publishedBinCount;
     std::array<std::atomic<int>, maxChainModules> moduleTypes;
     std::array<int, maxChainModules> activeModuleTypes {};
     std::array<std::atomic<bool>, maxChainModules> moduleResetRequested;
@@ -242,6 +274,7 @@ struct ModuleChain
     std::array<CompressorModuleState, maxChainModules> compressorStates;
     std::array<DelayModuleState, maxChainModules> delayStates;
     std::array<ReverbModuleState, maxChainModules> reverbStates;
+    std::array<SpectrumAnalyzerState, maxChainModules> spectrumAnalyzerStates;
     std::array<float, maxChainModules> moduleBlockInputPeaks {};
     std::array<float, maxChainModules> moduleBlockOutputPeaks {};
 
@@ -279,6 +312,7 @@ struct ModuleChain
             compressorStates[(size_t) moduleIndex].reset();
             delayStates[(size_t) moduleIndex].reset();
             reverbStates[(size_t) moduleIndex].reset();
+            spectrumAnalyzerStates[(size_t) moduleIndex].reset();
 
             for (int bandIndex = 0; bandIndex < maxEqBands; ++bandIndex)
             {
