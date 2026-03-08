@@ -1586,9 +1586,14 @@ CMakeFiles/FourTrackTape.dir/src/main.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/src/AppFonts.h \
   /Users/pavel/Documents/Projects/4-track/build/juce_binarydata_FourTrackAssets/JuceLibraryCode/FourTrackBinaryData.h \
   /Users/pavel/Documents/Projects/4-track/src/MainComponent.h \
+  /Users/pavel/Documents/Projects/4-track/src/audio/AudioDeviceController.h \
   /Users/pavel/Documents/Projects/4-track/src/AppSettingsComponent.h \
   /Users/pavel/Documents/Projects/4-track/src/TapeEngine.h \
   /Users/pavel/Documents/Projects/4-track/src/Track.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/ExportSettingsSection.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/TechnicalSettingsSection.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/UserSettingsSection.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/../../../TapeEngine.h \
   /Users/pavel/Documents/Projects/4-track/src/TrackControlChain.h \
   /Users/pavel/Documents/Projects/4-track/src/TrackMixerPanel.h \
   /Users/pavel/Documents/Projects/4-track/src/TapeView.h

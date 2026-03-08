@@ -1,7 +1,6 @@
 #include "MainComponent.h"
 
 #include "AppFonts.h"
-#include "AppSettings.h"
 
 #include <cmath>
 
@@ -144,7 +143,6 @@ MainComponent::MainComponent()
         initialiseAudio();
     }
 
-    audioDeviceManager.addChangeListener(this);
     addKeyListenerRecursive(tapeView);
     addKeyListenerRecursive(trackControlChain);
     addKeyListenerRecursive(trackMixerPanel);
@@ -159,7 +157,6 @@ MainComponent::MainComponent()
 MainComponent::~MainComponent()
 {
     closeSettingsWindow();
-    audioDeviceManager.removeChangeListener(this);
     removeKeyListenerRecursive(tapeView);
     removeKeyListenerRecursive(trackControlChain);
     removeKeyListenerRecursive(trackMixerPanel);
@@ -167,8 +164,6 @@ MainComponent::~MainComponent()
     removeKeyListenerRecursive(mixerTabButton);
     removeKeyListenerRecursive(settingsButton);
     removeKeyListenerRecursive(shortcutsHelpButton);
-    audioDeviceManager.removeAudioCallback(&tapeEngine);
-    audioDeviceManager.closeAudioDevice();
 }
 
 void MainComponent::paint(juce::Graphics& g)
@@ -214,46 +209,14 @@ bool MainComponent::keyPressed(const juce::KeyPress& key)
     return MainComponent::keyPressed(key, this);
 }
 
-void MainComponent::changeListenerCallback(juce::ChangeBroadcaster* source)
-{
-    if (source != &audioDeviceManager)
-        return;
-
-    refreshInputOptions();
-    persistAudioDeviceState();
-}
-
 void MainComponent::initialiseAudio()
 {
-    const auto wantsInput = juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio) ? 16 : 0;
-    const auto savedState = AppSettings::getInstance().createAudioDeviceState();
-    auto error = audioDeviceManager.initialise(wantsInput, 2, savedState.get(), true);
-
-    if (error.isNotEmpty() && savedState != nullptr)
-        error = audioDeviceManager.initialise(wantsInput, 2, nullptr, true);
-
-    if (error.isEmpty())
-    {
-        audioDeviceManager.addAudioCallback(&tapeEngine);
-        refreshInputOptions();
-        persistAudioDeviceState();
-    }
-}
-
-void MainComponent::persistAudioDeviceState()
-{
-    const auto state = audioDeviceManager.createStateXml();
-    AppSettings::getInstance().setAudioDeviceState(state.get());
+    audioDeviceController.initialise(tapeEngine, [this] { refreshInputOptions(); });
 }
 
 void MainComponent::refreshInputOptions()
 {
-    juce::StringArray hardwareInputNames;
-
-    if (auto* device = audioDeviceManager.getCurrentAudioDevice())
-        hardwareInputNames = device->getInputChannelNames();
-
-    trackControlChain.setInputOptions(tapeEngine.getAvailableInputSources(hardwareInputNames,
+    trackControlChain.setInputOptions(tapeEngine.getAvailableInputSources(audioDeviceController.getHardwareInputNames(),
                                                                          trackControlChain.getSelectedTrack()));
 }
 
@@ -473,7 +436,7 @@ void MainComponent::showSettingsWindow()
     }
 
     settingsWindow = std::make_unique<SettingsWindow>(*this,
-                                                      std::make_unique<AppSettingsComponent>(audioDeviceManager,
+                                                      std::make_unique<AppSettingsComponent>(audioDeviceController.getDeviceManager(),
                                                                                             tapeEngine));
 }
 

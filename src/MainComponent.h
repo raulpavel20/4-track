@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 
+#include "audio/AudioDeviceController.h"
 #include "AppSettingsComponent.h"
 #include "TapeEngine.h"
 #include "TrackControlChain.h"
@@ -9,8 +10,7 @@
 #include "TapeView.h"
 
 class MainComponent : public juce::Component,
-                      private juce::KeyListener,
-                      private juce::ChangeListener
+                      private juce::KeyListener
 {
 public:
     MainComponent();
@@ -51,7 +51,7 @@ private:
         mixer
     };
 
-    juce::AudioDeviceManager audioDeviceManager;
+    AudioDeviceController audioDeviceController;
     TapeEngine tapeEngine;
     TapeView tapeView;
     TrackControlChain trackControlChain;
@@ -64,9 +64,7 @@ private:
     std::unique_ptr<SettingsWindow> settingsWindow;
 
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
-    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     void initialiseAudio();
-    void persistAudioDeviceState();
     void refreshInputOptions();
     void setBottomPanelMode(BottomPanelMode newMode);
     void updateTabButtonStyles();

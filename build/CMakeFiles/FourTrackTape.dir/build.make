@@ -140,24 +140,10 @@ CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/MainComponent.cpp -o CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.s
 
-CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
-CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o: /Users/pavel/Documents/Projects/4-track/src/TapeEngine.cpp
-CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/TapeEngine.cpp
-
-CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/TapeEngine.cpp > CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.i
-
-CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/TapeEngine.cpp -o CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.s
-
 CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o: /Users/pavel/Documents/Projects/4-track/src/TapeView.cpp
 CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/TapeView.cpp
 
 CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.i: cmake_force
@@ -171,7 +157,7 @@ CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.s: cmake_force
 CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o: /Users/pavel/Documents/Projects/4-track/src/TrackControlChain.cpp
 CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/TrackControlChain.cpp
 
 CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.i: cmake_force
@@ -185,7 +171,7 @@ CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.s: cmake_force
 CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o: /Users/pavel/Documents/Projects/4-track/src/TrackMixerPanel.cpp
 CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/TrackMixerPanel.cpp
 
 CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.i: cmake_force
@@ -196,24 +182,346 @@ CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/TrackMixerPanel.cpp -o CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.s
 
-CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
-CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o: /Users/pavel/Documents/Projects/4-track/src/TransportControls.cpp
-CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/TransportControls.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o: /Users/pavel/Documents/Projects/4-track/src/audio/AudioDeviceController.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/audio/AudioDeviceController.cpp
 
-CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/TransportControls.cpp > CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.i
+CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/audio/AudioDeviceController.cpp > CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.i
 
-CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/TransportControls.cpp -o CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.s
+CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/audio/AudioDeviceController.cpp -o CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o: /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioCallback.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioCallback.cpp
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioCallback.cpp > CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioCallback.cpp -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o: /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioDevice.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioDevice.cpp
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioDevice.cpp > CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineAudioDevice.cpp -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o: /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineMixerExport.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineMixerExport.cpp
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineMixerExport.cpp > CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineMixerExport.cpp -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o: /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineModules.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineModules.cpp
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineModules.cpp > CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineModules.cpp -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o: /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineRouting.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineRouting.cpp
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineRouting.cpp > CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineRouting.cpp -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o: /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineTransport.cpp
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineTransport.cpp
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineTransport.cpp > CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/audio/engine/TapeEngineTransport.cpp -o CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/ExportSettingsSection.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/ExportSettingsSection.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/ExportSettingsSection.cpp > CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/ExportSettingsSection.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/TechnicalSettingsSection.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/TechnicalSettingsSection.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/TechnicalSettingsSection.cpp > CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/TechnicalSettingsSection.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/UserSettingsSection.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/UserSettingsSection.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/UserSettingsSection.cpp > CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/UserSettingsSection.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelLayout.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelLayout.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelLayout.cpp > CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelLayout.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelPaint.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelPaint.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelPaint.cpp > CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/mixer/TrackMixerPanelPaint.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainLayout.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainLayout.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainLayout.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainLayout.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainInputModule.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainInputModule.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainInputModule.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainInputModule.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainFilterModule.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainFilterModule.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainFilterModule.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainFilterModule.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainEqModule.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainEqModule.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainEqModule.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainEqModule.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainCompressorModule.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainCompressorModule.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainCompressorModule.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainCompressorModule.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainSaturationModule.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainSaturationModule.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainSaturationModule.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainSaturationModule.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainGainModule.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainGainModule.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainGainModule.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainGainModule.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainPaint.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainPaint.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainPaint.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainPaint.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainWidgets.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainWidgets.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainWidgets.cpp > CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/TrackControlChainWidgets.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewGeometry.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewGeometry.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewGeometry.cpp > CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewGeometry.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewInteraction.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewInteraction.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewInteraction.cpp > CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewInteraction.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.s
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o: /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewPaint.cpp
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o -MF CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o.d -o CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o -c /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewPaint.cpp
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewPaint.cpp > CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.i
+
+CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/pavel/Documents/Projects/4-track/src/ui/tape/TapeViewPaint.cpp -o CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.s
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.i: cmake_force
@@ -227,7 +535,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_u
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.i: cmake_force
@@ -241,7 +549,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_au
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.i: cmake_force
@@ -255,7 +563,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.i: cmake_force
@@ -269,7 +577,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basi
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.i: cmake_force
@@ -283,7 +591,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_H
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building C object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.i: cmake_force
@@ -297,7 +605,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_S
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_graphics/juce_graphics.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.i: cmake_force
@@ -311,7 +619,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.m
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_events/juce_events.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_events/juce_events.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.i: cmake_force
@@ -325,7 +633,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.s:
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.i: cmake_force
@@ -339,7 +647,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_Compilati
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/juce_core.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_core/juce_core.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.i: cmake_force
@@ -353,7 +661,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.s: cma
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_data_structures/juce_data_structures.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_data_structures/juce_data_structures.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.i: cmake_force
@@ -367,7 +675,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_dat
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.i: cmake_force
@@ -381,7 +689,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headles
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.i: cmake_force
@@ -395,7 +703,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headles
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.i: cmake_force
@@ -409,7 +717,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headles
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.i: cmake_force
@@ -423,7 +731,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.i: cmake_force
@@ -437,7 +745,7 @@ CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o: /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o: CMakeFiles/FourTrackTape.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building CXX object CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o -MF CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o.d -o CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o -c /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm
 
 CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.i: cmake_force
@@ -454,11 +762,33 @@ FourTrackTape_OBJECTS = \
 "CMakeFiles/FourTrackTape.dir/src/AppSettings.cpp.o" \
 "CMakeFiles/FourTrackTape.dir/src/AppSettingsComponent.cpp.o" \
 "CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.o" \
-"CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o" \
 "CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o" \
 "CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o" \
 "CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o" \
-"CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o" \
+"CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o" \
 "CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o" \
 "CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o" \
 "CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o" \
@@ -484,11 +814,33 @@ FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrack
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/AppSettings.cpp.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/AppSettingsComponent.cpp.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.o
-FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o
-FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o
@@ -509,7 +861,7 @@ FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrack
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/build.make
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: libFourTrackAssets.a
 FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Linking CXX executable FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Linking CXX executable FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/FourTrackTape.dir/link.txt --verbose=$(VERBOSE)
 	/Applications/CMake.app/Contents/bin/cmake -E copy /Users/pavel/Documents/Projects/4-track/build/FourTrackTape_artefacts/JuceLibraryCode/FourTrackTape/PkgInfo /Users/pavel/Documents/Projects/4-track/build/FourTrackTape_artefacts/4-Track.app/Contents
 

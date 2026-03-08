@@ -692,30 +692,6 @@ src/MainComponent.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.s
 .PHONY : src/MainComponent.cpp.s
 
-src/TapeEngine.o: src/TapeEngine.cpp.o
-.PHONY : src/TapeEngine.o
-
-# target to build an object file
-src/TapeEngine.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o
-.PHONY : src/TapeEngine.cpp.o
-
-src/TapeEngine.i: src/TapeEngine.cpp.i
-.PHONY : src/TapeEngine.i
-
-# target to preprocess a source file
-src/TapeEngine.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.i
-.PHONY : src/TapeEngine.cpp.i
-
-src/TapeEngine.s: src/TapeEngine.cpp.s
-.PHONY : src/TapeEngine.s
-
-# target to generate assembly for a file
-src/TapeEngine.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.s
-.PHONY : src/TapeEngine.cpp.s
-
 src/TapeView.o: src/TapeView.cpp.o
 .PHONY : src/TapeView.o
 
@@ -788,29 +764,173 @@ src/TrackMixerPanel.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.s
 .PHONY : src/TrackMixerPanel.cpp.s
 
-src/TransportControls.o: src/TransportControls.cpp.o
-.PHONY : src/TransportControls.o
+src/audio/AudioDeviceController.o: src/audio/AudioDeviceController.cpp.o
+.PHONY : src/audio/AudioDeviceController.o
 
 # target to build an object file
-src/TransportControls.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o
-.PHONY : src/TransportControls.cpp.o
+src/audio/AudioDeviceController.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.o
+.PHONY : src/audio/AudioDeviceController.cpp.o
 
-src/TransportControls.i: src/TransportControls.cpp.i
-.PHONY : src/TransportControls.i
+src/audio/AudioDeviceController.i: src/audio/AudioDeviceController.cpp.i
+.PHONY : src/audio/AudioDeviceController.i
 
 # target to preprocess a source file
-src/TransportControls.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.i
-.PHONY : src/TransportControls.cpp.i
+src/audio/AudioDeviceController.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.i
+.PHONY : src/audio/AudioDeviceController.cpp.i
 
-src/TransportControls.s: src/TransportControls.cpp.s
-.PHONY : src/TransportControls.s
+src/audio/AudioDeviceController.s: src/audio/AudioDeviceController.cpp.s
+.PHONY : src/audio/AudioDeviceController.s
 
 # target to generate assembly for a file
-src/TransportControls.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.s
-.PHONY : src/TransportControls.cpp.s
+src/audio/AudioDeviceController.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/AudioDeviceController.cpp.s
+.PHONY : src/audio/AudioDeviceController.cpp.s
+
+src/audio/engine/TapeEngineAudioCallback.o: src/audio/engine/TapeEngineAudioCallback.cpp.o
+.PHONY : src/audio/engine/TapeEngineAudioCallback.o
+
+# target to build an object file
+src/audio/engine/TapeEngineAudioCallback.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.o
+.PHONY : src/audio/engine/TapeEngineAudioCallback.cpp.o
+
+src/audio/engine/TapeEngineAudioCallback.i: src/audio/engine/TapeEngineAudioCallback.cpp.i
+.PHONY : src/audio/engine/TapeEngineAudioCallback.i
+
+# target to preprocess a source file
+src/audio/engine/TapeEngineAudioCallback.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.i
+.PHONY : src/audio/engine/TapeEngineAudioCallback.cpp.i
+
+src/audio/engine/TapeEngineAudioCallback.s: src/audio/engine/TapeEngineAudioCallback.cpp.s
+.PHONY : src/audio/engine/TapeEngineAudioCallback.s
+
+# target to generate assembly for a file
+src/audio/engine/TapeEngineAudioCallback.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioCallback.cpp.s
+.PHONY : src/audio/engine/TapeEngineAudioCallback.cpp.s
+
+src/audio/engine/TapeEngineAudioDevice.o: src/audio/engine/TapeEngineAudioDevice.cpp.o
+.PHONY : src/audio/engine/TapeEngineAudioDevice.o
+
+# target to build an object file
+src/audio/engine/TapeEngineAudioDevice.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.o
+.PHONY : src/audio/engine/TapeEngineAudioDevice.cpp.o
+
+src/audio/engine/TapeEngineAudioDevice.i: src/audio/engine/TapeEngineAudioDevice.cpp.i
+.PHONY : src/audio/engine/TapeEngineAudioDevice.i
+
+# target to preprocess a source file
+src/audio/engine/TapeEngineAudioDevice.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.i
+.PHONY : src/audio/engine/TapeEngineAudioDevice.cpp.i
+
+src/audio/engine/TapeEngineAudioDevice.s: src/audio/engine/TapeEngineAudioDevice.cpp.s
+.PHONY : src/audio/engine/TapeEngineAudioDevice.s
+
+# target to generate assembly for a file
+src/audio/engine/TapeEngineAudioDevice.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineAudioDevice.cpp.s
+.PHONY : src/audio/engine/TapeEngineAudioDevice.cpp.s
+
+src/audio/engine/TapeEngineMixerExport.o: src/audio/engine/TapeEngineMixerExport.cpp.o
+.PHONY : src/audio/engine/TapeEngineMixerExport.o
+
+# target to build an object file
+src/audio/engine/TapeEngineMixerExport.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.o
+.PHONY : src/audio/engine/TapeEngineMixerExport.cpp.o
+
+src/audio/engine/TapeEngineMixerExport.i: src/audio/engine/TapeEngineMixerExport.cpp.i
+.PHONY : src/audio/engine/TapeEngineMixerExport.i
+
+# target to preprocess a source file
+src/audio/engine/TapeEngineMixerExport.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.i
+.PHONY : src/audio/engine/TapeEngineMixerExport.cpp.i
+
+src/audio/engine/TapeEngineMixerExport.s: src/audio/engine/TapeEngineMixerExport.cpp.s
+.PHONY : src/audio/engine/TapeEngineMixerExport.s
+
+# target to generate assembly for a file
+src/audio/engine/TapeEngineMixerExport.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineMixerExport.cpp.s
+.PHONY : src/audio/engine/TapeEngineMixerExport.cpp.s
+
+src/audio/engine/TapeEngineModules.o: src/audio/engine/TapeEngineModules.cpp.o
+.PHONY : src/audio/engine/TapeEngineModules.o
+
+# target to build an object file
+src/audio/engine/TapeEngineModules.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.o
+.PHONY : src/audio/engine/TapeEngineModules.cpp.o
+
+src/audio/engine/TapeEngineModules.i: src/audio/engine/TapeEngineModules.cpp.i
+.PHONY : src/audio/engine/TapeEngineModules.i
+
+# target to preprocess a source file
+src/audio/engine/TapeEngineModules.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.i
+.PHONY : src/audio/engine/TapeEngineModules.cpp.i
+
+src/audio/engine/TapeEngineModules.s: src/audio/engine/TapeEngineModules.cpp.s
+.PHONY : src/audio/engine/TapeEngineModules.s
+
+# target to generate assembly for a file
+src/audio/engine/TapeEngineModules.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineModules.cpp.s
+.PHONY : src/audio/engine/TapeEngineModules.cpp.s
+
+src/audio/engine/TapeEngineRouting.o: src/audio/engine/TapeEngineRouting.cpp.o
+.PHONY : src/audio/engine/TapeEngineRouting.o
+
+# target to build an object file
+src/audio/engine/TapeEngineRouting.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.o
+.PHONY : src/audio/engine/TapeEngineRouting.cpp.o
+
+src/audio/engine/TapeEngineRouting.i: src/audio/engine/TapeEngineRouting.cpp.i
+.PHONY : src/audio/engine/TapeEngineRouting.i
+
+# target to preprocess a source file
+src/audio/engine/TapeEngineRouting.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.i
+.PHONY : src/audio/engine/TapeEngineRouting.cpp.i
+
+src/audio/engine/TapeEngineRouting.s: src/audio/engine/TapeEngineRouting.cpp.s
+.PHONY : src/audio/engine/TapeEngineRouting.s
+
+# target to generate assembly for a file
+src/audio/engine/TapeEngineRouting.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineRouting.cpp.s
+.PHONY : src/audio/engine/TapeEngineRouting.cpp.s
+
+src/audio/engine/TapeEngineTransport.o: src/audio/engine/TapeEngineTransport.cpp.o
+.PHONY : src/audio/engine/TapeEngineTransport.o
+
+# target to build an object file
+src/audio/engine/TapeEngineTransport.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.o
+.PHONY : src/audio/engine/TapeEngineTransport.cpp.o
+
+src/audio/engine/TapeEngineTransport.i: src/audio/engine/TapeEngineTransport.cpp.i
+.PHONY : src/audio/engine/TapeEngineTransport.i
+
+# target to preprocess a source file
+src/audio/engine/TapeEngineTransport.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.i
+.PHONY : src/audio/engine/TapeEngineTransport.cpp.i
+
+src/audio/engine/TapeEngineTransport.s: src/audio/engine/TapeEngineTransport.cpp.s
+.PHONY : src/audio/engine/TapeEngineTransport.s
+
+# target to generate assembly for a file
+src/audio/engine/TapeEngineTransport.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/audio/engine/TapeEngineTransport.cpp.s
+.PHONY : src/audio/engine/TapeEngineTransport.cpp.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -835,6 +955,414 @@ src/main.s: src/main.cpp.s
 src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
+
+src/ui/mixer/TrackMixerPanelLayout.o: src/ui/mixer/TrackMixerPanelLayout.cpp.o
+.PHONY : src/ui/mixer/TrackMixerPanelLayout.o
+
+# target to build an object file
+src/ui/mixer/TrackMixerPanelLayout.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o
+.PHONY : src/ui/mixer/TrackMixerPanelLayout.cpp.o
+
+src/ui/mixer/TrackMixerPanelLayout.i: src/ui/mixer/TrackMixerPanelLayout.cpp.i
+.PHONY : src/ui/mixer/TrackMixerPanelLayout.i
+
+# target to preprocess a source file
+src/ui/mixer/TrackMixerPanelLayout.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.i
+.PHONY : src/ui/mixer/TrackMixerPanelLayout.cpp.i
+
+src/ui/mixer/TrackMixerPanelLayout.s: src/ui/mixer/TrackMixerPanelLayout.cpp.s
+.PHONY : src/ui/mixer/TrackMixerPanelLayout.s
+
+# target to generate assembly for a file
+src/ui/mixer/TrackMixerPanelLayout.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.s
+.PHONY : src/ui/mixer/TrackMixerPanelLayout.cpp.s
+
+src/ui/mixer/TrackMixerPanelPaint.o: src/ui/mixer/TrackMixerPanelPaint.cpp.o
+.PHONY : src/ui/mixer/TrackMixerPanelPaint.o
+
+# target to build an object file
+src/ui/mixer/TrackMixerPanelPaint.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o
+.PHONY : src/ui/mixer/TrackMixerPanelPaint.cpp.o
+
+src/ui/mixer/TrackMixerPanelPaint.i: src/ui/mixer/TrackMixerPanelPaint.cpp.i
+.PHONY : src/ui/mixer/TrackMixerPanelPaint.i
+
+# target to preprocess a source file
+src/ui/mixer/TrackMixerPanelPaint.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.i
+.PHONY : src/ui/mixer/TrackMixerPanelPaint.cpp.i
+
+src/ui/mixer/TrackMixerPanelPaint.s: src/ui/mixer/TrackMixerPanelPaint.cpp.s
+.PHONY : src/ui/mixer/TrackMixerPanelPaint.s
+
+# target to generate assembly for a file
+src/ui/mixer/TrackMixerPanelPaint.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.s
+.PHONY : src/ui/mixer/TrackMixerPanelPaint.cpp.s
+
+src/ui/pre_tape/TrackControlChainCompressorModule.o: src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainCompressorModule.i: src/ui/pre_tape/TrackControlChainCompressorModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainCompressorModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainCompressorModule.s: src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s
+
+src/ui/pre_tape/TrackControlChainEqModule.o: src/ui/pre_tape/TrackControlChainEqModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainEqModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainEqModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainEqModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainEqModule.i: src/ui/pre_tape/TrackControlChainEqModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainEqModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainEqModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainEqModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainEqModule.s: src/ui/pre_tape/TrackControlChainEqModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainEqModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainEqModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainEqModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainEqModule.cpp.s
+
+src/ui/pre_tape/TrackControlChainFilterModule.o: src/ui/pre_tape/TrackControlChainFilterModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainFilterModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainFilterModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainFilterModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainFilterModule.i: src/ui/pre_tape/TrackControlChainFilterModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainFilterModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainFilterModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainFilterModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainFilterModule.s: src/ui/pre_tape/TrackControlChainFilterModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainFilterModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainFilterModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainFilterModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainFilterModule.cpp.s
+
+src/ui/pre_tape/TrackControlChainGainModule.o: src/ui/pre_tape/TrackControlChainGainModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainGainModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainGainModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainGainModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainGainModule.i: src/ui/pre_tape/TrackControlChainGainModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainGainModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainGainModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainGainModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainGainModule.s: src/ui/pre_tape/TrackControlChainGainModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainGainModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainGainModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainGainModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainGainModule.cpp.s
+
+src/ui/pre_tape/TrackControlChainInputModule.o: src/ui/pre_tape/TrackControlChainInputModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainInputModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainInputModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainInputModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainInputModule.i: src/ui/pre_tape/TrackControlChainInputModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainInputModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainInputModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainInputModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainInputModule.s: src/ui/pre_tape/TrackControlChainInputModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainInputModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainInputModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainInputModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainInputModule.cpp.s
+
+src/ui/pre_tape/TrackControlChainLayout.o: src/ui/pre_tape/TrackControlChainLayout.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainLayout.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainLayout.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainLayout.cpp.o
+
+src/ui/pre_tape/TrackControlChainLayout.i: src/ui/pre_tape/TrackControlChainLayout.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainLayout.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainLayout.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainLayout.cpp.i
+
+src/ui/pre_tape/TrackControlChainLayout.s: src/ui/pre_tape/TrackControlChainLayout.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainLayout.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainLayout.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainLayout.cpp.s
+
+src/ui/pre_tape/TrackControlChainPaint.o: src/ui/pre_tape/TrackControlChainPaint.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainPaint.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainPaint.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainPaint.cpp.o
+
+src/ui/pre_tape/TrackControlChainPaint.i: src/ui/pre_tape/TrackControlChainPaint.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainPaint.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainPaint.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainPaint.cpp.i
+
+src/ui/pre_tape/TrackControlChainPaint.s: src/ui/pre_tape/TrackControlChainPaint.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainPaint.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainPaint.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainPaint.cpp.s
+
+src/ui/pre_tape/TrackControlChainSaturationModule.o: src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainSaturationModule.i: src/ui/pre_tape/TrackControlChainSaturationModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainSaturationModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainSaturationModule.s: src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.cpp.s
+
+src/ui/pre_tape/TrackControlChainWidgets.o: src/ui/pre_tape/TrackControlChainWidgets.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainWidgets.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainWidgets.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainWidgets.cpp.o
+
+src/ui/pre_tape/TrackControlChainWidgets.i: src/ui/pre_tape/TrackControlChainWidgets.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainWidgets.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainWidgets.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainWidgets.cpp.i
+
+src/ui/pre_tape/TrackControlChainWidgets.s: src/ui/pre_tape/TrackControlChainWidgets.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainWidgets.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainWidgets.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainWidgets.cpp.s
+
+src/ui/settings/sections/ExportSettingsSection.o: src/ui/settings/sections/ExportSettingsSection.cpp.o
+.PHONY : src/ui/settings/sections/ExportSettingsSection.o
+
+# target to build an object file
+src/ui/settings/sections/ExportSettingsSection.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.o
+.PHONY : src/ui/settings/sections/ExportSettingsSection.cpp.o
+
+src/ui/settings/sections/ExportSettingsSection.i: src/ui/settings/sections/ExportSettingsSection.cpp.i
+.PHONY : src/ui/settings/sections/ExportSettingsSection.i
+
+# target to preprocess a source file
+src/ui/settings/sections/ExportSettingsSection.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.i
+.PHONY : src/ui/settings/sections/ExportSettingsSection.cpp.i
+
+src/ui/settings/sections/ExportSettingsSection.s: src/ui/settings/sections/ExportSettingsSection.cpp.s
+.PHONY : src/ui/settings/sections/ExportSettingsSection.s
+
+# target to generate assembly for a file
+src/ui/settings/sections/ExportSettingsSection.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/ExportSettingsSection.cpp.s
+.PHONY : src/ui/settings/sections/ExportSettingsSection.cpp.s
+
+src/ui/settings/sections/TechnicalSettingsSection.o: src/ui/settings/sections/TechnicalSettingsSection.cpp.o
+.PHONY : src/ui/settings/sections/TechnicalSettingsSection.o
+
+# target to build an object file
+src/ui/settings/sections/TechnicalSettingsSection.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.o
+.PHONY : src/ui/settings/sections/TechnicalSettingsSection.cpp.o
+
+src/ui/settings/sections/TechnicalSettingsSection.i: src/ui/settings/sections/TechnicalSettingsSection.cpp.i
+.PHONY : src/ui/settings/sections/TechnicalSettingsSection.i
+
+# target to preprocess a source file
+src/ui/settings/sections/TechnicalSettingsSection.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.i
+.PHONY : src/ui/settings/sections/TechnicalSettingsSection.cpp.i
+
+src/ui/settings/sections/TechnicalSettingsSection.s: src/ui/settings/sections/TechnicalSettingsSection.cpp.s
+.PHONY : src/ui/settings/sections/TechnicalSettingsSection.s
+
+# target to generate assembly for a file
+src/ui/settings/sections/TechnicalSettingsSection.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/TechnicalSettingsSection.cpp.s
+.PHONY : src/ui/settings/sections/TechnicalSettingsSection.cpp.s
+
+src/ui/settings/sections/UserSettingsSection.o: src/ui/settings/sections/UserSettingsSection.cpp.o
+.PHONY : src/ui/settings/sections/UserSettingsSection.o
+
+# target to build an object file
+src/ui/settings/sections/UserSettingsSection.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.o
+.PHONY : src/ui/settings/sections/UserSettingsSection.cpp.o
+
+src/ui/settings/sections/UserSettingsSection.i: src/ui/settings/sections/UserSettingsSection.cpp.i
+.PHONY : src/ui/settings/sections/UserSettingsSection.i
+
+# target to preprocess a source file
+src/ui/settings/sections/UserSettingsSection.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.i
+.PHONY : src/ui/settings/sections/UserSettingsSection.cpp.i
+
+src/ui/settings/sections/UserSettingsSection.s: src/ui/settings/sections/UserSettingsSection.cpp.s
+.PHONY : src/ui/settings/sections/UserSettingsSection.s
+
+# target to generate assembly for a file
+src/ui/settings/sections/UserSettingsSection.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/settings/sections/UserSettingsSection.cpp.s
+.PHONY : src/ui/settings/sections/UserSettingsSection.cpp.s
+
+src/ui/tape/TapeViewGeometry.o: src/ui/tape/TapeViewGeometry.cpp.o
+.PHONY : src/ui/tape/TapeViewGeometry.o
+
+# target to build an object file
+src/ui/tape/TapeViewGeometry.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.o
+.PHONY : src/ui/tape/TapeViewGeometry.cpp.o
+
+src/ui/tape/TapeViewGeometry.i: src/ui/tape/TapeViewGeometry.cpp.i
+.PHONY : src/ui/tape/TapeViewGeometry.i
+
+# target to preprocess a source file
+src/ui/tape/TapeViewGeometry.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.i
+.PHONY : src/ui/tape/TapeViewGeometry.cpp.i
+
+src/ui/tape/TapeViewGeometry.s: src/ui/tape/TapeViewGeometry.cpp.s
+.PHONY : src/ui/tape/TapeViewGeometry.s
+
+# target to generate assembly for a file
+src/ui/tape/TapeViewGeometry.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewGeometry.cpp.s
+.PHONY : src/ui/tape/TapeViewGeometry.cpp.s
+
+src/ui/tape/TapeViewInteraction.o: src/ui/tape/TapeViewInteraction.cpp.o
+.PHONY : src/ui/tape/TapeViewInteraction.o
+
+# target to build an object file
+src/ui/tape/TapeViewInteraction.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.o
+.PHONY : src/ui/tape/TapeViewInteraction.cpp.o
+
+src/ui/tape/TapeViewInteraction.i: src/ui/tape/TapeViewInteraction.cpp.i
+.PHONY : src/ui/tape/TapeViewInteraction.i
+
+# target to preprocess a source file
+src/ui/tape/TapeViewInteraction.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.i
+.PHONY : src/ui/tape/TapeViewInteraction.cpp.i
+
+src/ui/tape/TapeViewInteraction.s: src/ui/tape/TapeViewInteraction.cpp.s
+.PHONY : src/ui/tape/TapeViewInteraction.s
+
+# target to generate assembly for a file
+src/ui/tape/TapeViewInteraction.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewInteraction.cpp.s
+.PHONY : src/ui/tape/TapeViewInteraction.cpp.s
+
+src/ui/tape/TapeViewPaint.o: src/ui/tape/TapeViewPaint.cpp.o
+.PHONY : src/ui/tape/TapeViewPaint.o
+
+# target to build an object file
+src/ui/tape/TapeViewPaint.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o
+.PHONY : src/ui/tape/TapeViewPaint.cpp.o
+
+src/ui/tape/TapeViewPaint.i: src/ui/tape/TapeViewPaint.cpp.i
+.PHONY : src/ui/tape/TapeViewPaint.i
+
+# target to preprocess a source file
+src/ui/tape/TapeViewPaint.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.i
+.PHONY : src/ui/tape/TapeViewPaint.cpp.i
+
+src/ui/tape/TapeViewPaint.s: src/ui/tape/TapeViewPaint.cpp.s
+.PHONY : src/ui/tape/TapeViewPaint.s
+
+# target to generate assembly for a file
+src/ui/tape/TapeViewPaint.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.s
+.PHONY : src/ui/tape/TapeViewPaint.cpp.s
 
 # Help Target
 help:
@@ -913,9 +1441,6 @@ help:
 	@echo "... src/MainComponent.o"
 	@echo "... src/MainComponent.i"
 	@echo "... src/MainComponent.s"
-	@echo "... src/TapeEngine.o"
-	@echo "... src/TapeEngine.i"
-	@echo "... src/TapeEngine.s"
 	@echo "... src/TapeView.o"
 	@echo "... src/TapeView.i"
 	@echo "... src/TapeView.s"
@@ -925,12 +1450,81 @@ help:
 	@echo "... src/TrackMixerPanel.o"
 	@echo "... src/TrackMixerPanel.i"
 	@echo "... src/TrackMixerPanel.s"
-	@echo "... src/TransportControls.o"
-	@echo "... src/TransportControls.i"
-	@echo "... src/TransportControls.s"
+	@echo "... src/audio/AudioDeviceController.o"
+	@echo "... src/audio/AudioDeviceController.i"
+	@echo "... src/audio/AudioDeviceController.s"
+	@echo "... src/audio/engine/TapeEngineAudioCallback.o"
+	@echo "... src/audio/engine/TapeEngineAudioCallback.i"
+	@echo "... src/audio/engine/TapeEngineAudioCallback.s"
+	@echo "... src/audio/engine/TapeEngineAudioDevice.o"
+	@echo "... src/audio/engine/TapeEngineAudioDevice.i"
+	@echo "... src/audio/engine/TapeEngineAudioDevice.s"
+	@echo "... src/audio/engine/TapeEngineMixerExport.o"
+	@echo "... src/audio/engine/TapeEngineMixerExport.i"
+	@echo "... src/audio/engine/TapeEngineMixerExport.s"
+	@echo "... src/audio/engine/TapeEngineModules.o"
+	@echo "... src/audio/engine/TapeEngineModules.i"
+	@echo "... src/audio/engine/TapeEngineModules.s"
+	@echo "... src/audio/engine/TapeEngineRouting.o"
+	@echo "... src/audio/engine/TapeEngineRouting.i"
+	@echo "... src/audio/engine/TapeEngineRouting.s"
+	@echo "... src/audio/engine/TapeEngineTransport.o"
+	@echo "... src/audio/engine/TapeEngineTransport.i"
+	@echo "... src/audio/engine/TapeEngineTransport.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/ui/mixer/TrackMixerPanelLayout.o"
+	@echo "... src/ui/mixer/TrackMixerPanelLayout.i"
+	@echo "... src/ui/mixer/TrackMixerPanelLayout.s"
+	@echo "... src/ui/mixer/TrackMixerPanelPaint.o"
+	@echo "... src/ui/mixer/TrackMixerPanelPaint.i"
+	@echo "... src/ui/mixer/TrackMixerPanelPaint.s"
+	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainEqModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainEqModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainEqModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainFilterModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainFilterModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainFilterModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainGainModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainGainModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainGainModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainInputModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainInputModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainInputModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainLayout.o"
+	@echo "... src/ui/pre_tape/TrackControlChainLayout.i"
+	@echo "... src/ui/pre_tape/TrackControlChainLayout.s"
+	@echo "... src/ui/pre_tape/TrackControlChainPaint.o"
+	@echo "... src/ui/pre_tape/TrackControlChainPaint.i"
+	@echo "... src/ui/pre_tape/TrackControlChainPaint.s"
+	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainWidgets.o"
+	@echo "... src/ui/pre_tape/TrackControlChainWidgets.i"
+	@echo "... src/ui/pre_tape/TrackControlChainWidgets.s"
+	@echo "... src/ui/settings/sections/ExportSettingsSection.o"
+	@echo "... src/ui/settings/sections/ExportSettingsSection.i"
+	@echo "... src/ui/settings/sections/ExportSettingsSection.s"
+	@echo "... src/ui/settings/sections/TechnicalSettingsSection.o"
+	@echo "... src/ui/settings/sections/TechnicalSettingsSection.i"
+	@echo "... src/ui/settings/sections/TechnicalSettingsSection.s"
+	@echo "... src/ui/settings/sections/UserSettingsSection.o"
+	@echo "... src/ui/settings/sections/UserSettingsSection.i"
+	@echo "... src/ui/settings/sections/UserSettingsSection.s"
+	@echo "... src/ui/tape/TapeViewGeometry.o"
+	@echo "... src/ui/tape/TapeViewGeometry.i"
+	@echo "... src/ui/tape/TapeViewGeometry.s"
+	@echo "... src/ui/tape/TapeViewInteraction.o"
+	@echo "... src/ui/tape/TapeViewInteraction.i"
+	@echo "... src/ui/tape/TapeViewInteraction.s"
+	@echo "... src/ui/tape/TapeViewPaint.o"
+	@echo "... src/ui/tape/TapeViewPaint.i"
+	@echo "... src/ui/tape/TapeViewPaint.s"
 .PHONY : help
 
 

@@ -26,11 +26,33 @@ target_sources(FourTrackTape
         src/AppSettings.cpp
         src/AppSettingsComponent.cpp
         src/MainComponent.cpp
-        src/TapeEngine.cpp
         src/TapeView.cpp
         src/TrackControlChain.cpp
         src/TrackMixerPanel.cpp
-        src/TransportControls.cpp
+        src/audio/AudioDeviceController.cpp
+        src/audio/engine/TapeEngineAudioCallback.cpp
+        src/audio/engine/TapeEngineAudioDevice.cpp
+        src/audio/engine/TapeEngineMixerExport.cpp
+        src/audio/engine/TapeEngineModules.cpp
+        src/audio/engine/TapeEngineRouting.cpp
+        src/audio/engine/TapeEngineTransport.cpp
+        src/ui/settings/sections/ExportSettingsSection.cpp
+        src/ui/settings/sections/TechnicalSettingsSection.cpp
+        src/ui/settings/sections/UserSettingsSection.cpp
+        src/ui/mixer/TrackMixerPanelLayout.cpp
+        src/ui/mixer/TrackMixerPanelPaint.cpp
+        src/ui/pre_tape/TrackControlChainLayout.cpp
+        src/ui/pre_tape/TrackControlChainInputModule.cpp
+        src/ui/pre_tape/TrackControlChainFilterModule.cpp
+        src/ui/pre_tape/TrackControlChainEqModule.cpp
+        src/ui/pre_tape/TrackControlChainCompressorModule.cpp
+        src/ui/pre_tape/TrackControlChainSaturationModule.cpp
+        src/ui/pre_tape/TrackControlChainGainModule.cpp
+        src/ui/pre_tape/TrackControlChainPaint.cpp
+        src/ui/pre_tape/TrackControlChainWidgets.cpp
+        src/ui/tape/TapeViewGeometry.cpp
+        src/ui/tape/TapeViewInteraction.cpp
+        src/ui/tape/TapeViewPaint.cpp
 )
 
 target_include_directories(FourTrackTape

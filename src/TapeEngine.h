@@ -254,4 +254,20 @@ private:
                           int64_t& loopStartBeat) const noexcept;
     void applyPendingRecordModes() noexcept;
     void syncWritePositionsToPlayhead(int samplePosition) noexcept;
+    void clearAudioOutputs(float* const* outputChannelData, int numOutputChannels, int numSamples) const noexcept;
+    void copyInputsToScratch(const float* const* inputChannelData, int numInputChannels, int numSamples) noexcept;
+    int applyRequestedPlayheadForBlock() noexcept;
+    void beginCountInIfRequestedForBlock(int currentBeatsPerBar) noexcept;
+    void prepareTransportStartForBlock(int localPlayhead) noexcept;
+    void prepareTrackRuntimePeaksForBlock() noexcept;
+    void updateReverbParametersForBlock() noexcept;
+    void updateTrackMetersFromBlockPeaks(const std::array<float, numTracks>& blockPeaks,
+                                         const std::array<bool, numTracks>& blockClips) noexcept;
+    void finalizeStoppedTransportForBlock(bool shouldReversePlay,
+                                          bool shouldRewind,
+                                          int transportSample,
+                                          bool reachedTransportStart,
+                                          int localPlayhead,
+                                          int numSamples) noexcept;
+    void finalizeRunningTransportForBlock(int newPlayhead) noexcept;
 };

@@ -94,6 +94,18 @@ private:
     void updateVisibleModules();
     void updateModuleVisibility();
     void layoutContent();
+    void layoutInputModule(juce::Rectangle<int> inputBounds);
+    void layoutFilterModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutEqModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutCompressorModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutSaturationModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutGainModule(int slot, juce::Rectangle<int> moduleArea);
+    void paintInputModule(juce::Graphics& g, juce::Colour accent, juce::Rectangle<int> inputBounds);
+    void paintFilterModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintEqModule(juce::Graphics& g, int slot);
+    void paintCompressorModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintSaturationModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintGainModule(juce::Graphics& g, int slot, juce::Rectangle<int> bounds);
     void syncFrequencyEditorsFromEngine(bool force);
     juce::Rectangle<int> getFrameBounds() const;
     juce::Rectangle<int> getViewportBounds() const;

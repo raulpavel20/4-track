@@ -1584,6 +1584,9 @@ CMakeFiles/FourTrackTape.dir/src/AppSettingsComponent.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_utils/audio_cd/juce_AudioCDReader.h \
   /Users/pavel/Documents/Projects/4-track/src/TapeEngine.h \
   /Users/pavel/Documents/Projects/4-track/src/Track.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/ExportSettingsSection.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/TechnicalSettingsSection.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/UserSettingsSection.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/settings/sections/../../../TapeEngine.h \
   /Users/pavel/Documents/Projects/4-track/src/AppFonts.h \
-  /Users/pavel/Documents/Projects/4-track/build/juce_binarydata_FourTrackAssets/JuceLibraryCode/FourTrackBinaryData.h \
-  /Users/pavel/Documents/Projects/4-track/src/AppSettings.h
+  /Users/pavel/Documents/Projects/4-track/build/juce_binarydata_FourTrackAssets/JuceLibraryCode/FourTrackBinaryData.h
