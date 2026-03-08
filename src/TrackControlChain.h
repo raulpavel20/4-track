@@ -27,6 +27,7 @@ private:
     static constexpr int compressorControlCount = 5;
     static constexpr int delayControlCount = 3;
     static constexpr int reverbControlCount = 3;
+    static constexpr int phaserControlCount = 5;
     static constexpr int utilityControlCount = 2;
 
     enum class TargetType
@@ -96,11 +97,16 @@ private:
     std::array<std::array<juce::Slider, delayControlCount>, Track::maxChainModules> delaySliders;
     std::array<juce::TextButton, Track::maxChainModules> delayTimeModeButtons;
     std::array<std::array<juce::Slider, reverbControlCount>, Track::maxChainModules> reverbSliders;
+    std::array<std::array<juce::Slider, phaserControlCount>, Track::maxChainModules> phaserSliders;
+    std::array<juce::TextButton, Track::maxChainModules> phaserRateModeButtons;
     std::array<std::array<juce::Slider, utilityControlCount>, Track::maxChainModules> gainModuleSliders;
     std::array<int, Track::maxChainModules> visibleSlots {};
     std::array<ChainModuleType, Track::maxChainModules> visibleTypes {};
     std::array<juce::Rectangle<int>, Track::maxChainModules> moduleBounds {};
+    std::array<float, Track::maxChainModules> phaserVisualPhases {};
+    std::array<float, Track::maxChainModules> phaserVisualRates {};
     int visibleModuleCount = 0;
+    double lastAnimationTimestampMs = 0.0;
 
     void timerCallback() override;
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
@@ -154,6 +160,21 @@ private:
     void setReverbDamping(int moduleIndex, float value);
     float getReverbMix(int moduleIndex) const noexcept;
     void setReverbMix(int moduleIndex, float value);
+    float getPhaserRate(int moduleIndex) const noexcept;
+    void setPhaserRate(int moduleIndex, float value);
+    bool isPhaserSyncEnabled(int moduleIndex) const noexcept;
+    void setPhaserSyncEnabled(int moduleIndex, bool shouldBeEnabled);
+    int getPhaserSyncIndex(int moduleIndex) const noexcept;
+    void setPhaserSyncIndex(int moduleIndex, int index);
+    float getResolvedPhaserRateHz(int moduleIndex) const noexcept;
+    float getPhaserDepth(int moduleIndex) const noexcept;
+    void setPhaserDepth(int moduleIndex, float value);
+    float getPhaserCentreFrequency(int moduleIndex) const noexcept;
+    void setPhaserCentreFrequency(int moduleIndex, float value);
+    float getPhaserFeedback(int moduleIndex) const noexcept;
+    void setPhaserFeedback(int moduleIndex, float value);
+    float getPhaserMix(int moduleIndex) const noexcept;
+    void setPhaserMix(int moduleIndex, float value);
     float getGainModuleGainDb(int moduleIndex) const noexcept;
     void setGainModuleGainDb(int moduleIndex, float value);
     float getGainModulePan(int moduleIndex) const noexcept;
@@ -172,6 +193,7 @@ private:
     void layoutSaturationModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutDelayModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutReverbModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutPhaserModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutSpectrumAnalyzerModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutGainModule(int slot, juce::Rectangle<int> moduleArea);
     void paintInputModule(juce::Graphics& g, juce::Colour accent, juce::Rectangle<int> inputBounds);
@@ -181,6 +203,7 @@ private:
     void paintSaturationModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintDelayModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintReverbModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintPhaserModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintSpectrumAnalyzerModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintGainModule(juce::Graphics& g, int slot, juce::Rectangle<int> bounds);
     void syncFrequencyEditorsFromEngine(bool force);

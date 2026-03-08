@@ -29,7 +29,7 @@ void TrackControlChain::layoutInputModule(juce::Rectangle<int> inputBounds)
 void TrackControlChain::paintInputModule(juce::Graphics& g, juce::Colour accent, juce::Rectangle<int> inputBounds)
 {
     g.setColour(accent);
-    g.drawRoundedRectangle(inputBounds.toFloat(), 14.0f, 2.0f);
+    g.drawRoundedRectangle(inputBounds.toFloat(), 14.0f, 1.0f);
 
     g.setColour(juce::Colours::white);
     g.setFont(AppFonts::getFont(16.0f));

@@ -137,6 +137,21 @@ public:
     float getTrackReverbDamping(int trackIndex, int moduleIndex) const noexcept;
     void setTrackReverbMix(int trackIndex, int moduleIndex, float mix);
     float getTrackReverbMix(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackPhaserRate(int trackIndex, int moduleIndex, float rate);
+    float getTrackPhaserRate(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackPhaserSyncEnabled(int trackIndex, int moduleIndex, bool shouldBeEnabled);
+    bool isTrackPhaserSyncEnabled(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackPhaserSyncIndex(int trackIndex, int moduleIndex, int index);
+    int getTrackPhaserSyncIndex(int trackIndex, int moduleIndex) const noexcept;
+    float getTrackResolvedPhaserRateHz(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackPhaserDepth(int trackIndex, int moduleIndex, float depth);
+    float getTrackPhaserDepth(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackPhaserCentreFrequency(int trackIndex, int moduleIndex, float centreFrequency);
+    float getTrackPhaserCentreFrequency(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackPhaserFeedback(int trackIndex, int moduleIndex, float feedback);
+    float getTrackPhaserFeedback(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackPhaserMix(int trackIndex, int moduleIndex, float mix);
+    float getTrackPhaserMix(int trackIndex, int moduleIndex) const noexcept;
     void setTrackGainModuleGainDb(int trackIndex, int moduleIndex, float gainDb);
     float getTrackGainModuleGainDb(int trackIndex, int moduleIndex) const noexcept;
     void setTrackGainModulePan(int trackIndex, int moduleIndex, float pan);
@@ -191,6 +206,21 @@ public:
     float getSendBusReverbDamping(int sendIndex, int moduleIndex) const noexcept;
     void setSendBusReverbMix(int sendIndex, int moduleIndex, float mix);
     float getSendBusReverbMix(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusPhaserRate(int sendIndex, int moduleIndex, float rate);
+    float getSendBusPhaserRate(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusPhaserSyncEnabled(int sendIndex, int moduleIndex, bool shouldBeEnabled);
+    bool isSendBusPhaserSyncEnabled(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusPhaserSyncIndex(int sendIndex, int moduleIndex, int index);
+    int getSendBusPhaserSyncIndex(int sendIndex, int moduleIndex) const noexcept;
+    float getSendBusResolvedPhaserRateHz(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusPhaserDepth(int sendIndex, int moduleIndex, float depth);
+    float getSendBusPhaserDepth(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusPhaserCentreFrequency(int sendIndex, int moduleIndex, float centreFrequency);
+    float getSendBusPhaserCentreFrequency(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusPhaserFeedback(int sendIndex, int moduleIndex, float feedback);
+    float getSendBusPhaserFeedback(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusPhaserMix(int sendIndex, int moduleIndex, float mix);
+    float getSendBusPhaserMix(int sendIndex, int moduleIndex) const noexcept;
     void setSendBusGainModuleGainDb(int sendIndex, int moduleIndex, float gainDb);
     float getSendBusGainModuleGainDb(int sendIndex, int moduleIndex) const noexcept;
     void setSendBusGainModulePan(int sendIndex, int moduleIndex, float pan);
@@ -283,6 +313,7 @@ private:
     float processSaturationModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     float processDelayModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     float processReverbModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processPhaserModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     float processSpectrumAnalyzerModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     float processGainModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     void applyTrackMixer(float pan, float& left, float& right) const noexcept;
@@ -310,6 +341,7 @@ private:
     void prepareTransportStartForBlock(int localPlayhead) noexcept;
     void prepareTrackRuntimePeaksForBlock() noexcept;
     float getResolvedDelayTimeMs(const ModuleChain& chain, int moduleIndex) const noexcept;
+    float getResolvedPhaserRateHz(const ModuleChain& chain, int moduleIndex) const noexcept;
     void updateTrackMetersFromBlockPeaks(const std::array<float, numTracks>& blockPeaks,
                                          const std::array<bool, numTracks>& blockClips) noexcept;
     void finalizeStoppedTransportForBlock(bool shouldReversePlay,

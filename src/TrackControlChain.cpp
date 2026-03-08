@@ -131,6 +131,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         menu.addItem(6, "Reverb");
         menu.addItem(7, "Utility");
         menu.addItem(8, "Spectrum Analyzer");
+        menu.addItem(9, "Phaser");
         menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
                            [safeThis](int result)
                            {
@@ -155,6 +156,8 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                    moduleType = ChainModuleType::gain;
                                else if (result == 8)
                                    moduleType = ChainModuleType::spectrumAnalyzer;
+                               else if (result == 9)
+                                   moduleType = ChainModuleType::phaser;
 
                                safeThis->addModule(moduleType);
                                safeThis->refreshFromEngine();
@@ -306,6 +309,18 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         };
         contentComponent.addAndMakeVisible(delayTimeModeButton);
 
+        auto& phaserRateModeButton = phaserRateModeButtons[(size_t) moduleIndex];
+        phaserRateModeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+        phaserRateModeButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+        phaserRateModeButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white.withAlpha(0.72f));
+        phaserRateModeButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+        phaserRateModeButton.onClick = [this, moduleIndex]
+        {
+            setPhaserSyncEnabled(moduleIndex, ! isPhaserSyncEnabled(moduleIndex));
+            refreshFromEngine();
+        };
+        contentComponent.addAndMakeVisible(phaserRateModeButton);
+
         for (int controlIndex = 0; controlIndex < delayControlCount; ++controlIndex)
         {
             auto& slider = delaySliders[(size_t) moduleIndex][(size_t) controlIndex];
@@ -366,6 +381,49 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
             contentComponent.addAndMakeVisible(slider);
         }
 
+        for (int controlIndex = 0; controlIndex < phaserControlCount; ++controlIndex)
+        {
+            auto& slider = phaserSliders[(size_t) moduleIndex][(size_t) controlIndex];
+
+            if (controlIndex == 0)
+                configureRotarySlider(slider, 0.05, 10.0, 0.01, 0.5);
+            else if (controlIndex == 1)
+                configureRotarySlider(slider, 0.0, 1.0, 0.01, 0.8);
+            else if (controlIndex == 2)
+                configureRotarySlider(slider, 200.0, 2000.0, 1.0, 700.0);
+            else if (controlIndex == 3)
+                configureRotarySlider(slider, 0.0, 0.95, 0.01, 0.3);
+            else
+                configureRotarySlider(slider, 0.0, 1.0, 0.01, 0.5);
+
+            slider.onValueChange = [this, moduleIndex, controlIndex]
+            {
+                const auto value = (float) phaserSliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
+
+                if (controlIndex == 0)
+                {
+                    if (isPhaserSyncEnabled(moduleIndex))
+                        setPhaserSyncIndex(moduleIndex, juce::roundToInt(value));
+                    else
+                        setPhaserRate(moduleIndex, value);
+
+                    refreshFromEngine();
+                    return;
+                }
+                else if (controlIndex == 1)
+                    setPhaserDepth(moduleIndex, value);
+                else if (controlIndex == 2)
+                    setPhaserCentreFrequency(moduleIndex, value);
+                else if (controlIndex == 3)
+                    setPhaserFeedback(moduleIndex, value);
+                else
+                    setPhaserMix(moduleIndex, value);
+
+                contentComponent.repaint();
+            };
+            contentComponent.addAndMakeVisible(slider);
+        }
+
         auto& gainSlider = gainModuleSliders[(size_t) moduleIndex][0];
         configureRotarySlider(gainSlider, -24.0, 24.0, 0.1, 0.0);
         gainSlider.onValueChange = [this, moduleIndex]
@@ -385,7 +443,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         contentComponent.addAndMakeVisible(panSlider);
     }
 
-    startTimerHz(30);
+    startTimerHz(60);
     updateAccentColours();
     refreshFromEngine();
 }
@@ -410,6 +468,24 @@ void TrackControlChain::resized()
 
 void TrackControlChain::timerCallback()
 {
+    const auto nowMs = juce::Time::getMillisecondCounterHiRes();
+    const auto deltaSeconds = lastAnimationTimestampMs > 0.0 ? juce::jlimit(0.0, 0.05, (nowMs - lastAnimationTimestampMs) * 0.001)
+                                                             : (1.0 / 60.0);
+    lastAnimationTimestampMs = nowMs;
+
+    for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
+    {
+        if (getModuleType(moduleIndex) != ChainModuleType::phaser || isModuleBypassed(moduleIndex))
+            continue;
+
+                    const auto rate = juce::jlimit(0.05f, 10.0f, getResolvedPhaserRateHz(moduleIndex));
+        const auto rateNorm = (float) ((std::log((double) rate) - std::log(0.05)) / (std::log(10.0) - std::log(0.05)));
+        const auto targetVisualRate = juce::jmap(juce::jlimit(0.0f, 1.0f, rateNorm), 0.12f, 0.7f);
+        auto& smoothedVisualRate = phaserVisualRates[(size_t) moduleIndex];
+        smoothedVisualRate += (targetVisualRate - smoothedVisualRate) * 0.16f;
+        phaserVisualPhases[(size_t) moduleIndex] += (float) (deltaSeconds * (double) juce::MathConstants<float>::twoPi * smoothedVisualRate);
+    }
+
     contentComponent.repaint();
 }
 
@@ -786,6 +862,110 @@ void TrackControlChain::setReverbMix(int moduleIndex, float value)
         engine.setSendBusReverbMix(selectedSendBus, moduleIndex, value);
 }
 
+float TrackControlChain::getPhaserRate(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackPhaserRate(selectedTrack, moduleIndex)
+                           : engine.getSendBusPhaserRate(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setPhaserRate(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackPhaserRate(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusPhaserRate(selectedSendBus, moduleIndex, value);
+}
+
+bool TrackControlChain::isPhaserSyncEnabled(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.isTrackPhaserSyncEnabled(selectedTrack, moduleIndex)
+                           : engine.isSendBusPhaserSyncEnabled(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setPhaserSyncEnabled(int moduleIndex, bool shouldBeEnabled)
+{
+    if (isTrackTarget())
+        engine.setTrackPhaserSyncEnabled(selectedTrack, moduleIndex, shouldBeEnabled);
+    else
+        engine.setSendBusPhaserSyncEnabled(selectedSendBus, moduleIndex, shouldBeEnabled);
+}
+
+int TrackControlChain::getPhaserSyncIndex(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackPhaserSyncIndex(selectedTrack, moduleIndex)
+                           : engine.getSendBusPhaserSyncIndex(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setPhaserSyncIndex(int moduleIndex, int index)
+{
+    if (isTrackTarget())
+        engine.setTrackPhaserSyncIndex(selectedTrack, moduleIndex, index);
+    else
+        engine.setSendBusPhaserSyncIndex(selectedSendBus, moduleIndex, index);
+}
+
+float TrackControlChain::getResolvedPhaserRateHz(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackResolvedPhaserRateHz(selectedTrack, moduleIndex)
+                           : engine.getSendBusResolvedPhaserRateHz(selectedSendBus, moduleIndex);
+}
+
+float TrackControlChain::getPhaserDepth(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackPhaserDepth(selectedTrack, moduleIndex)
+                           : engine.getSendBusPhaserDepth(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setPhaserDepth(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackPhaserDepth(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusPhaserDepth(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getPhaserCentreFrequency(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackPhaserCentreFrequency(selectedTrack, moduleIndex)
+                           : engine.getSendBusPhaserCentreFrequency(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setPhaserCentreFrequency(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackPhaserCentreFrequency(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusPhaserCentreFrequency(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getPhaserFeedback(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackPhaserFeedback(selectedTrack, moduleIndex)
+                           : engine.getSendBusPhaserFeedback(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setPhaserFeedback(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackPhaserFeedback(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusPhaserFeedback(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getPhaserMix(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackPhaserMix(selectedTrack, moduleIndex)
+                           : engine.getSendBusPhaserMix(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setPhaserMix(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackPhaserMix(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusPhaserMix(selectedSendBus, moduleIndex, value);
+}
+
 float TrackControlChain::getGainModuleGainDb(int moduleIndex) const noexcept
 {
     return isTrackTarget() ? engine.getTrackGainModuleGainDb(selectedTrack, moduleIndex)
@@ -879,6 +1059,24 @@ void TrackControlChain::refreshFromEngine()
         reverbSliders[(size_t) moduleIndex][0].setValue(getReverbSize(moduleIndex), juce::dontSendNotification);
         reverbSliders[(size_t) moduleIndex][1].setValue(getReverbDamping(moduleIndex), juce::dontSendNotification);
         reverbSliders[(size_t) moduleIndex][2].setValue(getReverbMix(moduleIndex), juce::dontSendNotification);
+        if (isPhaserSyncEnabled(moduleIndex))
+        {
+            phaserSliders[(size_t) moduleIndex][0].setRange(0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0);
+            phaserSliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 2.0);
+            phaserSliders[(size_t) moduleIndex][0].setValue((double) getPhaserSyncIndex(moduleIndex), juce::dontSendNotification);
+            phaserRateModeButtons[(size_t) moduleIndex].setButtonText(TapeEngine::getDelaySyncLabel(getPhaserSyncIndex(moduleIndex)));
+        }
+        else
+        {
+            phaserSliders[(size_t) moduleIndex][0].setRange(0.05, 10.0, 0.01);
+            phaserSliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 0.5);
+            phaserSliders[(size_t) moduleIndex][0].setValue(getPhaserRate(moduleIndex), juce::dontSendNotification);
+            phaserRateModeButtons[(size_t) moduleIndex].setButtonText(juce::String(getPhaserRate(moduleIndex), 2) + "Hz");
+        }
+        phaserSliders[(size_t) moduleIndex][1].setValue(getPhaserDepth(moduleIndex), juce::dontSendNotification);
+        phaserSliders[(size_t) moduleIndex][2].setValue(getPhaserCentreFrequency(moduleIndex), juce::dontSendNotification);
+        phaserSliders[(size_t) moduleIndex][3].setValue(getPhaserFeedback(moduleIndex), juce::dontSendNotification);
+        phaserSliders[(size_t) moduleIndex][4].setValue(getPhaserMix(moduleIndex), juce::dontSendNotification);
         gainModuleSliders[(size_t) moduleIndex][0].setValue(getGainModuleGainDb(moduleIndex), juce::dontSendNotification);
         gainModuleSliders[(size_t) moduleIndex][1].setValue(getGainModulePan(moduleIndex), juce::dontSendNotification);
 
@@ -954,6 +1152,12 @@ void TrackControlChain::updateAccentColours()
             slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
     }
 
+    for (auto& slot : phaserSliders)
+    {
+        for (auto& slider : slot)
+            slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+    }
+
     for (auto& slot : gainModuleSliders)
     {
         for (auto& slider : slot)
@@ -1019,10 +1223,13 @@ void TrackControlChain::updateModuleVisibility()
         saturationModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
         saturationAmountSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
         delayTimeModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::delay);
+        phaserRateModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::phaser);
         for (int controlIndex = 0; controlIndex < delayControlCount; ++controlIndex)
             delaySliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::delay);
         for (int controlIndex = 0; controlIndex < reverbControlCount; ++controlIndex)
             reverbSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::reverb);
+        for (int controlIndex = 0; controlIndex < phaserControlCount; ++controlIndex)
+            phaserSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::phaser);
         for (int controlIndex = 0; controlIndex < utilityControlCount; ++controlIndex)
             gainModuleSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::gain);
 

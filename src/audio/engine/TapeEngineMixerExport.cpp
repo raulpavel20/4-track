@@ -230,6 +230,20 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
                                                                     std::memory_order_relaxed);
             localSendBus.reverbMixes[(size_t) moduleIndex].store(sourceSendBus.reverbMixes[(size_t) moduleIndex].load(std::memory_order_acquire),
                                                                  std::memory_order_relaxed);
+            localSendBus.phaserRates[(size_t) moduleIndex].store(sourceSendBus.phaserRates[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                 std::memory_order_relaxed);
+            localSendBus.phaserSyncEnableds[(size_t) moduleIndex].store(sourceSendBus.phaserSyncEnableds[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                        std::memory_order_relaxed);
+            localSendBus.phaserSyncIndices[(size_t) moduleIndex].store(sourceSendBus.phaserSyncIndices[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                       std::memory_order_relaxed);
+            localSendBus.phaserDepths[(size_t) moduleIndex].store(sourceSendBus.phaserDepths[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                  std::memory_order_relaxed);
+            localSendBus.phaserCentreFrequencies[(size_t) moduleIndex].store(sourceSendBus.phaserCentreFrequencies[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                             std::memory_order_relaxed);
+            localSendBus.phaserFeedbacks[(size_t) moduleIndex].store(sourceSendBus.phaserFeedbacks[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                     std::memory_order_relaxed);
+            localSendBus.phaserMixes[(size_t) moduleIndex].store(sourceSendBus.phaserMixes[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                 std::memory_order_relaxed);
             localSendBus.gainModuleGainsDb[(size_t) moduleIndex].store(sourceSendBus.gainModuleGainsDb[(size_t) moduleIndex].load(std::memory_order_acquire),
                                                                        std::memory_order_relaxed);
             localSendBus.gainModulePans[(size_t) moduleIndex].store(sourceSendBus.gainModulePans[(size_t) moduleIndex].load(std::memory_order_acquire),
@@ -250,6 +264,9 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
 
             if (type == ChainModuleType::reverb)
                 localSendBus.reverbStates[(size_t) moduleIndex].prepare(targetSampleRate);
+
+            if (type == ChainModuleType::phaser)
+                localSendBus.phaserStates[(size_t) moduleIndex].prepare(targetSampleRate);
         }
     }
 

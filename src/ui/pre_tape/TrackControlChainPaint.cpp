@@ -22,6 +22,8 @@ juce::String getModuleTitle(ChainModuleType type)
             return "Delay";
         case ChainModuleType::reverb:
             return "Reverb";
+        case ChainModuleType::phaser:
+            return "Phaser";
         case ChainModuleType::spectrumAnalyzer:
             return "Spectrum";
         case ChainModuleType::gain:
@@ -55,7 +57,7 @@ void TrackControlChain::paintContent(juce::Graphics& g)
         titleBounds.removeFromRight(18 + 8);
 
         g.setColour(accent);
-        g.drawRoundedRectangle(bounds.toFloat(), 14.0f, 2.0f);
+        g.drawRoundedRectangle(bounds.toFloat(), 14.0f, 1.0f);
 
         g.setColour(juce::Colours::white);
         g.setFont(AppFonts::getFont(16.0f));
@@ -73,6 +75,8 @@ void TrackControlChain::paintContent(juce::Graphics& g)
             paintDelayModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::reverb)
             paintReverbModule(g, accent, slot, bounds);
+        else if (type == ChainModuleType::phaser)
+            paintPhaserModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::spectrumAnalyzer)
             paintSpectrumAnalyzerModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::gain)

@@ -49,6 +49,7 @@ target_sources(FourTrackTape
         src/ui/pre_tape/TrackControlChainSaturationModule.cpp
         src/ui/pre_tape/TrackControlChainDelayModule.cpp
         src/ui/pre_tape/TrackControlChainReverbModule.cpp
+        src/ui/pre_tape/TrackControlChainPhaserModule.cpp
         src/ui/pre_tape/TrackControlChainSpectrumModule.cpp
         src/ui/pre_tape/TrackControlChainGainModule.cpp
         src/ui/pre_tape/TrackControlChainPaint.cpp

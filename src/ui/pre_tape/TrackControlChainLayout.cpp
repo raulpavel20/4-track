@@ -10,6 +10,7 @@ constexpr int compressorModuleWidth = 260;
 constexpr int saturationModuleWidth = 140;
 constexpr int delayModuleWidth = 214;
 constexpr int reverbModuleWidth = 214;
+constexpr int phaserModuleWidth = 290;
 constexpr int spectrumAnalyzerModuleWidth = 224;
 constexpr int gainModuleWidth = 100;
 constexpr int moduleVerticalInset = 10;
@@ -34,6 +35,8 @@ int getModuleWidth(ChainModuleType type)
             return delayModuleWidth;
         case ChainModuleType::reverb:
             return reverbModuleWidth;
+        case ChainModuleType::phaser:
+            return phaserModuleWidth;
         case ChainModuleType::spectrumAnalyzer:
             return spectrumAnalyzerModuleWidth;
         case ChainModuleType::gain:
@@ -101,6 +104,8 @@ void TrackControlChain::layoutContent()
             layoutDelayModule(slot, moduleArea);
         else if (type == ChainModuleType::reverb)
             layoutReverbModule(slot, moduleArea);
+        else if (type == ChainModuleType::phaser)
+            layoutPhaserModule(slot, moduleArea);
         else if (type == ChainModuleType::spectrumAnalyzer)
             layoutSpectrumAnalyzerModule(slot, moduleArea);
         else if (type == ChainModuleType::gain)
