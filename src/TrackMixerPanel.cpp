@@ -100,15 +100,6 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
             contentComponent.repaint();
         };
         contentComponent.addAndMakeVisible(delaySendSlider);
-
-        auto& reverbSendSlider = reverbSendSliders[(size_t) trackIndex];
-        configureRotarySlider(reverbSendSlider, 0.0, 1.0, 0.01, 0.0);
-        reverbSendSlider.onValueChange = [this, trackIndex]
-        {
-            engine.setTrackReverbSend(trackIndex, (float) reverbSendSliders[(size_t) trackIndex].getValue());
-            contentComponent.repaint();
-        };
-        contentComponent.addAndMakeVisible(reverbSendSlider);
     }
 
     configureRotarySlider(delayControlSliders[0], 0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0, 2.0);
@@ -126,17 +117,7 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
     delayControlSliders[1].onValueChange = [this] { engine.setDelayFeedback((float) delayControlSliders[1].getValue()); contentComponent.repaint(); };
     delayControlSliders[2].onValueChange = [this] { engine.setDelayMix((float) delayControlSliders[2].getValue()); contentComponent.repaint(); };
 
-    configureRotarySlider(reverbControlSliders[0], 0.0, 1.0, 0.01, 0.45);
-    configureRotarySlider(reverbControlSliders[1], 0.0, 1.0, 0.01, 0.35);
-    configureRotarySlider(reverbControlSliders[2], 0.0, 1.0, 0.01, 0.25);
-    reverbControlSliders[0].onValueChange = [this] { engine.setReverbSize((float) reverbControlSliders[0].getValue()); contentComponent.repaint(); };
-    reverbControlSliders[1].onValueChange = [this] { engine.setReverbDamping((float) reverbControlSliders[1].getValue()); contentComponent.repaint(); };
-    reverbControlSliders[2].onValueChange = [this] { engine.setReverbMix((float) reverbControlSliders[2].getValue()); contentComponent.repaint(); };
-
     for (auto& slider : delayControlSliders)
-        contentComponent.addAndMakeVisible(slider);
-
-    for (auto& slider : reverbControlSliders)
         contentComponent.addAndMakeVisible(slider);
 
     delayTimeModeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
@@ -283,7 +264,6 @@ void TrackMixerPanel::refreshFromEngine()
         gainSliders[(size_t) trackIndex].setValue(engine.getTrackMixerGainDb(trackIndex), juce::dontSendNotification);
         panSliders[(size_t) trackIndex].setValue(engine.getTrackMixerPan(trackIndex), juce::dontSendNotification);
         delaySendSliders[(size_t) trackIndex].setValue(engine.getTrackDelaySend(trackIndex), juce::dontSendNotification);
-        reverbSendSliders[(size_t) trackIndex].setValue(engine.getTrackReverbSend(trackIndex), juce::dontSendNotification);
     }
 
     if (engine.isDelaySyncEnabled())
@@ -301,9 +281,6 @@ void TrackMixerPanel::refreshFromEngine()
 
     delayControlSliders[1].setValue(engine.getDelayFeedback(), juce::dontSendNotification);
     delayControlSliders[2].setValue(engine.getDelayMix(), juce::dontSendNotification);
-    reverbControlSliders[0].setValue(engine.getReverbSize(), juce::dontSendNotification);
-    reverbControlSliders[1].setValue(engine.getReverbDamping(), juce::dontSendNotification);
-    reverbControlSliders[2].setValue(engine.getReverbMix(), juce::dontSendNotification);
     delayTimeModeButton.setButtonText(engine.isDelaySyncEnabled() ? TapeEngine::getDelaySyncLabel(engine.getDelaySyncIndex())
                                                                   : formatTimeValue(engine.getDelayTimeMs()));
     layoutContent();
@@ -319,13 +296,9 @@ void TrackMixerPanel::updateColours()
         gainSliders[(size_t) trackIndex].setColour(juce::Slider::thumbColourId, colour);
         panSliders[(size_t) trackIndex].setColour(juce::Slider::rotarySliderFillColourId, colour);
         delaySendSliders[(size_t) trackIndex].setColour(juce::Slider::rotarySliderFillColourId, colour);
-        reverbSendSliders[(size_t) trackIndex].setColour(juce::Slider::rotarySliderFillColourId, colour);
     }
 
     for (auto& slider : delayControlSliders)
-        slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::white);
-
-    for (auto& slider : reverbControlSliders)
         slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::white);
 
     delayTimeModeButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white.withAlpha(0.8f));

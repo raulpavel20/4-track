@@ -24,6 +24,8 @@ juce::String getModuleTitle(ChainModuleType type)
             return "Compressor";
         case ChainModuleType::saturation:
             return "Saturation";
+        case ChainModuleType::reverb:
+            return "Reverb";
         case ChainModuleType::gain:
             return "Gain";
         case ChainModuleType::none:
@@ -69,6 +71,8 @@ void TrackControlChain::paintContent(juce::Graphics& g)
             paintCompressorModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::saturation)
             paintSaturationModule(g, accent, slot, bounds);
+        else if (type == ChainModuleType::reverb)
+            paintReverbModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::gain)
             paintGainModule(g, slot, bounds);
     }

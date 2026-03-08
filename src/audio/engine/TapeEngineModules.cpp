@@ -19,6 +19,11 @@ float clampDbGain(float gainDb, float minimum, float maximum) noexcept
     return juce::jlimit(minimum, maximum, gainDb);
 }
 
+float clampUnit(float value) noexcept
+{
+    return juce::jlimit(0.0f, 1.0f, value);
+}
+
 float calculatePeakFilterSample(float input, EqBandState& state, size_t channelIndex) noexcept
 {
     const auto output = (state.b0 * input) + state.z1[channelIndex];
@@ -448,6 +453,54 @@ float TapeEngine::getTrackSaturationAmount(int trackIndex, int moduleIndex) cons
     return tracks[(size_t) trackIndex].saturationAmounts[(size_t) moduleIndex].load(std::memory_order_acquire);
 }
 
+void TapeEngine::setTrackReverbSize(int trackIndex, int moduleIndex, float size)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].reverbSizes[(size_t) moduleIndex].store(clampUnit(size), std::memory_order_release);
+}
+
+float TapeEngine::getTrackReverbSize(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.45f;
+
+    return tracks[(size_t) trackIndex].reverbSizes[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackReverbDamping(int trackIndex, int moduleIndex, float damping)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].reverbDampings[(size_t) moduleIndex].store(clampUnit(damping), std::memory_order_release);
+}
+
+float TapeEngine::getTrackReverbDamping(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.35f;
+
+    return tracks[(size_t) trackIndex].reverbDampings[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackReverbMix(int trackIndex, int moduleIndex, float mix)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].reverbMixes[(size_t) moduleIndex].store(clampUnit(mix), std::memory_order_release);
+}
+
+float TapeEngine::getTrackReverbMix(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.25f;
+
+    return tracks[(size_t) trackIndex].reverbMixes[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
 void TapeEngine::setTrackGainModuleGainDb(int trackIndex, int moduleIndex, float gainDb)
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
@@ -517,6 +570,8 @@ void TapeEngine::resetModuleState(Track& track, int moduleIndex, ChainModuleType
 {
     track.filterStates[(size_t) moduleIndex].reset();
     track.compressorStates[(size_t) moduleIndex].reset();
+    track.reverbStates[(size_t) moduleIndex].reset();
+    track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
     track.moduleBlockInputPeaks[(size_t) moduleIndex] = 0.0f;
     track.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
     track.moduleInputMeters[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
@@ -539,6 +594,9 @@ void TapeEngine::resetModuleParameters(Track& track, int moduleIndex, ChainModul
     track.compressorMakeupGainsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
     track.saturationModes[(size_t) moduleIndex].store((int) SaturationMode::light, std::memory_order_relaxed);
     track.saturationAmounts[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
+    track.reverbSizes[(size_t) moduleIndex].store(0.45f, std::memory_order_relaxed);
+    track.reverbDampings[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
+    track.reverbMixes[(size_t) moduleIndex].store(0.25f, std::memory_order_relaxed);
     track.gainModuleGainsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
     track.moduleInputMeters[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
     track.moduleOutputMeters[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
@@ -595,6 +653,9 @@ float TapeEngine::processChainModule(Track& track, int moduleIndex, int channel,
             break;
         case ChainModuleType::saturation:
             output = processSaturationModule(track, moduleIndex, channel, sample);
+            break;
+        case ChainModuleType::reverb:
+            output = processReverbModule(track, moduleIndex, channel, sample);
             break;
         case ChainModuleType::gain:
             output = processGainModule(track, moduleIndex, channel, sample);
@@ -705,6 +766,20 @@ float TapeEngine::processSaturationModule(Track& track, int moduleIndex, int cha
     return pushed / (1.0f + (0.6f * std::abs(pushed)));
 }
 
+float TapeEngine::processReverbModule(Track& track, int moduleIndex, int channel, float sample) noexcept
+{
+    const auto channelIndex = juce::jlimit(0, Track::numChannels - 1, channel);
+    const auto size = track.reverbSizes[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto damping = track.reverbDampings[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto mix = track.reverbMixes[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    auto& state = track.reverbStates[(size_t) moduleIndex];
+    state.prepare(sampleRate);
+    state.updateParameters(size, damping);
+    auto wet = sample;
+    state.reverbs[(size_t) channelIndex].processMono(&wet, 1);
+    return wet * mix + sample * (1.0f - mix);
+}
+
 float TapeEngine::processGainModule(Track& track, int moduleIndex, int channel, float sample) noexcept
 {
     juce::ignoreUnused(channel);
@@ -726,6 +801,8 @@ void TapeEngine::resetTrackRuntimeState(Track& track) noexcept
         track.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
         track.filterStates[(size_t) moduleIndex].reset();
         track.compressorStates[(size_t) moduleIndex].reset();
+        track.reverbStates[(size_t) moduleIndex].reset();
+        track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
 
         for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
             track.eqStates[(size_t) moduleIndex][(size_t) bandIndex].reset();

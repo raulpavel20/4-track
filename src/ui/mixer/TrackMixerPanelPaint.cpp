@@ -177,14 +177,6 @@ void TrackMixerPanel::paintContent(juce::Graphics& g)
                     formatPercentValue((float) delayControlSliders[1].getValue()),
                     formatPercentValue((float) delayControlSliders[2].getValue()) });
 
-    paintFxModule(reverbModuleBounds,
-                  "REVERB",
-                  reverbSendSliders,
-                  { "SIZE", "DAMP", "MIX" },
-                  { formatPercentValue((float) reverbControlSliders[0].getValue()),
-                    formatPercentValue((float) reverbControlSliders[1].getValue()),
-                    formatPercentValue((float) reverbControlSliders[2].getValue()) });
-
     g.setColour(juce::Colours::white.withAlpha(0.22f));
     g.drawRoundedRectangle(exportModuleBounds.toFloat().reduced(0.5f), 14.0f, 1.0f);
     g.setColour(juce::Colours::white);

@@ -12,8 +12,6 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     delayBuffer.setSize(Track::numChannels, maxDelaySamples, false, false, true);
     delayBuffer.clear();
     delayWritePosition = 0;
-    reverb.reset();
-    reverb.setSampleRate(sampleRate);
     lastMasterInputBus.fill(0.0f);
 
     for (auto& trackBus : lastTrackInputBuses)
@@ -52,7 +50,6 @@ void TapeEngine::audioDeviceStopped()
     transportStartPulsePending.store(false, std::memory_order_release);
     delayWritePosition = 0;
     delayBuffer.clear();
-    reverb.reset();
     lastMasterInputBus.fill(0.0f);
 
     for (auto& trackBus : lastTrackInputBuses)

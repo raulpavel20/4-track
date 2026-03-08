@@ -126,7 +126,8 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         menu.addItem(2, "EQ");
         menu.addItem(3, "Compressor");
         menu.addItem(4, "Saturation");
-        menu.addItem(5, "Gain");
+        menu.addItem(5, "Reverb");
+        menu.addItem(6, "Gain");
         menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
                            [safeThis](int result)
                            {
@@ -144,6 +145,8 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                else if (result == 4)
                                    moduleType = ChainModuleType::saturation;
                                else if (result == 5)
+                                   moduleType = ChainModuleType::reverb;
+                               else if (result == 6)
                                    moduleType = ChainModuleType::gain;
 
                                safeThis->engine.addTrackModule(safeThis->selectedTrack, moduleType);
@@ -289,6 +292,31 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         };
         contentComponent.addAndMakeVisible(saturationAmountSlider);
 
+        for (int controlIndex = 0; controlIndex < reverbControlCount; ++controlIndex)
+        {
+            auto& slider = reverbSliders[(size_t) moduleIndex][(size_t) controlIndex];
+            configureRotarySlider(slider,
+                                  0.0,
+                                  1.0,
+                                  0.01,
+                                  controlIndex == 0 ? 0.45 : controlIndex == 1 ? 0.35
+                                                                                : 0.25);
+            slider.onValueChange = [this, moduleIndex, controlIndex]
+            {
+                const auto value = (float) reverbSliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
+
+                if (controlIndex == 0)
+                    engine.setTrackReverbSize(selectedTrack, moduleIndex, value);
+                else if (controlIndex == 1)
+                    engine.setTrackReverbDamping(selectedTrack, moduleIndex, value);
+                else
+                    engine.setTrackReverbMix(selectedTrack, moduleIndex, value);
+
+                contentComponent.repaint();
+            };
+            contentComponent.addAndMakeVisible(slider);
+        }
+
         auto& gainSlider = gainModuleSliders[(size_t) moduleIndex];
         configureVerticalSlider(gainSlider, -24.0, 24.0, 0.1, 0.0);
         gainSlider.onValueChange = [this, moduleIndex]
@@ -385,6 +413,9 @@ void TrackControlChain::refreshFromEngine()
         saturationAmountSliders[(size_t) moduleIndex].setValue(engine.getTrackSaturationAmount(selectedTrack, moduleIndex), juce::dontSendNotification);
         saturationModeButtons[(size_t) moduleIndex].setToggleState(engine.getTrackSaturationMode(selectedTrack, moduleIndex) == SaturationMode::heavy,
                                                                    juce::dontSendNotification);
+        reverbSliders[(size_t) moduleIndex][0].setValue(engine.getTrackReverbSize(selectedTrack, moduleIndex), juce::dontSendNotification);
+        reverbSliders[(size_t) moduleIndex][1].setValue(engine.getTrackReverbDamping(selectedTrack, moduleIndex), juce::dontSendNotification);
+        reverbSliders[(size_t) moduleIndex][2].setValue(engine.getTrackReverbMix(selectedTrack, moduleIndex), juce::dontSendNotification);
         gainModuleSliders[(size_t) moduleIndex].setValue(engine.getTrackGainModuleGainDb(selectedTrack, moduleIndex), juce::dontSendNotification);
 
         compressorSliders[(size_t) moduleIndex][0].setValue(engine.getTrackCompressorThresholdDb(selectedTrack, moduleIndex), juce::dontSendNotification);
@@ -449,6 +480,12 @@ void TrackControlChain::updateAccentColours()
     for (auto& slider : saturationAmountSliders)
         slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
 
+    for (auto& slot : reverbSliders)
+    {
+        for (auto& slider : slot)
+            slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+    }
+
     for (auto& slider : gainModuleSliders)
         slider.setColour(juce::Slider::thumbColourId, accent);
 
@@ -509,6 +546,8 @@ void TrackControlChain::updateModuleVisibility()
         filterSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::filter);
         saturationModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
         saturationAmountSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
+        for (int controlIndex = 0; controlIndex < reverbControlCount; ++controlIndex)
+            reverbSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::reverb);
         gainModuleSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::gain);
 
         for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)

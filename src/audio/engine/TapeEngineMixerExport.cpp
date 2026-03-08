@@ -87,19 +87,6 @@ void processDelayReturnOffline(OfflineDelayState& state,
     outputRight = delayedRight * wet;
 }
 
-void processReverbReturnOffline(juce::Reverb& reverb,
-                                float wet,
-                                float inputLeft,
-                                float inputRight,
-                                float& outputLeft,
-                                float& outputRight) noexcept
-{
-    outputLeft = inputLeft;
-    outputRight = inputRight;
-    reverb.processStereo(&outputLeft, &outputRight, 1);
-    outputLeft *= wet;
-    outputRight *= wet;
-}
 }
 
 void TapeEngine::setTrackMuted(int trackIndex, bool shouldBeMuted)
@@ -187,22 +174,6 @@ float TapeEngine::getTrackDelaySend(int trackIndex) const noexcept
     return tracks[(size_t) trackIndex].delaySend.load(std::memory_order_acquire);
 }
 
-void TapeEngine::setTrackReverbSend(int trackIndex, float amount)
-{
-    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
-        return;
-
-    tracks[(size_t) trackIndex].reverbSend.store(clampUnit(amount), std::memory_order_release);
-}
-
-float TapeEngine::getTrackReverbSend(int trackIndex) const noexcept
-{
-    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
-        return 0.0f;
-
-    return tracks[(size_t) trackIndex].reverbSend.load(std::memory_order_acquire);
-}
-
 float TapeEngine::getTrackMixerMeter(int trackIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))
@@ -271,36 +242,6 @@ float TapeEngine::getDelayMix() const noexcept
     return delayMix.load(std::memory_order_acquire);
 }
 
-void TapeEngine::setReverbSize(float size)
-{
-    reverbSize.store(clampUnit(size), std::memory_order_release);
-}
-
-float TapeEngine::getReverbSize() const noexcept
-{
-    return reverbSize.load(std::memory_order_acquire);
-}
-
-void TapeEngine::setReverbDamping(float damping)
-{
-    reverbDamping.store(clampUnit(damping), std::memory_order_release);
-}
-
-float TapeEngine::getReverbDamping() const noexcept
-{
-    return reverbDamping.load(std::memory_order_acquire);
-}
-
-void TapeEngine::setReverbMix(float mix)
-{
-    reverbMix.store(clampUnit(mix), std::memory_order_release);
-}
-
-float TapeEngine::getReverbMix() const noexcept
-{
-    return reverbMix.load(std::memory_order_acquire);
-}
-
 float TapeEngine::getTrackPeakMeter(int trackIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))
@@ -363,12 +304,10 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
                                                         : delayTimeMs.load(std::memory_order_acquire);
     const auto delayFeedbackSnapshot = delayFeedback.load(std::memory_order_acquire);
     const auto delayMixSnapshot = delayMix.load(std::memory_order_acquire);
-    const auto reverbMixSnapshot = reverbMix.load(std::memory_order_acquire);
     std::array<bool, numTracks> mutedSnapshots {};
     std::array<float, numTracks> gainSnapshots {};
     std::array<float, numTracks> panSnapshots {};
     std::array<float, numTracks> delaySendSnapshots {};
-    std::array<float, numTracks> reverbSendSnapshots {};
 
     for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
     {
@@ -377,19 +316,7 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
         gainSnapshots[(size_t) trackIndex] = track.mixerGainDb.load(std::memory_order_acquire);
         panSnapshots[(size_t) trackIndex] = track.mixerPan.load(std::memory_order_acquire);
         delaySendSnapshots[(size_t) trackIndex] = track.delaySend.load(std::memory_order_acquire);
-        reverbSendSnapshots[(size_t) trackIndex] = track.reverbSend.load(std::memory_order_acquire);
     }
-
-    juce::Reverb localReverb;
-    juce::Reverb::Parameters reverbParameters;
-    reverbParameters.roomSize = reverbSize.load(std::memory_order_acquire);
-    reverbParameters.damping = reverbDamping.load(std::memory_order_acquire);
-    reverbParameters.wetLevel = 1.0f;
-    reverbParameters.dryLevel = 0.0f;
-    reverbParameters.width = 1.0f;
-    reverbParameters.freezeMode = 0.0f;
-    localReverb.setSampleRate(targetSampleRate);
-    localReverb.setParameters(reverbParameters);
 
     OfflineDelayState localDelay;
     localDelay.prepare(targetSampleRate);
@@ -437,8 +364,6 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
             auto mixedRight = 0.0f;
             auto delayBusLeft = 0.0f;
             auto delayBusRight = 0.0f;
-            auto reverbBusLeft = 0.0f;
-            auto reverbBusRight = 0.0f;
 
             for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
             {
@@ -456,8 +381,6 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
                 mixedRight += trackRight;
                 delayBusLeft += trackLeft * delaySendSnapshots[(size_t) trackIndex];
                 delayBusRight += trackRight * delaySendSnapshots[(size_t) trackIndex];
-                reverbBusLeft += trackLeft * reverbSendSnapshots[(size_t) trackIndex];
-                reverbBusRight += trackRight * reverbSendSnapshots[(size_t) trackIndex];
             }
 
             auto delayReturnLeft = 0.0f;
@@ -473,17 +396,6 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
                                       delayReturnRight);
             mixedLeft += delayReturnLeft;
             mixedRight += delayReturnRight;
-
-            auto reverbReturnLeft = 0.0f;
-            auto reverbReturnRight = 0.0f;
-            processReverbReturnOffline(localReverb,
-                                       reverbMixSnapshot,
-                                       reverbBusLeft,
-                                       reverbBusRight,
-                                       reverbReturnLeft,
-                                       reverbReturnRight);
-            mixedLeft += reverbReturnLeft;
-            mixedRight += reverbReturnRight;
 
             renderBuffer.setSample(0, sampleIndex, mixedLeft);
             renderBuffer.setSample(1, sampleIndex, mixedRight);
@@ -528,16 +440,6 @@ void TapeEngine::processDelayReturn(float inputLeft, float inputRight, float& ou
     const auto wet = delayMix.load(std::memory_order_relaxed);
     outputLeft = delayedLeft * wet;
     outputRight = delayedRight * wet;
-}
-
-void TapeEngine::processReverbReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept
-{
-    outputLeft = inputLeft;
-    outputRight = inputRight;
-    reverb.processStereo(&outputLeft, &outputRight, 1);
-    const auto wet = reverbMix.load(std::memory_order_relaxed);
-    outputLeft *= wet;
-    outputRight *= wet;
 }
 
 float TapeEngine::getResolvedDelayTimeMs() const noexcept

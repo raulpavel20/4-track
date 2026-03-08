@@ -79,6 +79,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o.d"
+  "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainReverbModule.cpp.o"
+  "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainReverbModule.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainWidgets.cpp.o"

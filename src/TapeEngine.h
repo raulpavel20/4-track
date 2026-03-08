@@ -115,6 +115,12 @@ public:
     SaturationMode getTrackSaturationMode(int trackIndex, int moduleIndex) const noexcept;
     void setTrackSaturationAmount(int trackIndex, int moduleIndex, float amount);
     float getTrackSaturationAmount(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackReverbSize(int trackIndex, int moduleIndex, float size);
+    float getTrackReverbSize(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackReverbDamping(int trackIndex, int moduleIndex, float damping);
+    float getTrackReverbDamping(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackReverbMix(int trackIndex, int moduleIndex, float mix);
+    float getTrackReverbMix(int trackIndex, int moduleIndex) const noexcept;
     void setTrackGainModuleGainDb(int trackIndex, int moduleIndex, float gainDb);
     float getTrackGainModuleGainDb(int trackIndex, int moduleIndex) const noexcept;
     float getTrackModuleInputMeter(int trackIndex, int moduleIndex) const noexcept;
@@ -130,8 +136,6 @@ public:
     float getTrackMixerPan(int trackIndex) const noexcept;
     void setTrackDelaySend(int trackIndex, float amount);
     float getTrackDelaySend(int trackIndex) const noexcept;
-    void setTrackReverbSend(int trackIndex, float amount);
-    float getTrackReverbSend(int trackIndex) const noexcept;
     float getTrackMixerMeter(int trackIndex) const noexcept;
     void setDelayTimeMs(float timeMs);
     float getDelayTimeMs() const noexcept;
@@ -145,12 +149,6 @@ public:
     float getDelayFeedback() const noexcept;
     void setDelayMix(float mix);
     float getDelayMix() const noexcept;
-    void setReverbSize(float size);
-    float getReverbSize() const noexcept;
-    void setReverbDamping(float damping);
-    float getReverbDamping() const noexcept;
-    void setReverbMix(float mix);
-    float getReverbMix() const noexcept;
 
     float getTrackPeakMeter(int trackIndex) const noexcept;
     bool getTrackClipping(int trackIndex) const noexcept;
@@ -195,9 +193,6 @@ private:
     std::atomic<int> delaySyncIndex { 2 };
     std::atomic<float> delayFeedback { 0.35f };
     std::atomic<float> delayMix { 0.25f };
-    std::atomic<float> reverbSize { 0.45f };
-    std::atomic<float> reverbDamping { 0.35f };
-    std::atomic<float> reverbMix { 0.25f };
     std::array<std::atomic<int64_t>, maxLoopMarkers> loopMarkerBeats;
     std::atomic<int> loopMarkerCount { 0 };
     std::atomic<int> loopMarkerRevision { 0 };
@@ -205,7 +200,6 @@ private:
     int preparedBlockSize = 512;
     juce::AudioBuffer<float> inputScratch;
     juce::AudioBuffer<float> delayBuffer;
-    juce::Reverb reverb;
     int delayWritePosition = 0;
     int maxDelaySamples = 1;
     std::array<std::array<float, Track::numChannels>, numTracks> lastTrackInputBuses {};
@@ -233,10 +227,10 @@ private:
     float processEqModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processCompressorModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processSaturationModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
+    float processReverbModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processGainModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     void applyTrackMixer(float pan, float& left, float& right) const noexcept;
     void processDelayReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
-    void processReverbReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
     float getResolvedDelayTimeMs() const noexcept;
     bool shouldStartCountIn() const noexcept;
     void resetCountInState() noexcept;
@@ -260,7 +254,6 @@ private:
     void beginCountInIfRequestedForBlock(int currentBeatsPerBar) noexcept;
     void prepareTransportStartForBlock(int localPlayhead) noexcept;
     void prepareTrackRuntimePeaksForBlock() noexcept;
-    void updateReverbParametersForBlock() noexcept;
     void updateTrackMetersFromBlockPeaks(const std::array<float, numTracks>& blockPeaks,
                                          const std::array<bool, numTracks>& blockClips) noexcept;
     void finalizeStoppedTransportForBlock(bool shouldReversePlay,

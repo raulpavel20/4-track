@@ -30,8 +30,6 @@ void TrackMixerPanel::layoutContent()
 
     delayModuleBounds = juce::Rectangle<int>(x, 0, fxModuleWidth, contentHeight);
     x += fxModuleWidth + moduleGap;
-    reverbModuleBounds = juce::Rectangle<int>(x, 0, fxModuleWidth, contentHeight);
-    x += fxModuleWidth + moduleGap;
     exportModuleBounds = juce::Rectangle<int>(x, 0, exportModuleWidth, contentHeight);
     const auto requiredWidth = exportModuleBounds.getRight();
     contentComponent.setSize(juce::jmax(viewportBounds.getWidth(), requiredWidth), contentHeight);
@@ -89,7 +87,6 @@ void TrackMixerPanel::layoutContent()
     };
 
     layoutFxModule(delayModuleBounds, delaySendSliders, delayControlSliders);
-    layoutFxModule(reverbModuleBounds, reverbSendSliders, reverbControlSliders);
 
     auto exportContent = exportModuleBounds.reduced(moduleInnerPadding, moduleVerticalInset);
     exportContent.removeFromTop(28);

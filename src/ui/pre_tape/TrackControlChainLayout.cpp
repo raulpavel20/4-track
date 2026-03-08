@@ -8,6 +8,7 @@ constexpr int filterModuleWidth = 166;
 constexpr int eqModuleWidth = 280;
 constexpr int compressorModuleWidth = 260;
 constexpr int saturationModuleWidth = 140;
+constexpr int reverbModuleWidth = 214;
 constexpr int gainModuleWidth = 78;
 constexpr int moduleVerticalInset = 10;
 constexpr int moduleInnerPadding = 10;
@@ -27,6 +28,8 @@ int getModuleWidth(ChainModuleType type)
             return compressorModuleWidth;
         case ChainModuleType::saturation:
             return saturationModuleWidth;
+        case ChainModuleType::reverb:
+            return reverbModuleWidth;
         case ChainModuleType::gain:
             return gainModuleWidth;
         case ChainModuleType::none:
@@ -84,6 +87,8 @@ void TrackControlChain::layoutContent()
             layoutCompressorModule(slot, moduleArea);
         else if (type == ChainModuleType::saturation)
             layoutSaturationModule(slot, moduleArea);
+        else if (type == ChainModuleType::reverb)
+            layoutReverbModule(slot, moduleArea);
         else if (type == ChainModuleType::gain)
             layoutGainModule(slot, moduleArea);
     }

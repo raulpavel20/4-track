@@ -53,7 +53,6 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
     std::array<float, numTracks> blockPeaks {};
     std::array<bool, numTracks> blockClips {};
-    updateReverbParametersForBlock();
     prepareTrackRuntimePeaksForBlock();
 
     auto* outputLeft = numOutputChannels > 0 ? outputChannelData[0] : nullptr;
@@ -96,11 +95,8 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         auto mixedRight = 0.0f;
         auto delayBusLeft = 0.0f;
         auto delayBusRight = 0.0f;
-        auto reverbBusLeft = 0.0f;
-        auto reverbBusRight = 0.0f;
         std::array<std::array<float, Track::numChannels>, numTracks> trackDryContributions {};
         std::array<std::array<float, Track::numChannels>, numTracks> trackDelayContributions {};
-        std::array<std::array<float, Track::numChannels>, numTracks> trackReverbContributions {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
         {
@@ -178,19 +174,14 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
             if (isAudible)
             {
                 const auto delaySendAmount = track.delaySend.load(std::memory_order_relaxed);
-                const auto reverbSendAmount = track.reverbSend.load(std::memory_order_relaxed);
                 mixedLeft += postMixerLeft;
                 mixedRight += postMixerRight;
                 delayBusLeft += postMixerLeft * delaySendAmount;
                 delayBusRight += postMixerRight * delaySendAmount;
-                reverbBusLeft += postMixerLeft * reverbSendAmount;
-                reverbBusRight += postMixerRight * reverbSendAmount;
                 trackDryContributions[(size_t) trackIndex][0] = postMixerLeft;
                 trackDryContributions[(size_t) trackIndex][1] = postMixerRight;
                 trackDelayContributions[(size_t) trackIndex][0] = postMixerLeft * delaySendAmount;
                 trackDelayContributions[(size_t) trackIndex][1] = postMixerRight * delaySendAmount;
-                trackReverbContributions[(size_t) trackIndex][0] = postMixerLeft * reverbSendAmount;
-                trackReverbContributions[(size_t) trackIndex][1] = postMixerRight * reverbSendAmount;
             }
 
             const auto peak = juce::jmax(std::abs(audibleLeft), std::abs(audibleRight));
@@ -206,30 +197,18 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         mixedLeft += delayReturnLeft;
         mixedRight += delayReturnRight;
 
-        auto reverbReturnLeft = 0.0f;
-        auto reverbReturnRight = 0.0f;
-        processReverbReturn(reverbBusLeft, reverbBusRight, reverbReturnLeft, reverbReturnRight);
-        mixedLeft += reverbReturnLeft;
-        mixedRight += reverbReturnRight;
-
         auto totalDelayWeight = 0.0f;
-        auto totalReverbWeight = 0.0f;
         std::array<std::array<float, Track::numChannels>, numTracks> currentTrackInputBuses {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
-        {
             totalDelayWeight += std::abs(trackDelayContributions[(size_t) trackIndex][0]) + std::abs(trackDelayContributions[(size_t) trackIndex][1]);
-            totalReverbWeight += std::abs(trackReverbContributions[(size_t) trackIndex][0]) + std::abs(trackReverbContributions[(size_t) trackIndex][1]);
-        }
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
         {
             const auto delayWeight = std::abs(trackDelayContributions[(size_t) trackIndex][0]) + std::abs(trackDelayContributions[(size_t) trackIndex][1]);
-            const auto reverbWeight = std::abs(trackReverbContributions[(size_t) trackIndex][0]) + std::abs(trackReverbContributions[(size_t) trackIndex][1]);
             const auto delayShare = totalDelayWeight > 0.0f ? delayWeight / totalDelayWeight : 0.0f;
-            const auto reverbShare = totalReverbWeight > 0.0f ? reverbWeight / totalReverbWeight : 0.0f;
-            currentTrackInputBuses[(size_t) trackIndex][0] = trackDryContributions[(size_t) trackIndex][0] + (delayReturnLeft * delayShare) + (reverbReturnLeft * reverbShare);
-            currentTrackInputBuses[(size_t) trackIndex][1] = trackDryContributions[(size_t) trackIndex][1] + (delayReturnRight * delayShare) + (reverbReturnRight * reverbShare);
+            currentTrackInputBuses[(size_t) trackIndex][0] = trackDryContributions[(size_t) trackIndex][0] + (delayReturnLeft * delayShare);
+            currentTrackInputBuses[(size_t) trackIndex][1] = trackDryContributions[(size_t) trackIndex][1] + (delayReturnRight * delayShare);
         }
 
         lastMasterInputBus[0] = mixedLeft;
@@ -399,18 +378,6 @@ void TapeEngine::prepareTrackRuntimePeaksForBlock() noexcept
         track.moduleBlockOutputPeaks.fill(0.0f);
         track.mixerBlockPeak = 0.0f;
     }
-}
-
-void TapeEngine::updateReverbParametersForBlock() noexcept
-{
-    juce::Reverb::Parameters reverbParameters;
-    reverbParameters.roomSize = reverbSize.load(std::memory_order_acquire);
-    reverbParameters.damping = reverbDamping.load(std::memory_order_acquire);
-    reverbParameters.wetLevel = 1.0f;
-    reverbParameters.dryLevel = 0.0f;
-    reverbParameters.width = 1.0f;
-    reverbParameters.freezeMode = 0.0f;
-    reverb.setParameters(reverbParameters);
 }
 
 void TapeEngine::updateTrackMetersFromBlockPeaks(const std::array<float, numTracks>& blockPeaks,

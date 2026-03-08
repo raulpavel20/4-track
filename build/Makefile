@@ -1172,6 +1172,30 @@ src/ui/pre_tape/TrackControlChainPaint.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.s
 .PHONY : src/ui/pre_tape/TrackControlChainPaint.cpp.s
 
+src/ui/pre_tape/TrackControlChainReverbModule.o: src/ui/pre_tape/TrackControlChainReverbModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainReverbModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainReverbModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainReverbModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainReverbModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainReverbModule.i: src/ui/pre_tape/TrackControlChainReverbModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainReverbModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainReverbModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainReverbModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainReverbModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainReverbModule.s: src/ui/pre_tape/TrackControlChainReverbModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainReverbModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainReverbModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainReverbModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainReverbModule.cpp.s
+
 src/ui/pre_tape/TrackControlChainSaturationModule.o: src/ui/pre_tape/TrackControlChainSaturationModule.cpp.o
 .PHONY : src/ui/pre_tape/TrackControlChainSaturationModule.o
 
@@ -1501,6 +1525,9 @@ help:
 	@echo "... src/ui/pre_tape/TrackControlChainPaint.o"
 	@echo "... src/ui/pre_tape/TrackControlChainPaint.i"
 	@echo "... src/ui/pre_tape/TrackControlChainPaint.s"
+	@echo "... src/ui/pre_tape/TrackControlChainReverbModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainReverbModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainReverbModule.s"
 	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.o"
 	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.i"
 	@echo "... src/ui/pre_tape/TrackControlChainSaturationModule.s"
