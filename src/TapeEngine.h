@@ -11,6 +11,20 @@
 class TapeEngine : public juce::AudioIODeviceCallback
 {
 public:
+    enum class ExportFormat
+    {
+        wav = 0,
+        aiff
+    };
+
+    struct ExportSettings
+    {
+        ExportFormat format = ExportFormat::wav;
+        double sampleRate = 44100.0;
+        int bitDepth = 24;
+        double tailSeconds = 2.0;
+    };
+
     struct InputSourceOption
     {
         int sourceId = makeInputSourceId(InputSourceType::hardwareStereo, 0);
@@ -132,6 +146,7 @@ public:
     void clearTrackClipping(int trackIndex);
     int getTrackRecordedLength(int trackIndex) const noexcept;
     float getTrackSample(int trackIndex, int channel, int samplePosition) const noexcept;
+    juce::Result exportMixToFile(const juce::File& file, const ExportSettings& settings) const;
 
     void servicePendingAllocations();
 
@@ -202,8 +217,10 @@ private:
     void processDelayReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
     void processReverbReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
     float readTrackSample(const Track& track, int channel, int samplePosition) const noexcept;
+    float readTrackSampleInterpolated(const Track& track, int channel, double samplePosition) const noexcept;
     bool writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept;
     int getMaxRecordedLength() const noexcept;
+    int getLastAudibleSample() const noexcept;
     int readLoopMarkers(std::array<int64_t, maxLoopMarkers>& destination) const noexcept;
     bool getLoopStartBeat(int64_t beatIndex,
                           const std::array<int64_t, maxLoopMarkers>& markers,

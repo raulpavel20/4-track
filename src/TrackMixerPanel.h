@@ -35,9 +35,16 @@ private:
     std::array<juce::Slider, TapeEngine::numTracks> reverbSendSliders;
     std::array<juce::Slider, 3> delayControlSliders;
     std::array<juce::Slider, 3> reverbControlSliders;
+    juce::ComboBox exportFormatBox;
+    juce::ComboBox exportSampleRateBox;
+    juce::ComboBox exportBitDepthBox;
+    juce::ComboBox exportTailBox;
+    juce::TextButton exportButton { "Export" };
+    std::unique_ptr<juce::FileChooser> exportChooser;
     std::array<juce::Rectangle<int>, TapeEngine::numTracks> trackModuleBounds {};
     juce::Rectangle<int> delayModuleBounds;
     juce::Rectangle<int> reverbModuleBounds;
+    juce::Rectangle<int> exportModuleBounds;
 
     void timerCallback() override;
     void paintContent(juce::Graphics& g);

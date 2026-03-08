@@ -47,9 +47,9 @@ file(REMOVE_RECURSE
   "CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/main.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/main.cpp.o.d"
-  "FourTrackTape_artefacts/4-Track Tape.app/Contents/MacOS/4-Track Tape"
-  "FourTrackTape_artefacts/4-Track Tape.app/Contents/Resources/RecentFilesMenuTemplate.nib"
-  "FourTrackTape_artefacts/4-Track Tape.pdb"
+  "FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track"
+  "FourTrackTape_artefacts/4-Track.app/Contents/Resources/RecentFilesMenuTemplate.nib"
+  "FourTrackTape_artefacts/4-Track.pdb"
   "FourTrackTape_artefacts/JuceLibraryCode/FourTrackTape/PkgInfo"
   "FourTrackTape_artefacts/JuceLibraryCode/JuceHeader.h"
 )

@@ -16,8 +16,8 @@ juce_add_binary_data(FourTrackAssets
 
 juce_add_gui_app(FourTrackTape
     MICROPHONE_PERMISSION_ENABLED TRUE
-    MICROPHONE_PERMISSION_TEXT "4-Track Tape needs microphone access to record audio onto the virtual tape."
-    PRODUCT_NAME "4-Track Tape"
+    MICROPHONE_PERMISSION_TEXT "4-Track needs microphone access to record audio onto the virtual tape."
+    PRODUCT_NAME "4-Track"
 )
 
 target_sources(FourTrackTape

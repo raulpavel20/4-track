@@ -4,17 +4,17 @@
 <plist>
   <dict>
     <key>NSMicrophoneUsageDescription</key>
-    <string>4-Track Tape needs microphone access to record audio onto the virtual tape.</string>
+    <string>4-Track needs microphone access to record audio onto the virtual tape.</string>
     <key>CFBundleExecutable</key>
-    <string>4-Track Tape</string>
+    <string>4-Track</string>
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
     <string>com.yourcompany.FourTrackTape</string>
     <key>CFBundleName</key>
-    <string>4-Track Tape</string>
+    <string>4-Track</string>
     <key>CFBundleDisplayName</key>
-    <string>4-Track Tape</string>
+    <string>4-Track</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleSignature</key>

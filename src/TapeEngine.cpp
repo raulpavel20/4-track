@@ -34,6 +34,64 @@ float clampDelayTimeMs(float value) noexcept
     return juce::jlimit(20.0f, 2000.0f, value);
 }
 
+struct OfflineDelayState
+{
+    juce::AudioBuffer<float> buffer;
+    int writePosition = 0;
+    int maxDelaySamples = 1;
+
+    void prepare(double sampleRate)
+    {
+        maxDelaySamples = juce::jmax(1, (int) std::ceil(sampleRate * 2.0));
+        buffer.setSize(Track::numChannels, maxDelaySamples, false, false, true);
+        buffer.clear();
+        writePosition = 0;
+    }
+};
+
+void processDelayReturnOffline(OfflineDelayState& state,
+                               double sampleRate,
+                               float delayTimeMs,
+                               float feedback,
+                               float wet,
+                               float inputLeft,
+                               float inputRight,
+                               float& outputLeft,
+                               float& outputRight) noexcept
+{
+    outputLeft = 0.0f;
+    outputRight = 0.0f;
+
+    if (state.buffer.getNumSamples() <= 0)
+        return;
+
+    const auto delaySamples = juce::jlimit(1,
+                                           juce::jmax(1, state.maxDelaySamples - 1),
+                                           (int) std::round((sampleRate * clampDelayTimeMs(delayTimeMs)) * 0.001));
+    const auto readPosition = (state.writePosition - delaySamples + state.maxDelaySamples) % state.maxDelaySamples;
+    const auto delayedLeft = state.buffer.getSample(0, readPosition);
+    const auto delayedRight = state.buffer.getSample(1, readPosition);
+    state.buffer.setSample(0, state.writePosition, inputLeft + (delayedLeft * feedback));
+    state.buffer.setSample(1, state.writePosition, inputRight + (delayedRight * feedback));
+    state.writePosition = (state.writePosition + 1) % state.maxDelaySamples;
+    outputLeft = delayedLeft * wet;
+    outputRight = delayedRight * wet;
+}
+
+void processReverbReturnOffline(juce::Reverb& reverb,
+                                float wet,
+                                float inputLeft,
+                                float inputRight,
+                                float& outputLeft,
+                                float& outputRight) noexcept
+{
+    outputLeft = inputLeft;
+    outputRight = inputRight;
+    reverb.processStereo(&outputLeft, &outputRight, 1);
+    outputLeft *= wet;
+    outputRight *= wet;
+}
+
 float calculatePeakFilterSample(float input, EqBandState& state, size_t channelIndex) noexcept
 {
     const auto output = (state.b0 * input) + state.z1[channelIndex];
@@ -963,6 +1021,159 @@ float TapeEngine::getTrackSample(int trackIndex, int channel, int samplePosition
                            samplePosition);
 }
 
+juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSettings& settings) const
+{
+    if (file == juce::File())
+        return juce::Result::fail("No export file selected.");
+
+    const auto sourceSampleRate = juce::jmax(1.0, sampleRate);
+    const auto targetSampleRate = juce::jmax(1.0, settings.sampleRate);
+    const auto lastAudibleSample = getLastAudibleSample();
+
+    if (lastAudibleSample <= 0)
+        return juce::Result::fail("There is no recorded audio to export.");
+
+    const auto tailSeconds = juce::jlimit(0.0, 30.0, settings.tailSeconds);
+    const auto outputDurationSeconds = ((double) lastAudibleSample / sourceSampleRate) + tailSeconds;
+    const auto totalOutputSamples = juce::jmax<int64_t>(1, (int64_t) std::ceil(outputDurationSeconds * targetSampleRate));
+    const auto soloedTrackSnapshot = soloTrack.load(std::memory_order_acquire);
+    const auto delayTimeSnapshot = delayTimeMs.load(std::memory_order_acquire);
+    const auto delayFeedbackSnapshot = delayFeedback.load(std::memory_order_acquire);
+    const auto delayMixSnapshot = delayMix.load(std::memory_order_acquire);
+    const auto reverbMixSnapshot = reverbMix.load(std::memory_order_acquire);
+    std::array<bool, numTracks> mutedSnapshots {};
+    std::array<float, numTracks> gainSnapshots {};
+    std::array<float, numTracks> panSnapshots {};
+    std::array<float, numTracks> delaySendSnapshots {};
+    std::array<float, numTracks> reverbSendSnapshots {};
+
+    for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+    {
+        const auto& track = tracks[(size_t) trackIndex];
+        mutedSnapshots[(size_t) trackIndex] = track.muted.load(std::memory_order_acquire);
+        gainSnapshots[(size_t) trackIndex] = track.mixerGainDb.load(std::memory_order_acquire);
+        panSnapshots[(size_t) trackIndex] = track.mixerPan.load(std::memory_order_acquire);
+        delaySendSnapshots[(size_t) trackIndex] = track.delaySend.load(std::memory_order_acquire);
+        reverbSendSnapshots[(size_t) trackIndex] = track.reverbSend.load(std::memory_order_acquire);
+    }
+
+    juce::Reverb localReverb;
+    juce::Reverb::Parameters reverbParameters;
+    reverbParameters.roomSize = reverbSize.load(std::memory_order_acquire);
+    reverbParameters.damping = reverbDamping.load(std::memory_order_acquire);
+    reverbParameters.wetLevel = 1.0f;
+    reverbParameters.dryLevel = 0.0f;
+    reverbParameters.width = 1.0f;
+    reverbParameters.freezeMode = 0.0f;
+    localReverb.setSampleRate(targetSampleRate);
+    localReverb.setParameters(reverbParameters);
+
+    OfflineDelayState localDelay;
+    localDelay.prepare(targetSampleRate);
+
+    if (file.existsAsFile() && ! file.deleteFile())
+        return juce::Result::fail("Could not replace the existing export file.");
+
+    auto outputStream = file.createOutputStream();
+
+    if (outputStream == nullptr || ! outputStream->openedOk())
+        return juce::Result::fail("Could not create the export file.");
+
+    std::unique_ptr<juce::AudioFormat> format;
+
+    if (settings.format == ExportFormat::aiff)
+        format = std::make_unique<juce::AiffAudioFormat>();
+    else
+        format = std::make_unique<juce::WavAudioFormat>();
+
+    auto writer = std::unique_ptr<juce::AudioFormatWriter>(format->createWriterFor(outputStream.get(),
+                                                                                   targetSampleRate,
+                                                                                   Track::numChannels,
+                                                                                   settings.bitDepth,
+                                                                                   {},
+                                                                                   0));
+
+    if (writer == nullptr)
+        return juce::Result::fail("Could not initialise the export writer.");
+
+    outputStream.release();
+
+    constexpr int blockSize = 512;
+    juce::AudioBuffer<float> renderBuffer(Track::numChannels, blockSize);
+    const auto sourceIncrement = sourceSampleRate / targetSampleRate;
+    auto sourcePosition = 0.0;
+
+    for (int64_t outputStart = 0; outputStart < totalOutputSamples; outputStart += blockSize)
+    {
+        const auto samplesThisBlock = (int) juce::jmin<int64_t>(blockSize, totalOutputSamples - outputStart);
+        renderBuffer.clear();
+
+        for (int sampleIndex = 0; sampleIndex < samplesThisBlock; ++sampleIndex)
+        {
+            auto mixedLeft = 0.0f;
+            auto mixedRight = 0.0f;
+            auto delayBusLeft = 0.0f;
+            auto delayBusRight = 0.0f;
+            auto reverbBusLeft = 0.0f;
+            auto reverbBusRight = 0.0f;
+
+            for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+            {
+                if ((soloedTrackSnapshot >= 0 && soloedTrackSnapshot != trackIndex) || mutedSnapshots[(size_t) trackIndex])
+                    continue;
+
+                const auto& track = tracks[(size_t) trackIndex];
+                auto trackLeft = readTrackSampleInterpolated(track, 0, sourcePosition);
+                auto trackRight = readTrackSampleInterpolated(track, 1, sourcePosition);
+                const auto gain = juce::Decibels::decibelsToGain(gainSnapshots[(size_t) trackIndex]);
+                trackLeft *= gain;
+                trackRight *= gain;
+                applyTrackMixer(panSnapshots[(size_t) trackIndex], trackLeft, trackRight);
+                mixedLeft += trackLeft;
+                mixedRight += trackRight;
+                delayBusLeft += trackLeft * delaySendSnapshots[(size_t) trackIndex];
+                delayBusRight += trackRight * delaySendSnapshots[(size_t) trackIndex];
+                reverbBusLeft += trackLeft * reverbSendSnapshots[(size_t) trackIndex];
+                reverbBusRight += trackRight * reverbSendSnapshots[(size_t) trackIndex];
+            }
+
+            auto delayReturnLeft = 0.0f;
+            auto delayReturnRight = 0.0f;
+            processDelayReturnOffline(localDelay,
+                                      targetSampleRate,
+                                      delayTimeSnapshot,
+                                      delayFeedbackSnapshot,
+                                      delayMixSnapshot,
+                                      delayBusLeft,
+                                      delayBusRight,
+                                      delayReturnLeft,
+                                      delayReturnRight);
+            mixedLeft += delayReturnLeft;
+            mixedRight += delayReturnRight;
+
+            auto reverbReturnLeft = 0.0f;
+            auto reverbReturnRight = 0.0f;
+            processReverbReturnOffline(localReverb,
+                                       reverbMixSnapshot,
+                                       reverbBusLeft,
+                                       reverbBusRight,
+                                       reverbReturnLeft,
+                                       reverbReturnRight);
+            mixedLeft += reverbReturnLeft;
+            mixedRight += reverbReturnRight;
+
+            renderBuffer.setSample(0, sampleIndex, mixedLeft);
+            renderBuffer.setSample(1, sampleIndex, mixedRight);
+            sourcePosition += sourceIncrement;
+        }
+
+        if (! writer->writeFromAudioSampleBuffer(renderBuffer, 0, samplesThisBlock))
+            return juce::Result::fail("Failed while writing exported audio.");
+    }
+
+    return juce::Result::ok();
+}
+
 void TapeEngine::servicePendingAllocations()
 {
     const auto chunkCount = juce::jlimit(initialChunkCount,
@@ -1737,6 +1948,18 @@ float TapeEngine::readTrackSample(const Track& track, int channel, int samplePos
     return chunk->getSample(channel, offset);
 }
 
+float TapeEngine::readTrackSampleInterpolated(const Track& track, int channel, double samplePosition) const noexcept
+{
+    if (samplePosition <= 0.0)
+        return readTrackSample(track, channel, 0);
+
+    const auto floorSample = (int) std::floor(samplePosition);
+    const auto fraction = (float) (samplePosition - (double) floorSample);
+    const auto firstSample = readTrackSample(track, channel, floorSample);
+    const auto secondSample = readTrackSample(track, channel, floorSample + 1);
+    return firstSample + ((secondSample - firstSample) * fraction);
+}
+
 bool TapeEngine::writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept
 {
     if (samplePosition < 0)
@@ -1761,6 +1984,29 @@ int TapeEngine::getMaxRecordedLength() const noexcept
         maxRecordedLength = juce::jmax(maxRecordedLength, track.recordedLength.load(std::memory_order_acquire));
 
     return maxRecordedLength;
+}
+
+int TapeEngine::getLastAudibleSample() const noexcept
+{
+    constexpr float silenceThreshold = 1.0e-5f;
+    auto lastAudibleSample = 0;
+
+    for (const auto& track : tracks)
+    {
+        const auto recordedLength = track.recordedLength.load(std::memory_order_acquire);
+
+        for (int sampleIndex = recordedLength - 1; sampleIndex >= 0; --sampleIndex)
+        {
+            if (std::abs(readTrackSample(track, 0, sampleIndex)) > silenceThreshold
+                || std::abs(readTrackSample(track, 1, sampleIndex)) > silenceThreshold)
+            {
+                lastAudibleSample = juce::jmax(lastAudibleSample, sampleIndex + 1);
+                break;
+            }
+        }
+    }
+
+    return lastAudibleSample;
 }
 
 int TapeEngine::readLoopMarkers(std::array<int64_t, maxLoopMarkers>& destination) const noexcept

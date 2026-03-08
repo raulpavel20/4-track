@@ -69,9 +69,9 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "FourTrackTape_artefacts/JuceLibraryCode/Defs.txt"
-  "FourTrackTape_artefacts/4-Track Tape.app/Contents/MacOS"
-  "FourTrackTape_artefacts/4-Track Tape.app/Contents/Info.plist"
-  "FourTrackTape_artefacts/4-Track Tape.app/Contents/Info.plist"
+  "FourTrackTape_artefacts/4-Track.app/Contents/MacOS"
+  "FourTrackTape_artefacts/4-Track.app/Contents/Info.plist"
+  "FourTrackTape_artefacts/4-Track.app/Contents/Info.plist"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "external/JUCE/JUCEConfigVersion.cmake"
   "external/JUCE/JUCEConfig.cmake"

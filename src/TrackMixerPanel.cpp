@@ -7,8 +7,9 @@
 namespace
 {
 constexpr int moduleGap = 10;
-constexpr int trackModuleWidth = 80;
+constexpr int trackModuleWidth = 83;
 constexpr int fxModuleWidth = 210;
+constexpr int exportModuleWidth = 232;
 constexpr int moduleVerticalInset = 10;
 constexpr int moduleInnerPadding = 10;
 constexpr int gainSliderWidth = 20;
@@ -86,6 +87,14 @@ juce::String formatTimeValue(float value)
 {
     return juce::String((int) std::round(value)) + " ms";
 }
+
+juce::String formatSampleRateValue(double value)
+{
+    if (value >= 1000.0)
+        return juce::String(value / 1000.0, std::abs(std::round(value / 1000.0) - (value / 1000.0)) < 0.01 ? 0 : 1) + " kHz";
+
+    return juce::String((int) std::round(value)) + " Hz";
+}
 }
 
 TrackMixerPanel::ContentComponent::ContentComponent(TrackMixerPanel& ownerToUse)
@@ -104,9 +113,10 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
 {
     addAndMakeVisible(modulesViewport);
     modulesViewport.setViewedComponent(&contentComponent, false);
-    modulesViewport.setScrollBarsShown(true, false);
-    modulesViewport.setColour(juce::ScrollBar::thumbColourId, juce::Colours::white.withAlpha(0.2f));
-    modulesViewport.setColour(juce::ScrollBar::trackColourId, juce::Colours::transparentBlack);
+    modulesViewport.setScrollBarsShown(false, true);
+    modulesViewport.setScrollBarThickness(8);
+    modulesViewport.getHorizontalScrollBar().setColour(juce::ScrollBar::thumbColourId, juce::Colours::white.withAlpha(0.32f));
+    modulesViewport.getHorizontalScrollBar().setColour(juce::ScrollBar::trackColourId, juce::Colours::white.withAlpha(0.08f));
 
     for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
     {
@@ -166,6 +176,82 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
 
     for (auto& slider : reverbControlSliders)
         contentComponent.addAndMakeVisible(slider);
+
+    auto configureExportBox = [] (juce::ComboBox& box)
+    {
+        box.setColour(juce::ComboBox::backgroundColourId, juce::Colours::black);
+        box.setColour(juce::ComboBox::outlineColourId, juce::Colours::white.withAlpha(0.18f));
+        box.setColour(juce::ComboBox::textColourId, juce::Colours::white);
+        box.setColour(juce::ComboBox::arrowColourId, juce::Colours::white);
+    };
+
+    configureExportBox(exportFormatBox);
+    configureExportBox(exportSampleRateBox);
+    configureExportBox(exportBitDepthBox);
+    configureExportBox(exportTailBox);
+    exportFormatBox.addItem("WAV", 1);
+    exportFormatBox.addItem("AIFF", 2);
+    exportSampleRateBox.addItem("44.1 kHz", 1);
+    exportSampleRateBox.addItem("48 kHz", 2);
+    exportBitDepthBox.addItem("16-bit", 1);
+    exportBitDepthBox.addItem("24-bit", 2);
+    exportTailBox.addItem("1 sec", 1);
+    exportTailBox.addItem("2 sec", 2);
+    exportTailBox.addItem("4 sec", 3);
+    exportTailBox.addItem("8 sec", 4);
+    exportFormatBox.setSelectedId(1, juce::dontSendNotification);
+    exportSampleRateBox.setSelectedId(1, juce::dontSendNotification);
+    exportBitDepthBox.setSelectedId(2, juce::dontSendNotification);
+    exportTailBox.setSelectedId(2, juce::dontSendNotification);
+    contentComponent.addAndMakeVisible(exportFormatBox);
+    contentComponent.addAndMakeVisible(exportSampleRateBox);
+    contentComponent.addAndMakeVisible(exportBitDepthBox);
+    contentComponent.addAndMakeVisible(exportTailBox);
+
+    exportButton.setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+    exportButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::black);
+    exportButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+    exportButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    exportButton.onClick = [this]
+    {
+        TapeEngine::ExportSettings settings;
+        settings.format = exportFormatBox.getSelectedId() == 2 ? TapeEngine::ExportFormat::aiff
+                                                               : TapeEngine::ExportFormat::wav;
+        settings.sampleRate = exportSampleRateBox.getSelectedId() == 2 ? 48000.0 : 44100.0;
+        settings.bitDepth = exportBitDepthBox.getSelectedId() == 1 ? 16 : 24;
+        settings.tailSeconds = exportTailBox.getSelectedId() == 1 ? 1.0
+                               : exportTailBox.getSelectedId() == 3 ? 4.0
+                               : exportTailBox.getSelectedId() == 4 ? 8.0
+                                                                    : 2.0;
+        const auto wildcard = settings.format == TapeEngine::ExportFormat::aiff ? "*.aiff" : "*.wav";
+        const auto suffix = settings.format == TapeEngine::ExportFormat::aiff ? ".aiff" : ".wav";
+        exportChooser = std::make_unique<juce::FileChooser>("Export Mix", juce::File(), wildcard);
+        auto safeThis = juce::Component::SafePointer<TrackMixerPanel>(this);
+        exportChooser->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+                                   [safeThis, settings, suffix] (const juce::FileChooser& chooser)
+                                   {
+                                       if (safeThis == nullptr)
+                                           return;
+
+                                       auto file = chooser.getResult();
+
+                                       if (file == juce::File())
+                                           return;
+
+                                       if (! file.hasFileExtension(suffix))
+                                           file = file.withFileExtension(suffix);
+
+                                       const auto result = safeThis->engine.exportMixToFile(file, settings);
+
+                                       if (result.failed())
+                                           juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::WarningIcon, "Export Failed", result.getErrorMessage());
+                                       else
+                                           juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, "Export Complete", file.getFileName());
+
+                                       safeThis->exportChooser.reset();
+                                   });
+    };
+    contentComponent.addAndMakeVisible(exportButton);
 
     updateColours();
     refreshFromEngine();
@@ -320,6 +406,47 @@ void TrackMixerPanel::paintContent(juce::Graphics& g)
                   { formatPercentValue((float) reverbControlSliders[0].getValue()),
                     formatPercentValue((float) reverbControlSliders[1].getValue()),
                     formatPercentValue((float) reverbControlSliders[2].getValue()) });
+
+    g.setColour(juce::Colours::white.withAlpha(0.22f));
+    g.drawRoundedRectangle(exportModuleBounds.toFloat().reduced(0.5f), 14.0f, 1.0f);
+    g.setColour(juce::Colours::white);
+    g.setFont(AppFonts::getFont(12.0f));
+    g.drawText("EXPORT",
+               exportModuleBounds.getX(),
+               exportModuleBounds.getY() + 6,
+               exportModuleBounds.getWidth(),
+               16,
+               juce::Justification::centred);
+
+    static const std::array<juce::String, 4> exportLabels { "FORMAT", "RATE", "DEPTH", "TAIL" };
+    const std::array<juce::String, 4> exportValues
+    {
+        exportFormatBox.getText(),
+        formatSampleRateValue(exportSampleRateBox.getSelectedId() == 2 ? 48000.0 : 44100.0),
+        exportBitDepthBox.getText(),
+        exportTailBox.getText()
+    };
+
+    auto exportContent = exportModuleBounds.reduced(moduleInnerPadding, moduleVerticalInset);
+    exportContent.removeFromTop(28);
+    const auto rowHeight = 56;
+    auto topRow = exportContent.removeFromTop(rowHeight);
+    auto bottomRow = exportContent.removeFromTop(rowHeight);
+    const auto cellWidth = exportContent.getWidth() / 2;
+
+    for (int index = 0; index < 4; ++index)
+    {
+        auto& row = index < 2 ? topRow : bottomRow;
+        auto cell = row.removeFromLeft(index % 2 == 0 ? cellWidth : row.getWidth());
+        g.setColour(juce::Colours::white.withAlpha(0.8f));
+        g.setFont(AppFonts::getFont(10.0f));
+        g.drawText(exportLabels[(size_t) index],
+                   cell.getX(),
+                   cell.getY() + 2,
+                   cell.getWidth(),
+                   12,
+                   juce::Justification::centred);
+    }
 }
 
 void TrackMixerPanel::refreshFromEngine()
@@ -379,7 +506,9 @@ void TrackMixerPanel::layoutContent()
     delayModuleBounds = juce::Rectangle<int>(x, 0, fxModuleWidth, contentHeight);
     x += fxModuleWidth + moduleGap;
     reverbModuleBounds = juce::Rectangle<int>(x, 0, fxModuleWidth, contentHeight);
-    const auto requiredWidth = reverbModuleBounds.getRight();
+    x += fxModuleWidth + moduleGap;
+    exportModuleBounds = juce::Rectangle<int>(x, 0, exportModuleWidth, contentHeight);
+    const auto requiredWidth = exportModuleBounds.getRight();
     contentComponent.setSize(juce::jmax(viewportBounds.getWidth(), requiredWidth), contentHeight);
 
     for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
@@ -430,6 +559,29 @@ void TrackMixerPanel::layoutContent()
 
     layoutFxModule(delayModuleBounds, delaySendSliders, delayControlSliders);
     layoutFxModule(reverbModuleBounds, reverbSendSliders, reverbControlSliders);
+
+    auto exportContent = exportModuleBounds.reduced(moduleInnerPadding, moduleVerticalInset);
+    exportContent.removeFromTop(28);
+    auto topRow = exportContent.removeFromTop(56);
+    auto bottomRow = exportContent.removeFromTop(56);
+    const auto cellGap = 8;
+    const auto cellWidth = (topRow.getWidth() - cellGap) / 2;
+    const auto boxHeight = 28;
+    const auto buttonWidth = 94;
+    auto placeBox = [&] (juce::Rectangle<int> row, int columnIndex)
+    {
+        const auto xOffset = columnIndex == 0 ? 0 : cellWidth + cellGap;
+        return juce::Rectangle<int>(row.getX() + xOffset, row.getY() + 16, cellWidth, boxHeight);
+    };
+
+    exportFormatBox.setBounds(placeBox(topRow, 0));
+    exportSampleRateBox.setBounds(placeBox(topRow, 1));
+    exportBitDepthBox.setBounds(placeBox(bottomRow, 0));
+    exportTailBox.setBounds(placeBox(bottomRow, 1));
+    exportButton.setBounds(exportModuleBounds.getCentreX() - (buttonWidth / 2),
+                           exportModuleBounds.getBottom() - moduleVerticalInset - 38,
+                           buttonWidth,
+                           28);
 }
 
 juce::Rectangle<int> TrackMixerPanel::getFrameBounds() const

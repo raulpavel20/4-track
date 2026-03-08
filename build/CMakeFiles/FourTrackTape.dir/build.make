@@ -80,9 +80,9 @@ FourTrackTape_artefacts/JuceLibraryCode/JuceHeader.h: FourTrackTape_artefacts/Ju
 CMakeFiles/FourTrackTape.dir/codegen:
 .PHONY : CMakeFiles/FourTrackTape.dir/codegen
 
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/Resources/RecentFilesMenuTemplate.nib: /Users/pavel/Documents/Projects/4-track/external/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content FourTrackTape_artefacts/4-Track Tape.app/Contents/Resources/RecentFilesMenuTemplate.nib"
-	$(CMAKE_COMMAND) -E copy /Users/pavel/Documents/Projects/4-track/external/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib "FourTrackTape_artefacts/4-Track Tape.app/Contents/Resources/RecentFilesMenuTemplate.nib"
+FourTrackTape_artefacts/4-Track.app/Contents/Resources/RecentFilesMenuTemplate.nib: /Users/pavel/Documents/Projects/4-track/external/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Copying OS X content FourTrackTape_artefacts/4-Track.app/Contents/Resources/RecentFilesMenuTemplate.nib"
+	$(CMAKE_COMMAND) -E copy /Users/pavel/Documents/Projects/4-track/external/JUCE/extras/Build/CMake/RecentFilesMenuTemplate.nib FourTrackTape_artefacts/4-Track.app/Contents/Resources/RecentFilesMenuTemplate.nib
 
 CMakeFiles/FourTrackTape.dir/src/main.cpp.o: CMakeFiles/FourTrackTape.dir/flags.make
 CMakeFiles/FourTrackTape.dir/src/main.cpp.o: /Users/pavel/Documents/Projects/4-track/src/main.cpp
@@ -450,40 +450,40 @@ FourTrackTape_OBJECTS = \
 # External object files for target FourTrackTape
 FourTrackTape_EXTERNAL_OBJECTS =
 
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/src/main.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/build.make
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: libFourTrackAssets.a
-FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape: CMakeFiles/FourTrackTape.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Linking CXX executable \"FourTrackTape_artefacts/4-Track Tape.app/Contents/MacOS/4-Track Tape\""
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/main.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TapeEngine.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TapeView.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TrackControlChain.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TrackMixerPanel.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/src/TransportControls.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_utils/juce_audio_utils.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors/juce_audio_processors.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_extra/juce_gui_extra.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_gui_basics/juce_gui_basics.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Harfbuzz.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics_Sheenbidi.c.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_graphics/juce_graphics.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_events/juce_events.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core_CompilationTime.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_core/juce_core.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_data_structures/juce_data_structures.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_ara.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless_lv2_libs.cpp.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_processors_headless/juce_audio_processors_headless.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_basics/juce_audio_basics.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_formats/juce_audio_formats.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/external/JUCE/modules/juce_audio_devices/juce_audio_devices.mm.o
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/build.make
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: libFourTrackAssets.a
+FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track: CMakeFiles/FourTrackTape.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/pavel/Documents/Projects/4-track/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Linking CXX executable FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/FourTrackTape.dir/link.txt --verbose=$(VERBOSE)
-	/Applications/CMake.app/Contents/bin/cmake -E copy /Users/pavel/Documents/Projects/4-track/build/FourTrackTape_artefacts/JuceLibraryCode/FourTrackTape/PkgInfo "/Users/pavel/Documents/Projects/4-track/build/FourTrackTape_artefacts/4-Track Tape.app/Contents"
+	/Applications/CMake.app/Contents/bin/cmake -E copy /Users/pavel/Documents/Projects/4-track/build/FourTrackTape_artefacts/JuceLibraryCode/FourTrackTape/PkgInfo /Users/pavel/Documents/Projects/4-track/build/FourTrackTape_artefacts/4-Track.app/Contents
 
 # Rule to build all files generated by this target.
-CMakeFiles/FourTrackTape.dir/build: FourTrackTape_artefacts/4-Track\ Tape.app/Contents/MacOS/4-Track\ Tape
-CMakeFiles/FourTrackTape.dir/build: FourTrackTape_artefacts/4-Track\ Tape.app/Contents/Resources/RecentFilesMenuTemplate.nib
+CMakeFiles/FourTrackTape.dir/build: FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track
+CMakeFiles/FourTrackTape.dir/build: FourTrackTape_artefacts/4-Track.app/Contents/Resources/RecentFilesMenuTemplate.nib
 .PHONY : CMakeFiles/FourTrackTape.dir/build
 
 CMakeFiles/FourTrackTape.dir/clean:
