@@ -238,7 +238,7 @@ void TapeView::paint(juce::Graphics& g)
     drawRoundedButton(rewindButtonBounds, engine.isRewinding(), accent);
     drawRoundedButton(playButtonBounds, engine.isPlaying() || engine.isCountInActive(), accent);
     const auto metronomeActive = engine.isMetronomeEnabled();
-    const auto metronomeColour = accent.interpolatedWith(juce::Colours::white, (float) (1.0 - metronomeBlinkLevel * 0.5));
+    const auto metronomeColour = accent.brighter((float) (metronomeBlinkLevel * 0.18));
     drawRoundedButton(metronomeButtonBounds, metronomeActive, metronomeColour);
     drawRoundedButton(loopButtonBounds, engine.hasLoopMarkerNearPlayhead(), accent);
 
@@ -251,10 +251,7 @@ void TapeView::paint(juce::Graphics& g)
     g.setColour(buttonIconColour(engine.isRewinding()));
     g.fillPath(createRewindIcon(rewindButtonBounds.reduced(18.0f)));
     g.setColour(buttonIconColour(engine.isPlaying() || engine.isCountInActive()));
-    if (engine.isPlaying() || engine.isCountInActive())
-        g.fillRect(playButtonBounds.reduced(21.0f, 18.0f));
-    else
-        g.fillPath(createPlayIcon(playButtonBounds.reduced(22.0f, 18.0f)));
+    g.fillPath(createPlayIcon(playButtonBounds.reduced(22.0f, 18.0f)));
     g.setColour(buttonIconColour(metronomeActive));
     g.strokePath(createMetronomeIcon(metronomeButtonBounds.reduced(17.0f, 15.0f)),
                  juce::PathStrokeType(1.9f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
