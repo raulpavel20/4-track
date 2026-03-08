@@ -7,10 +7,12 @@
 #include "TapeEngine.h"
 
 class TrackMixerPanel : public juce::Component,
-                        private juce::Timer
+                        private juce::Timer,
+                        private juce::ChangeListener
 {
 public:
     explicit TrackMixerPanel(TapeEngine& engineToUse);
+    ~TrackMixerPanel() override;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -48,10 +50,13 @@ private:
     juce::Rectangle<int> exportModuleBounds;
 
     void timerCallback() override;
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     void paintContent(juce::Graphics& g);
     void refreshFromEngine();
     void updateColours();
     void layoutContent();
+    void syncExportDefaultsFromSettings();
+    void persistExportDefaults();
     juce::Rectangle<int> getFrameBounds() const;
     juce::Rectangle<int> getViewportBounds() const;
 };

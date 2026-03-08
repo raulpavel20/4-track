@@ -1,5 +1,6 @@
 #include <JuceHeader.h>
 
+#include "AppSettings.h"
 #include "AppLookAndFeel.h"
 #include "MainComponent.h"
 
@@ -25,6 +26,7 @@ public:
 
     void initialise(const juce::String&) override
     {
+        AppSettings::getInstance().initialise();
         juce::LookAndFeel::setDefaultLookAndFeel(&lookAndFeel);
         mainWindow = std::make_unique<MainWindow>(getApplicationName());
     }
@@ -33,6 +35,7 @@ public:
     {
         mainWindow.reset();
         juce::LookAndFeel::setDefaultLookAndFeel(nullptr);
+        AppSettings::getInstance().shutdown();
     }
 
     void systemRequestedQuit() override

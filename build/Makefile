@@ -620,6 +620,54 @@ juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackAssets.dir/build.make CMakeFiles/FourTrackAssets.dir/juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.cpp.s
 .PHONY : juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.cpp.s
 
+src/AppSettings.o: src/AppSettings.cpp.o
+.PHONY : src/AppSettings.o
+
+# target to build an object file
+src/AppSettings.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/AppSettings.cpp.o
+.PHONY : src/AppSettings.cpp.o
+
+src/AppSettings.i: src/AppSettings.cpp.i
+.PHONY : src/AppSettings.i
+
+# target to preprocess a source file
+src/AppSettings.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/AppSettings.cpp.i
+.PHONY : src/AppSettings.cpp.i
+
+src/AppSettings.s: src/AppSettings.cpp.s
+.PHONY : src/AppSettings.s
+
+# target to generate assembly for a file
+src/AppSettings.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/AppSettings.cpp.s
+.PHONY : src/AppSettings.cpp.s
+
+src/AppSettingsComponent.o: src/AppSettingsComponent.cpp.o
+.PHONY : src/AppSettingsComponent.o
+
+# target to build an object file
+src/AppSettingsComponent.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/AppSettingsComponent.cpp.o
+.PHONY : src/AppSettingsComponent.cpp.o
+
+src/AppSettingsComponent.i: src/AppSettingsComponent.cpp.i
+.PHONY : src/AppSettingsComponent.i
+
+# target to preprocess a source file
+src/AppSettingsComponent.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/AppSettingsComponent.cpp.i
+.PHONY : src/AppSettingsComponent.cpp.i
+
+src/AppSettingsComponent.s: src/AppSettingsComponent.cpp.s
+.PHONY : src/AppSettingsComponent.s
+
+# target to generate assembly for a file
+src/AppSettingsComponent.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/AppSettingsComponent.cpp.s
+.PHONY : src/AppSettingsComponent.cpp.s
+
 src/MainComponent.o: src/MainComponent.cpp.o
 .PHONY : src/MainComponent.o
 
@@ -856,6 +904,12 @@ help:
 	@echo "... juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.o"
 	@echo "... juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.i"
 	@echo "... juce_binarydata_FourTrackAssets/JuceLibraryCode/BinaryData1.s"
+	@echo "... src/AppSettings.o"
+	@echo "... src/AppSettings.i"
+	@echo "... src/AppSettings.s"
+	@echo "... src/AppSettingsComponent.o"
+	@echo "... src/AppSettingsComponent.i"
+	@echo "... src/AppSettingsComponent.s"
 	@echo "... src/MainComponent.o"
 	@echo "... src/MainComponent.i"
 	@echo "... src/MainComponent.s"

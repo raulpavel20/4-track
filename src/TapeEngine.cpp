@@ -1,5 +1,7 @@
 #include "TapeEngine.h"
 
+#include "AppSettings.h"
+
 #include <cmath>
 
 namespace
@@ -154,6 +156,12 @@ void updatePeakFilterCoefficients(EqBandState& state, double sampleRate, float f
 
 TapeEngine::TapeEngine()
 {
+    const auto& settings = AppSettings::getInstance();
+    bpm.store((float) settings.getDefaultBpm(), std::memory_order_relaxed);
+    beatsPerBar.store(settings.getDefaultBeatsPerBar(), std::memory_order_relaxed);
+    metronomeEnabled.store(settings.getDefaultMetronomeEnabled(), std::memory_order_relaxed);
+    countInEnabled.store(settings.getDefaultCountInEnabled(), std::memory_order_relaxed);
+
     for (auto& loopMarkerBeat : loopMarkerBeats)
         loopMarkerBeat.store(-1, std::memory_order_relaxed);
 }
@@ -226,6 +234,16 @@ bool TapeEngine::isRewinding() const noexcept
 bool TapeEngine::isReversePlaying() const noexcept
 {
     return reversePlaying.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setCountInEnabled(bool shouldBeEnabled)
+{
+    countInEnabled.store(shouldBeEnabled, std::memory_order_release);
+}
+
+bool TapeEngine::isCountInEnabled() const noexcept
+{
+    return countInEnabled.load(std::memory_order_acquire);
 }
 
 bool TapeEngine::isCountInActive() const noexcept
@@ -1333,9 +1351,7 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     metronomePulseRevision.store(0, std::memory_order_release);
 
     for (auto& track : tracks)
-    {
-        track.reset();
-    }
+        resetTrackRuntimeState(track);
 
     servicePendingAllocations();
 }
@@ -1794,6 +1810,9 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
 bool TapeEngine::shouldStartCountIn() const noexcept
 {
+    if (! countInEnabled.load(std::memory_order_acquire))
+        return false;
+
     if (! metronomeEnabled.load(std::memory_order_acquire))
         return false;
 
@@ -1826,6 +1845,27 @@ void TapeEngine::triggerMetronomePulse(bool isBarStart) noexcept
     clickPhaseDelta = juce::MathConstants<double>::twoPi * (isBarStart ? 1760.0 : 1320.0) / sampleRate;
     clickAmplitude = isBarStart ? 0.24f : 0.16f;
     metronomePulseRevision.fetch_add(1, std::memory_order_acq_rel);
+}
+
+void TapeEngine::resetTrackRuntimeState(Track& track) noexcept
+{
+    track.peakMeter.store(0.0f, std::memory_order_relaxed);
+    track.clipping.store(false, std::memory_order_relaxed);
+    track.mixerMeter.store(0.0f, std::memory_order_relaxed);
+    track.mixerBlockPeak = 0.0f;
+
+    for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
+    {
+        track.moduleInputMeters[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
+        track.moduleOutputMeters[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
+        track.moduleBlockInputPeaks[(size_t) moduleIndex] = 0.0f;
+        track.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
+        track.filterStates[(size_t) moduleIndex].reset();
+        track.compressorStates[(size_t) moduleIndex].reset();
+
+        for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
+            track.eqStates[(size_t) moduleIndex][(size_t) bandIndex].reset();
+    }
 }
 
 float TapeEngine::getInputSampleForTrack(int destinationTrackIndex,

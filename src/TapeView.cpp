@@ -1,5 +1,6 @@
 #include "TapeView.h"
 
+#include "AppSettings.h"
 #include "AppFonts.h"
 
 #include <cmath>
@@ -8,15 +9,7 @@ namespace
 {
 juce::Colour getTrackColour(int index)
 {
-    static const std::array<juce::Colour, TapeEngine::numTracks> colours
-    {
-        juce::Colour::fromRGB(255, 92, 92),
-        juce::Colour::fromRGB(255, 184, 77),
-        juce::Colour::fromRGB(94, 233, 196),
-        juce::Colour::fromRGB(94, 146, 255)
-    };
-
-    return colours[(size_t) index];
+    return AppSettings::getInstance().getTrackColour(juce::jlimit(0, TapeEngine::numTracks - 1, index));
 }
 
 juce::Path createReelPath(juce::Point<float> centre, float radius, float phase)
@@ -130,6 +123,7 @@ juce::Path createReplaceIcon(juce::Rectangle<float> bounds)
 TapeView::TapeView(TapeEngine& engineToUse)
     : engine(engineToUse)
 {
+    AppSettings::getInstance().addChangeListener(this);
     displayedPlayhead = engine.getDisplayPlayheadSample();
     lastDisplayedPlayhead = displayedPlayhead;
     lastTimerSeconds = juce::Time::getMillisecondCounterHiRes() * 0.001;
@@ -196,6 +190,11 @@ TapeView::TapeView(TapeEngine& engineToUse)
     addAndMakeVisible(zoomSlider);
 
     startTimerHz(30);
+}
+
+TapeView::~TapeView()
+{
+    AppSettings::getInstance().removeChangeListener(this);
 }
 
 void TapeView::paint(juce::Graphics& g)
@@ -923,5 +922,14 @@ void TapeView::timerCallback()
         reelPhase += juce::MathConstants<float>::twoPi;
 
     lastDisplayedPlayhead = displayedPlayhead;
+    repaint();
+}
+
+void TapeView::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    if (source != &AppSettings::getInstance())
+        return;
+
+    zoomSlider.setColour(juce::Slider::trackColourId, getTrackColour(selectedTrack));
     repaint();
 }

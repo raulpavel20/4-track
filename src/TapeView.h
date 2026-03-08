@@ -8,11 +8,12 @@
 #include <functional>
 
 class TapeView : public juce::Component,
-                 private juce::Timer
+                 private juce::Timer,
+                 private juce::ChangeListener
 {
 public:
     explicit TapeView(TapeEngine& engineToUse);
-    ~TapeView() override = default;
+    ~TapeView() override;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -64,4 +65,5 @@ private:
     juce::Range<float> getWaveformExtents(int trackIndex, int startSample, int endSample) const;
     void scrubTo(juce::Point<float> position);
     void timerCallback() override;
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 };

@@ -7,10 +7,12 @@
 #include "TapeEngine.h"
 
 class TrackControlChain : public juce::Component,
-                          private juce::Timer
+                          private juce::Timer,
+                          private juce::ChangeListener
 {
 public:
     explicit TrackControlChain(TapeEngine& engineToUse);
+    ~TrackControlChain() override;
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -85,6 +87,7 @@ private:
     int visibleModuleCount = 0;
 
     void timerCallback() override;
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     void paintContent(juce::Graphics& g);
     void refreshFromEngine();
     void updateAccentColours();

@@ -1,5 +1,6 @@
 #include "TrackMixerPanel.h"
 
+#include "AppSettings.h"
 #include "AppFonts.h"
 
 #include <cmath>
@@ -21,15 +22,7 @@ constexpr int fxKnobSize = 68;
 
 juce::Colour getTrackColour(int index)
 {
-    static const std::array<juce::Colour, TapeEngine::numTracks> colours
-    {
-        juce::Colour::fromRGB(255, 92, 92),
-        juce::Colour::fromRGB(255, 184, 77),
-        juce::Colour::fromRGB(94, 233, 196),
-        juce::Colour::fromRGB(94, 146, 255)
-    };
-
-    return colours[(size_t) juce::jlimit(0, TapeEngine::numTracks - 1, index)];
+    return AppSettings::getInstance().getTrackColour(juce::jlimit(0, TapeEngine::numTracks - 1, index));
 }
 
 void configureRotarySlider(juce::Slider& slider, double min, double max, double step, double resetValue)
@@ -111,6 +104,7 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
     : engine(engineToUse),
       contentComponent(*this)
 {
+    AppSettings::getInstance().addChangeListener(this);
     addAndMakeVisible(modulesViewport);
     modulesViewport.setViewedComponent(&contentComponent, false);
     modulesViewport.setScrollBarsShown(false, true);
@@ -218,10 +212,10 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
     exportTailBox.addItem("2 sec", 2);
     exportTailBox.addItem("4 sec", 3);
     exportTailBox.addItem("8 sec", 4);
-    exportFormatBox.setSelectedId(1, juce::dontSendNotification);
-    exportSampleRateBox.setSelectedId(1, juce::dontSendNotification);
-    exportBitDepthBox.setSelectedId(2, juce::dontSendNotification);
-    exportTailBox.setSelectedId(2, juce::dontSendNotification);
+    exportFormatBox.onChange = [this] { persistExportDefaults(); };
+    exportSampleRateBox.onChange = [this] { persistExportDefaults(); };
+    exportBitDepthBox.onChange = [this] { persistExportDefaults(); };
+    exportTailBox.onChange = [this] { persistExportDefaults(); };
     contentComponent.addAndMakeVisible(exportFormatBox);
     contentComponent.addAndMakeVisible(exportSampleRateBox);
     contentComponent.addAndMakeVisible(exportBitDepthBox);
@@ -279,9 +273,15 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
     };
     contentComponent.addAndMakeVisible(exportButton);
 
+    syncExportDefaultsFromSettings();
     updateColours();
     refreshFromEngine();
     startTimerHz(30);
+}
+
+TrackMixerPanel::~TrackMixerPanel()
+{
+    AppSettings::getInstance().removeChangeListener(this);
 }
 
 void TrackMixerPanel::paint(juce::Graphics& g)
@@ -299,6 +299,17 @@ void TrackMixerPanel::resized()
 
 void TrackMixerPanel::timerCallback()
 {
+    contentComponent.repaint();
+}
+
+void TrackMixerPanel::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    if (source != &AppSettings::getInstance())
+        return;
+
+    syncExportDefaultsFromSettings();
+    updateColours();
+    repaint();
     contentComponent.repaint();
 }
 
@@ -532,6 +543,38 @@ void TrackMixerPanel::updateColours()
 
     delayTimeModeButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white.withAlpha(0.8f));
     delayTimeModeButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+}
+
+void TrackMixerPanel::syncExportDefaultsFromSettings()
+{
+    const auto defaults = AppSettings::getInstance().getExportDefaults();
+    exportFormatBox.setSelectedId(defaults.formatId == 2 ? 2 : 1, juce::dontSendNotification);
+    exportSampleRateBox.setSelectedId(std::abs(defaults.sampleRate - 48000.0) < 1.0 ? 2 : 1, juce::dontSendNotification);
+    exportBitDepthBox.setSelectedId(defaults.bitDepth == 16 ? 1 : 2, juce::dontSendNotification);
+
+    auto tailId = 2;
+
+    if (defaults.tailSeconds == 1.0)
+        tailId = 1;
+    else if (defaults.tailSeconds == 4.0)
+        tailId = 3;
+    else if (defaults.tailSeconds == 8.0)
+        tailId = 4;
+
+    exportTailBox.setSelectedId(tailId, juce::dontSendNotification);
+}
+
+void TrackMixerPanel::persistExportDefaults()
+{
+    AppSettings::ExportDefaults defaults;
+    defaults.formatId = exportFormatBox.getSelectedId() == 2 ? 2 : 1;
+    defaults.sampleRate = exportSampleRateBox.getSelectedId() == 2 ? 48000.0 : 44100.0;
+    defaults.bitDepth = exportBitDepthBox.getSelectedId() == 1 ? 16 : 24;
+    defaults.tailSeconds = exportTailBox.getSelectedId() == 1 ? 1.0
+                           : exportTailBox.getSelectedId() == 3 ? 4.0
+                           : exportTailBox.getSelectedId() == 4 ? 8.0
+                                                                : 2.0;
+    AppSettings::getInstance().setExportDefaults(defaults);
 }
 
 void TrackMixerPanel::layoutContent()

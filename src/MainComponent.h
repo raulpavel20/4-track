@@ -2,13 +2,15 @@
 
 #include <JuceHeader.h>
 
+#include "AppSettingsComponent.h"
 #include "TapeEngine.h"
 #include "TrackControlChain.h"
 #include "TrackMixerPanel.h"
 #include "TapeView.h"
 
 class MainComponent : public juce::Component,
-                      private juce::KeyListener
+                      private juce::KeyListener,
+                      private juce::ChangeListener
 {
 public:
     MainComponent();
@@ -26,6 +28,23 @@ private:
         void paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown) override;
     };
 
+    class SettingsButton : public juce::Button
+    {
+    public:
+        SettingsButton();
+        void paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown) override;
+    };
+
+    class SettingsWindow : public juce::DialogWindow
+    {
+    public:
+        SettingsWindow(MainComponent& ownerToUse, std::unique_ptr<juce::Component> content);
+        void closeButtonPressed() override;
+
+    private:
+        MainComponent& owner;
+    };
+
     enum class BottomPanelMode
     {
         preTape = 0,
@@ -39,11 +58,15 @@ private:
     TrackMixerPanel trackMixerPanel;
     juce::TextButton preTapeTabButton { "PRE-TAPE" };
     juce::TextButton mixerTabButton { "MIXER" };
+    SettingsButton settingsButton;
     HelpButton shortcutsHelpButton;
     BottomPanelMode bottomPanelMode = BottomPanelMode::preTape;
+    std::unique_ptr<SettingsWindow> settingsWindow;
 
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     void initialiseAudio();
+    void persistAudioDeviceState();
     void refreshInputOptions();
     void setBottomPanelMode(BottomPanelMode newMode);
     void updateTabButtonStyles();
@@ -56,5 +79,7 @@ private:
     void toggleCurrentTrackSolo();
     void toggleCurrentTrackMute();
     void toggleCurrentTrackRecordMode(TrackRecordMode mode);
+    void showSettingsWindow();
+    void closeSettingsWindow();
     void showShortcutsHelp();
 };

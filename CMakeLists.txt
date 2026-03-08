@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(FourTrackTape VERSION 0.1.0)
+project(FourTrackTape VERSION 26.1)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,6 +23,8 @@ juce_add_gui_app(FourTrackTape
 target_sources(FourTrackTape
     PRIVATE
         src/main.cpp
+        src/AppSettings.cpp
+        src/AppSettingsComponent.cpp
         src/MainComponent.cpp
         src/TapeEngine.cpp
         src/TapeView.cpp

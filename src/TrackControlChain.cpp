@@ -1,5 +1,6 @@
 #include "TrackControlChain.h"
 
+#include "AppSettings.h"
 #include "AppFonts.h"
 
 #include <cmath>
@@ -33,15 +34,7 @@ constexpr int bypassCircleSize = 10;
 
 juce::Colour getChainAccentColour(int trackIndex)
 {
-    static const std::array<juce::Colour, TapeEngine::numTracks> colours
-    {
-        juce::Colour::fromRGB(255, 92, 92),
-        juce::Colour::fromRGB(255, 184, 77),
-        juce::Colour::fromRGB(94, 233, 196),
-        juce::Colour::fromRGB(94, 146, 255)
-    };
-
-    return colours[(size_t) juce::jlimit(0, TapeEngine::numTracks - 1, trackIndex)];
+    return AppSettings::getInstance().getTrackColour(juce::jlimit(0, TapeEngine::numTracks - 1, trackIndex));
 }
 
 juce::String formatInputGainValue(float value)
@@ -319,6 +312,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
     : engine(engineToUse),
       contentComponent(*this)
 {
+    AppSettings::getInstance().addChangeListener(this);
     addAndMakeVisible(modulesViewport);
     modulesViewport.setViewedComponent(&contentComponent, false);
     modulesViewport.setScrollBarsShown(false, true);
@@ -538,6 +532,11 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
     refreshFromEngine();
 }
 
+TrackControlChain::~TrackControlChain()
+{
+    AppSettings::getInstance().removeChangeListener(this);
+}
+
 void TrackControlChain::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colours::black);
@@ -553,6 +552,16 @@ void TrackControlChain::resized()
 
 void TrackControlChain::timerCallback()
 {
+    contentComponent.repaint();
+}
+
+void TrackControlChain::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    if (source != &AppSettings::getInstance())
+        return;
+
+    updateAccentColours();
+    repaint();
     contentComponent.repaint();
 }
 

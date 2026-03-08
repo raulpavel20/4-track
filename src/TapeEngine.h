@@ -56,6 +56,8 @@ public:
     int getBeatsPerBar() const noexcept;
     void setMetronomeEnabled(bool shouldBeEnabled);
     bool isMetronomeEnabled() const noexcept;
+    void setCountInEnabled(bool shouldBeEnabled);
+    bool isCountInEnabled() const noexcept;
     bool isCountInActive() const noexcept;
     int getMetronomePulseRevision() const noexcept;
     void toggleLoopMarkerAtNearestBeat();
@@ -177,6 +179,7 @@ private:
     std::atomic<float> bpm { 120.0f };
     std::atomic<int> beatsPerBar { defaultBeatsPerBar };
     std::atomic<bool> metronomeEnabled { false };
+    std::atomic<bool> countInEnabled { true };
     std::atomic<bool> countInRequested { false };
     std::atomic<bool> countInActive { false };
     std::atomic<bool> countInAudible { false };
@@ -238,6 +241,7 @@ private:
     bool shouldStartCountIn() const noexcept;
     void resetCountInState() noexcept;
     void triggerMetronomePulse(bool isBarStart) noexcept;
+    void resetTrackRuntimeState(Track& track) noexcept;
     float readTrackSample(const Track& track, int channel, int samplePosition) const noexcept;
     float readTrackSampleInterpolated(const Track& track, int channel, double samplePosition) const noexcept;
     bool writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept;
