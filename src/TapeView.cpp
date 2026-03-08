@@ -600,6 +600,44 @@ void TapeView::mouseUp(const juce::MouseEvent& event)
     isScrubbing = false;
 }
 
+void TapeView::mouseWheelMove(const juce::MouseEvent& event, const juce::MouseWheelDetails& wheel)
+{
+    auto isOverTrack = false;
+
+    for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
+    {
+        if (getLaneBounds(trackIndex).contains(event.position.toInt()))
+        {
+            isOverTrack = true;
+            break;
+        }
+    }
+
+    if (! isOverTrack)
+    {
+        juce::Component::mouseWheelMove(event, wheel);
+        return;
+    }
+
+    const auto wheelDelta = std::abs(wheel.deltaY) >= std::abs(wheel.deltaX) ? wheel.deltaY
+                                                                              : wheel.deltaX;
+
+    if (std::abs(wheelDelta) < 0.0001f)
+        return;
+
+    if (event.mods.isShiftDown())
+    {
+        zoomSlider.setValue(juce::jlimit(0.0, 1.0, zoomSlider.getValue() + (double) wheelDelta * 0.12),
+                            juce::sendNotificationSync);
+        repaint();
+        return;
+    }
+
+    const auto scrubAmount = getVisibleSamples() * 0.12;
+    engine.setPlayheadSample(engine.getPlayheadSample() - ((double) wheelDelta * scrubAmount));
+    repaint();
+}
+
 void TapeView::setSelectedTrack(int trackIndex)
 {
     const auto newTrack = juce::jlimit(0, TapeEngine::numTracks - 1, trackIndex);

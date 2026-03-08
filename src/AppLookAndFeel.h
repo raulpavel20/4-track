@@ -17,6 +17,9 @@ public:
         setColour(juce::PopupMenu::textColourId, juce::Colours::white);
         setColour(juce::PopupMenu::highlightedBackgroundColourId, juce::Colours::white.withAlpha(0.12f));
         setColour(juce::PopupMenu::highlightedTextColourId, juce::Colours::white);
+        setColour(juce::AlertWindow::backgroundColourId, juce::Colours::black);
+        setColour(juce::AlertWindow::textColourId, juce::Colours::white);
+        setColour(juce::AlertWindow::outlineColourId, juce::Colours::white.withAlpha(0.18f));
     }
 
     juce::Typeface::Ptr getTypefaceForFont(const juce::Font&) override
@@ -127,5 +130,85 @@ public:
             arrow.lineTo(centreX - 2.0f, centreY + 4.0f);
             g.strokePath(arrow, juce::PathStrokeType(1.4f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
         }
+    }
+
+    juce::AlertWindow* createAlertWindow(const juce::String& title,
+                                         const juce::String& message,
+                                         const juce::String& button1,
+                                         const juce::String& button2,
+                                         const juce::String& button3,
+                                         juce::MessageBoxIconType iconType,
+                                         int numButtons,
+                                         juce::Component* associatedComponent) override
+    {
+        auto* window = juce::LookAndFeel_V4::createAlertWindow(title,
+                                                               message,
+                                                               button1,
+                                                               button2,
+                                                               button3,
+                                                               iconType,
+                                                               numButtons,
+                                                               associatedComponent);
+
+        window->setColour(juce::AlertWindow::backgroundColourId, findColour(juce::AlertWindow::backgroundColourId));
+        window->setColour(juce::AlertWindow::textColourId, findColour(juce::AlertWindow::textColourId));
+        window->setColour(juce::AlertWindow::outlineColourId, findColour(juce::AlertWindow::outlineColourId));
+
+        for (int index = 0; index < window->getNumButtons(); ++index)
+        {
+            if (auto* button = dynamic_cast<juce::TextButton*>(window->getButton(index)))
+            {
+                button->setColour(juce::TextButton::buttonColourId, juce::Colours::black);
+                button->setColour(juce::TextButton::buttonOnColourId, juce::Colours::black);
+                button->setColour(juce::TextButton::textColourOffId, juce::Colours::white);
+                button->setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+            }
+        }
+
+        for (int childIndex = 0; childIndex < window->getNumChildComponents(); ++childIndex)
+        {
+            if (auto* textEditor = dynamic_cast<juce::TextEditor*>(window->getChildComponent(childIndex)))
+            {
+                textEditor->setJustification(juce::Justification::centred);
+                textEditor->setIndents(0, 0);
+                textEditor->setScrollbarsShown(false);
+            }
+        }
+
+        return window;
+    }
+
+    void drawAlertBox(juce::Graphics& g,
+                      juce::AlertWindow& alert,
+                      const juce::Rectangle<int>& textArea,
+                      juce::TextLayout& textLayout) override
+    {
+        auto bounds = alert.getLocalBounds().toFloat().reduced(0.5f);
+        g.setColour(alert.findColour(juce::AlertWindow::backgroundColourId));
+        g.fillRoundedRectangle(bounds, 10.0f);
+        g.setColour(alert.findColour(juce::AlertWindow::outlineColourId));
+        g.drawRoundedRectangle(bounds, 10.0f, 1.0f);
+        g.setColour(alert.findColour(juce::AlertWindow::textColourId));
+        textLayout.draw(g, textArea.toFloat());
+    }
+
+    int getAlertWindowButtonHeight() override
+    {
+        return 24;
+    }
+
+    juce::Font getAlertWindowTitleFont() override
+    {
+        return AppFonts::getFont(22.0f);
+    }
+
+    juce::Font getAlertWindowMessageFont() override
+    {
+        return AppFonts::getFont(16.0f);
+    }
+
+    juce::Font getAlertWindowFont() override
+    {
+        return AppFonts::getFont(16.0f);
     }
 };

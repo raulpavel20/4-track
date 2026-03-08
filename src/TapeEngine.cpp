@@ -34,6 +34,24 @@ float clampDelayTimeMs(float value) noexcept
     return juce::jlimit(20.0f, 2000.0f, value);
 }
 
+struct DelaySyncOption
+{
+    const char* label;
+    double beats;
+};
+
+constexpr std::array<DelaySyncOption, 8> delaySyncOptions
+{{
+    { "1/1", 4.0 },
+    { "1/2", 2.0 },
+    { "1/4", 1.0 },
+    { "1/8", 0.5 },
+    { "1/8.", 0.75 },
+    { "1/8T", 1.0 / 3.0 },
+    { "1/16", 0.25 },
+    { "1/16T", 1.0 / 6.0 }
+}};
+
 struct OfflineDelayState
 {
     juce::AudioBuffer<float> buffer;
@@ -298,6 +316,44 @@ bool TapeEngine::hasLoopMarkerNearPlayhead() const noexcept
 bool TapeEngine::canEditLoopMarkers() const noexcept
 {
     return ! isPlaying() && ! isRewinding() && ! isReversePlaying();
+}
+
+bool TapeEngine::getAdjacentLoopMarkerSample(bool forward, double fromSample, double& targetSample) const noexcept
+{
+    const auto samplesPerBeat = (sampleRate * 60.0) / juce::jmax(30.0, (double) bpm.load(std::memory_order_acquire));
+    std::array<int64_t, maxLoopMarkers> markers {};
+    const auto markerCount = readLoopMarkers(markers);
+
+    if (markerCount <= 0)
+        return false;
+
+    const auto currentBeat = juce::jmax<int64_t>(0, (int64_t) std::llround(fromSample / samplesPerBeat));
+
+    if (forward)
+    {
+        for (int markerIndex = 0; markerIndex < markerCount; ++markerIndex)
+        {
+            if (markers[(size_t) markerIndex] > currentBeat)
+            {
+                targetSample = (double) markers[(size_t) markerIndex] * samplesPerBeat;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    for (int markerIndex = markerCount - 1; markerIndex >= 0; --markerIndex)
+    {
+        if (markers[(size_t) markerIndex] < currentBeat)
+        {
+            targetSample = (double) markers[(size_t) markerIndex] * samplesPerBeat;
+            return true;
+        }
+    }
+
+    targetSample = 0.0;
+    return true;
 }
 
 void TapeEngine::setMetronomeEnabled(bool shouldBeEnabled)
@@ -929,6 +985,36 @@ float TapeEngine::getDelayTimeMs() const noexcept
     return delayTimeMs.load(std::memory_order_acquire);
 }
 
+void TapeEngine::setDelaySyncEnabled(bool shouldBeEnabled)
+{
+    delaySyncEnabled.store(shouldBeEnabled, std::memory_order_release);
+}
+
+bool TapeEngine::isDelaySyncEnabled() const noexcept
+{
+    return delaySyncEnabled.load(std::memory_order_acquire);
+}
+
+void TapeEngine::setDelaySyncIndex(int index)
+{
+    delaySyncIndex.store(juce::jlimit(0, getNumDelaySyncOptions() - 1, index), std::memory_order_release);
+}
+
+int TapeEngine::getDelaySyncIndex() const noexcept
+{
+    return juce::jlimit(0, getNumDelaySyncOptions() - 1, delaySyncIndex.load(std::memory_order_acquire));
+}
+
+int TapeEngine::getNumDelaySyncOptions() noexcept
+{
+    return (int) delaySyncOptions.size();
+}
+
+juce::String TapeEngine::getDelaySyncLabel(int index)
+{
+    return delaySyncOptions[(size_t) juce::jlimit(0, getNumDelaySyncOptions() - 1, index)].label;
+}
+
 void TapeEngine::setDelayFeedback(float feedback)
 {
     delayFeedback.store(juce::jlimit(0.0f, 0.95f, feedback), std::memory_order_release);
@@ -1037,7 +1123,8 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
     const auto outputDurationSeconds = ((double) lastAudibleSample / sourceSampleRate) + tailSeconds;
     const auto totalOutputSamples = juce::jmax<int64_t>(1, (int64_t) std::ceil(outputDurationSeconds * targetSampleRate));
     const auto soloedTrackSnapshot = soloTrack.load(std::memory_order_acquire);
-    const auto delayTimeSnapshot = delayTimeMs.load(std::memory_order_acquire);
+    const auto delayTimeSnapshot = isDelaySyncEnabled() ? getResolvedDelayTimeMs()
+                                                        : delayTimeMs.load(std::memory_order_acquire);
     const auto delayFeedbackSnapshot = delayFeedback.load(std::memory_order_acquire);
     const auto delayMixSnapshot = delayMix.load(std::memory_order_acquire);
     const auto reverbMixSnapshot = reverbMix.load(std::memory_order_acquire);
@@ -1910,7 +1997,7 @@ void TapeEngine::processDelayReturn(float inputLeft, float inputRight, float& ou
 
     const auto delaySamples = juce::jlimit(1,
                                            juce::jmax(1, maxDelaySamples - 1),
-                                           (int) std::round((sampleRate * clampDelayTimeMs(delayTimeMs.load(std::memory_order_relaxed))) * 0.001));
+                                           (int) std::round((sampleRate * getResolvedDelayTimeMs()) * 0.001));
     const auto readPosition = (delayWritePosition - delaySamples + maxDelaySamples) % maxDelaySamples;
     const auto delayedLeft = delayBuffer.getSample(0, readPosition);
     const auto delayedRight = delayBuffer.getSample(1, readPosition);
@@ -1931,6 +2018,16 @@ void TapeEngine::processReverbReturn(float inputLeft, float inputRight, float& o
     const auto wet = reverbMix.load(std::memory_order_relaxed);
     outputLeft *= wet;
     outputRight *= wet;
+}
+
+float TapeEngine::getResolvedDelayTimeMs() const noexcept
+{
+    if (! isDelaySyncEnabled())
+        return clampDelayTimeMs(delayTimeMs.load(std::memory_order_relaxed));
+
+    const auto beats = delaySyncOptions[(size_t) getDelaySyncIndex()].beats;
+    const auto currentBpm = juce::jmax(30.0, (double) bpm.load(std::memory_order_relaxed));
+    return clampDelayTimeMs((float) ((60000.0 / currentBpm) * beats));
 }
 
 float TapeEngine::readTrackSample(const Track& track, int channel, int samplePosition) const noexcept

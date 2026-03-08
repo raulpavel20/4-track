@@ -1586,4 +1586,6 @@ CMakeFiles/FourTrackTape.dir/src/MainComponent.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/src/Track.h \
   /Users/pavel/Documents/Projects/4-track/src/TrackControlChain.h \
   /Users/pavel/Documents/Projects/4-track/src/TrackMixerPanel.h \
-  /Users/pavel/Documents/Projects/4-track/src/TapeView.h
+  /Users/pavel/Documents/Projects/4-track/src/TapeView.h \
+  /Users/pavel/Documents/Projects/4-track/src/AppFonts.h \
+  /Users/pavel/Documents/Projects/4-track/build/juce_binarydata_FourTrackAssets/JuceLibraryCode/FourTrackBinaryData.h

@@ -35,6 +35,7 @@ private:
     std::array<juce::Slider, TapeEngine::numTracks> reverbSendSliders;
     std::array<juce::Slider, 3> delayControlSliders;
     std::array<juce::Slider, 3> reverbControlSliders;
+    juce::TextButton delayTimeModeButton;
     juce::ComboBox exportFormatBox;
     juce::ComboBox exportSampleRateBox;
     juce::ComboBox exportBitDepthBox;

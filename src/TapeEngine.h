@@ -60,6 +60,7 @@ public:
     bool hasLoopMarkerAtBeat(int64_t beatIndex) const noexcept;
     bool hasLoopMarkerNearPlayhead() const noexcept;
     bool canEditLoopMarkers() const noexcept;
+    bool getAdjacentLoopMarkerSample(bool forward, double fromSample, double& targetSample) const noexcept;
 
     void setPlayheadSample(double samplePosition);
     double getPlayheadSample() const noexcept;
@@ -130,6 +131,12 @@ public:
     float getTrackMixerMeter(int trackIndex) const noexcept;
     void setDelayTimeMs(float timeMs);
     float getDelayTimeMs() const noexcept;
+    void setDelaySyncEnabled(bool shouldBeEnabled);
+    bool isDelaySyncEnabled() const noexcept;
+    void setDelaySyncIndex(int index);
+    int getDelaySyncIndex() const noexcept;
+    static int getNumDelaySyncOptions() noexcept;
+    static juce::String getDelaySyncLabel(int index);
     void setDelayFeedback(float feedback);
     float getDelayFeedback() const noexcept;
     void setDelayMix(float mix);
@@ -174,6 +181,8 @@ private:
     std::atomic<int> requiredChunkCount { initialChunkCount };
     std::atomic<int> soloTrack { -1 };
     std::atomic<float> delayTimeMs { 380.0f };
+    std::atomic<bool> delaySyncEnabled { true };
+    std::atomic<int> delaySyncIndex { 2 };
     std::atomic<float> delayFeedback { 0.35f };
     std::atomic<float> delayMix { 0.25f };
     std::atomic<float> reverbSize { 0.45f };
@@ -216,6 +225,7 @@ private:
     void applyTrackMixer(float pan, float& left, float& right) const noexcept;
     void processDelayReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
     void processReverbReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
+    float getResolvedDelayTimeMs() const noexcept;
     float readTrackSample(const Track& track, int channel, int samplePosition) const noexcept;
     float readTrackSampleInterpolated(const Track& track, int channel, double samplePosition) const noexcept;
     bool writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept;
