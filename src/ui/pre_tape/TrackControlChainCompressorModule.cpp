@@ -90,8 +90,8 @@ void TrackControlChain::paintCompressorModule(juce::Graphics& g, juce::Colour ac
     g.setColour(juce::Colours::white.withAlpha(0.14f));
     g.drawRoundedRectangle(inputMeterBounds.toFloat(), 5.0f, 1.0f);
     g.drawRoundedRectangle(outputMeterBounds.toFloat(), 5.0f, 1.0f);
-    const auto inputLevel = juce::jlimit(0.0f, 1.0f, engine.getTrackModuleInputMeter(selectedTrack, slot));
-    const auto outputLevel = juce::jlimit(0.0f, 1.0f, engine.getTrackModuleOutputMeter(selectedTrack, slot));
+    const auto inputLevel = juce::jlimit(0.0f, 1.0f, getModuleInputMeter(slot));
+    const auto outputLevel = juce::jlimit(0.0f, 1.0f, getModuleOutputMeter(slot));
     g.setColour(accent);
     g.fillRoundedRectangle(juce::Rectangle<float>((float) inputMeterBounds.getX() + 2.0f,
                                                   (float) inputMeterBounds.getBottom() - 2.0f - ((float) (inputMeterBounds.getHeight() - 4) * inputLevel),

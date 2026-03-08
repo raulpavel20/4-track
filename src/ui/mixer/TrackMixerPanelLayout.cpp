@@ -4,20 +4,26 @@ namespace
 {
 constexpr int moduleGap = 10;
 constexpr int trackModuleWidth = 83;
-constexpr int exportModuleWidth = 232;
+constexpr int sendModuleWidth = 136;
+constexpr int exportModuleWidth = 234;
 constexpr int moduleVerticalInset = 10;
 constexpr int moduleInnerPadding = 10;
 constexpr int gainSliderWidth = 20;
 constexpr int gainSliderHeight = 110;
 constexpr int panKnobSize = 54;
+constexpr int sendKnobSize = 54;
 }
 
 void TrackMixerPanel::layoutContent()
 {
     const auto viewportBounds = modulesViewport.getBounds();
     const auto contentHeight = juce::jmax(1, viewportBounds.getHeight());
-
-    auto x = 0;
+    const auto totalContentWidth = (trackModuleWidth * TapeEngine::numTracks)
+                                   + (sendModuleWidth * TapeEngine::numSendBuses)
+                                   + exportModuleWidth
+                                   + (moduleGap * (TapeEngine::numTracks + TapeEngine::numSendBuses));
+    const auto contentWidth = juce::jmax(viewportBounds.getWidth(), totalContentWidth);
+    auto x = viewportBounds.getWidth() > totalContentWidth ? (viewportBounds.getWidth() - totalContentWidth) / 2 : 0;
 
     for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
     {
@@ -25,9 +31,14 @@ void TrackMixerPanel::layoutContent()
         x += trackModuleWidth + moduleGap;
     }
 
+    for (int sendIndex = 0; sendIndex < TapeEngine::numSendBuses; ++sendIndex)
+    {
+        sendModuleBounds[(size_t) sendIndex] = juce::Rectangle<int>(x, 0, sendModuleWidth, contentHeight);
+        x += sendModuleWidth + moduleGap;
+    }
+
     exportModuleBounds = juce::Rectangle<int>(x, 0, exportModuleWidth, contentHeight);
-    const auto requiredWidth = exportModuleBounds.getRight();
-    contentComponent.setSize(juce::jmax(viewportBounds.getWidth(), requiredWidth), contentHeight);
+    contentComponent.setSize(contentWidth, contentHeight);
 
     for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
     {
@@ -42,6 +53,31 @@ void TrackMixerPanel::layoutContent()
                                                   content.getBottom() - panKnobSize - 4,
                                                   panKnobSize,
                                                   panKnobSize);
+    }
+
+    for (int sendIndex = 0; sendIndex < TapeEngine::numSendBuses; ++sendIndex)
+    {
+        auto content = sendModuleBounds[(size_t) sendIndex].reduced(moduleInnerPadding, moduleVerticalInset);
+        content.removeFromTop(30);
+        auto topRow = content.removeFromTop(sendKnobSize + 20);
+        content.removeFromTop(6);
+        auto bottomRow = content.removeFromTop(sendKnobSize + 20);
+        const auto cellGap = 6;
+        const auto cellWidth = (topRow.getWidth() - cellGap) / 2;
+
+        for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
+        {
+            auto& row = trackIndex < 2 ? topRow : bottomRow;
+            auto cell = row.removeFromLeft(trackIndex % 2 == 0 ? cellWidth : row.getWidth());
+
+            if (trackIndex % 2 == 0)
+                row.removeFromLeft(cellGap);
+
+            sendSliders[(size_t) sendIndex][(size_t) trackIndex].setBounds(cell.getCentreX() - (sendKnobSize / 2),
+                                                                           cell.getY(),
+                                                                           sendKnobSize,
+                                                                           sendKnobSize);
+        }
     }
 
     auto exportContent = exportModuleBounds.reduced(moduleInnerPadding, moduleVerticalInset);

@@ -38,8 +38,8 @@ void TrackControlChain::paintSaturationModule(juce::Graphics& g, juce::Colour ac
                                                         bounds.getY() + 44,
                                                         meterWidth,
                                                         meterHeight);
-    const auto inputLevel = juce::jlimit(0.0f, 1.0f, engine.getTrackModuleInputMeter(selectedTrack, slot));
-    const auto outputLevel = juce::jlimit(0.0f, 1.0f, engine.getTrackModuleOutputMeter(selectedTrack, slot));
+    const auto inputLevel = juce::jlimit(0.0f, 1.0f, getModuleInputMeter(slot));
+    const auto outputLevel = juce::jlimit(0.0f, 1.0f, getModuleOutputMeter(slot));
 
     g.setColour(juce::Colours::white.withAlpha(0.14f));
     g.drawRoundedRectangle(inputMeterBounds.toFloat(), 5.0f, 1.0f);

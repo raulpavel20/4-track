@@ -100,7 +100,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
     {
         const auto selectedId = inputSourceBox.getSelectedId();
 
-        if (selectedId > 0)
+        if (selectedId > 0 && isTrackTarget())
             engine.setTrackInputSource(selectedTrack, selectedId - 1);
     };
     contentComponent.addAndMakeVisible(inputSourceBox);
@@ -108,7 +108,8 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
     configureRotarySlider(inputGainSlider, 0.0, 2.0, 0.01, 1.0);
     inputGainSlider.onValueChange = [this]
     {
-        engine.setTrackInputGain(selectedTrack, (float) inputGainSlider.getValue());
+        if (isTrackTarget())
+            engine.setTrackInputGain(selectedTrack, (float) inputGainSlider.getValue());
         contentComponent.repaint();
     };
     contentComponent.addAndMakeVisible(inputGainSlider);
@@ -128,7 +129,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         menu.addItem(4, "Saturation");
         menu.addItem(5, "Delay");
         menu.addItem(6, "Reverb");
-        menu.addItem(7, "Gain");
+        menu.addItem(7, "Utility");
         menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
                            [safeThis](int result)
                            {
@@ -152,7 +153,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                else if (result == 7)
                                    moduleType = ChainModuleType::gain;
 
-                               safeThis->engine.addTrackModule(safeThis->selectedTrack, moduleType);
+                               safeThis->addModule(moduleType);
                                safeThis->refreshFromEngine();
                            });
     };
@@ -163,9 +164,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         auto& bypassButton = bypassButtons[(size_t) moduleIndex];
         bypassButton.onClick = [this, moduleIndex]
         {
-            engine.setTrackModuleBypassed(selectedTrack,
-                                         moduleIndex,
-                                         bypassButtons[(size_t) moduleIndex].getToggleState());
+            setModuleBypassed(moduleIndex, bypassButtons[(size_t) moduleIndex].getToggleState());
             contentComponent.repaint();
         };
         contentComponent.addAndMakeVisible(bypassButton);
@@ -173,7 +172,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         auto& removeButton = removeButtons[(size_t) moduleIndex];
         removeButton.onClick = [this, moduleIndex]
         {
-            engine.removeTrackModule(selectedTrack, moduleIndex);
+            removeModule(moduleIndex);
             refreshFromEngine();
         };
         contentComponent.addAndMakeVisible(removeButton);
@@ -182,7 +181,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         configureRotarySlider(filterSlider, -1.0, 1.0, 0.01, 0.0);
         filterSlider.onValueChange = [this, moduleIndex]
         {
-            engine.setTrackFilterMorph(selectedTrack, moduleIndex, (float) filterSliders[(size_t) moduleIndex].getValue());
+            setFilterMorph(moduleIndex, (float) filterSliders[(size_t) moduleIndex].getValue());
             contentComponent.repaint();
         };
         contentComponent.addAndMakeVisible(filterSlider);
@@ -193,10 +192,9 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
             configureVerticalSlider(gainSlider, -18.0, 18.0, 0.1, 0.0);
             gainSlider.onValueChange = [this, moduleIndex, bandIndex]
             {
-                engine.setTrackEqBandGainDb(selectedTrack,
-                                            moduleIndex,
-                                            bandIndex,
-                                            (float) eqGainSliders[(size_t) moduleIndex][(size_t) bandIndex].getValue());
+                setEqBandGainDb(moduleIndex,
+                                bandIndex,
+                                (float) eqGainSliders[(size_t) moduleIndex][(size_t) bandIndex].getValue());
                 contentComponent.repaint();
             };
             contentComponent.addAndMakeVisible(gainSlider);
@@ -205,10 +203,9 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
             configureRotarySlider(qSlider, 0.1, 10.0, 0.01, 1.0);
             qSlider.onValueChange = [this, moduleIndex, bandIndex]
             {
-                engine.setTrackEqBandQ(selectedTrack,
-                                       moduleIndex,
-                                       bandIndex,
-                                       (float) eqQSliders[(size_t) moduleIndex][(size_t) bandIndex].getValue());
+                setEqBandQ(moduleIndex,
+                           bandIndex,
+                           (float) eqQSliders[(size_t) moduleIndex][(size_t) bandIndex].getValue());
             };
             contentComponent.addAndMakeVisible(qSlider);
 
@@ -225,12 +222,12 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
 
                 if (parseFrequencyValue(frequencyEditor.getText(), frequency))
                 {
-                    engine.setTrackEqBandFrequency(selectedTrack, moduleIndex, bandIndex, frequency);
+                    setEqBandFrequency(moduleIndex, bandIndex, frequency);
                     frequencyEditor.setText(formatFrequencyValue(frequency), juce::dontSendNotification);
                 }
                 else
                 {
-                    frequencyEditor.setText(formatFrequencyValue(engine.getTrackEqBandFrequency(selectedTrack, moduleIndex, bandIndex)),
+                    frequencyEditor.setText(formatFrequencyValue(getEqBandFrequency(moduleIndex, bandIndex)),
                                             juce::dontSendNotification);
                 }
             };
@@ -258,15 +255,15 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                 const auto value = (float) compressorSliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
 
                 if (controlIndex == 0)
-                    engine.setTrackCompressorThresholdDb(selectedTrack, moduleIndex, value);
+                    setCompressorThresholdDb(moduleIndex, value);
                 else if (controlIndex == 1)
-                    engine.setTrackCompressorRatio(selectedTrack, moduleIndex, value);
+                    setCompressorRatio(moduleIndex, value);
                 else if (controlIndex == 2)
-                    engine.setTrackCompressorAttackMs(selectedTrack, moduleIndex, value);
+                    setCompressorAttackMs(moduleIndex, value);
                 else if (controlIndex == 3)
-                    engine.setTrackCompressorReleaseMs(selectedTrack, moduleIndex, value);
+                    setCompressorReleaseMs(moduleIndex, value);
                 else
-                    engine.setTrackCompressorMakeupGainDb(selectedTrack, moduleIndex, value);
+                    setCompressorMakeupGainDb(moduleIndex, value);
 
                 contentComponent.repaint();
             };
@@ -277,11 +274,10 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         saturationModeButton.setClickingTogglesState(true);
         saturationModeButton.onClick = [this, moduleIndex]
         {
-            engine.setTrackSaturationMode(selectedTrack,
-                                          moduleIndex,
-                                          saturationModeButtons[(size_t) moduleIndex].getToggleState()
-                                              ? SaturationMode::heavy
-                                              : SaturationMode::light);
+            setSaturationMode(moduleIndex,
+                              saturationModeButtons[(size_t) moduleIndex].getToggleState()
+                                  ? SaturationMode::heavy
+                                  : SaturationMode::light);
             contentComponent.repaint();
         };
         contentComponent.addAndMakeVisible(saturationModeButton);
@@ -290,7 +286,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         configureRotarySlider(saturationAmountSlider, 0.0, 1.0, 0.01, 0.35);
         saturationAmountSlider.onValueChange = [this, moduleIndex]
         {
-            engine.setTrackSaturationAmount(selectedTrack, moduleIndex, (float) saturationAmountSliders[(size_t) moduleIndex].getValue());
+            setSaturationAmount(moduleIndex, (float) saturationAmountSliders[(size_t) moduleIndex].getValue());
             contentComponent.repaint();
         };
         contentComponent.addAndMakeVisible(saturationAmountSlider);
@@ -302,9 +298,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         delayTimeModeButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
         delayTimeModeButton.onClick = [this, moduleIndex]
         {
-            engine.setTrackDelaySyncEnabled(selectedTrack,
-                                           moduleIndex,
-                                           ! engine.isTrackDelaySyncEnabled(selectedTrack, moduleIndex));
+            setDelaySyncEnabled(moduleIndex, ! isDelaySyncEnabled(moduleIndex));
             refreshFromEngine();
         };
         contentComponent.addAndMakeVisible(delayTimeModeButton);
@@ -326,18 +320,18 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
 
                 if (controlIndex == 0)
                 {
-                    if (engine.isTrackDelaySyncEnabled(selectedTrack, moduleIndex))
-                        engine.setTrackDelaySyncIndex(selectedTrack, moduleIndex, juce::roundToInt(value));
+                    if (isDelaySyncEnabled(moduleIndex))
+                        setDelaySyncIndex(moduleIndex, juce::roundToInt(value));
                     else
-                        engine.setTrackDelayTimeMs(selectedTrack, moduleIndex, value);
+                        setDelayTimeMs(moduleIndex, value);
 
                     refreshFromEngine();
                     return;
                 }
                 else if (controlIndex == 1)
-                    engine.setTrackDelayFeedback(selectedTrack, moduleIndex, value);
+                    setDelayFeedback(moduleIndex, value);
                 else
-                    engine.setTrackDelayMix(selectedTrack, moduleIndex, value);
+                    setDelayMix(moduleIndex, value);
 
                 contentComponent.repaint();
             };
@@ -358,25 +352,34 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                 const auto value = (float) reverbSliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
 
                 if (controlIndex == 0)
-                    engine.setTrackReverbSize(selectedTrack, moduleIndex, value);
+                    setReverbSize(moduleIndex, value);
                 else if (controlIndex == 1)
-                    engine.setTrackReverbDamping(selectedTrack, moduleIndex, value);
+                    setReverbDamping(moduleIndex, value);
                 else
-                    engine.setTrackReverbMix(selectedTrack, moduleIndex, value);
+                    setReverbMix(moduleIndex, value);
 
                 contentComponent.repaint();
             };
             contentComponent.addAndMakeVisible(slider);
         }
 
-        auto& gainSlider = gainModuleSliders[(size_t) moduleIndex];
-        configureVerticalSlider(gainSlider, -24.0, 24.0, 0.1, 0.0);
+        auto& gainSlider = gainModuleSliders[(size_t) moduleIndex][0];
+        configureRotarySlider(gainSlider, -24.0, 24.0, 0.1, 0.0);
         gainSlider.onValueChange = [this, moduleIndex]
         {
-            engine.setTrackGainModuleGainDb(selectedTrack, moduleIndex, (float) gainModuleSliders[(size_t) moduleIndex].getValue());
+            setGainModuleGainDb(moduleIndex, (float) gainModuleSliders[(size_t) moduleIndex][0].getValue());
             contentComponent.repaint();
         };
         contentComponent.addAndMakeVisible(gainSlider);
+
+        auto& panSlider = gainModuleSliders[(size_t) moduleIndex][1];
+        configureRotarySlider(panSlider, -1.0, 1.0, 0.01, 0.0);
+        panSlider.onValueChange = [this, moduleIndex]
+        {
+            setGainModulePan(moduleIndex, (float) gainModuleSliders[(size_t) moduleIndex][1].getValue());
+            contentComponent.repaint();
+        };
+        contentComponent.addAndMakeVisible(panSlider);
     }
 
     startTimerHz(30);
@@ -431,6 +434,7 @@ void TrackControlChain::setInputOptions(const juce::Array<TapeEngine::InputSourc
 
 void TrackControlChain::setSelectedTrack(int trackIndex)
 {
+    targetType = TargetType::track;
     selectedTrack = juce::jlimit(0, TapeEngine::numTracks - 1, trackIndex);
     refreshFromEngine();
 }
@@ -440,68 +444,445 @@ int TrackControlChain::getSelectedTrack() const noexcept
     return selectedTrack;
 }
 
+void TrackControlChain::setSendBusIndex(int sendIndex)
+{
+    targetType = TargetType::sendBus;
+    selectedSendBus = juce::jlimit(0, TapeEngine::numSendBuses - 1, sendIndex);
+    refreshFromEngine();
+}
+
+int TrackControlChain::getSendBusIndex() const noexcept
+{
+    return selectedSendBus;
+}
+
+bool TrackControlChain::showsInputModule() const noexcept
+{
+    return targetType == TargetType::track;
+}
+
+bool TrackControlChain::isTrackTarget() const noexcept
+{
+    return targetType == TargetType::track;
+}
+
+juce::Colour TrackControlChain::getAccentColour() const
+{
+    return isTrackTarget() ? getChainAccentColour(selectedTrack) : juce::Colours::white;
+}
+
+int TrackControlChain::addModule(ChainModuleType type)
+{
+    return isTrackTarget() ? engine.addTrackModule(selectedTrack, type)
+                           : engine.addSendBusModule(selectedSendBus, type);
+}
+
+void TrackControlChain::removeModule(int moduleIndex)
+{
+    if (isTrackTarget())
+        engine.removeTrackModule(selectedTrack, moduleIndex);
+    else
+        engine.removeSendBusModule(selectedSendBus, moduleIndex);
+}
+
+int TrackControlChain::getModuleCount() const noexcept
+{
+    return isTrackTarget() ? engine.getTrackModuleCount(selectedTrack)
+                           : engine.getSendBusModuleCount(selectedSendBus);
+}
+
+ChainModuleType TrackControlChain::getModuleType(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackModuleType(selectedTrack, moduleIndex)
+                           : engine.getSendBusModuleType(selectedSendBus, moduleIndex);
+}
+
+bool TrackControlChain::isModuleBypassed(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.isTrackModuleBypassed(selectedTrack, moduleIndex)
+                           : engine.isSendBusModuleBypassed(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setModuleBypassed(int moduleIndex, bool shouldBeBypassed)
+{
+    if (isTrackTarget())
+        engine.setTrackModuleBypassed(selectedTrack, moduleIndex, shouldBeBypassed);
+    else
+        engine.setSendBusModuleBypassed(selectedSendBus, moduleIndex, shouldBeBypassed);
+}
+
+float TrackControlChain::getFilterMorph(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackFilterMorph(selectedTrack, moduleIndex)
+                           : engine.getSendBusFilterMorph(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setFilterMorph(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackFilterMorph(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusFilterMorph(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getEqBandGainDb(int moduleIndex, int bandIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackEqBandGainDb(selectedTrack, moduleIndex, bandIndex)
+                           : engine.getSendBusEqBandGainDb(selectedSendBus, moduleIndex, bandIndex);
+}
+
+void TrackControlChain::setEqBandGainDb(int moduleIndex, int bandIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackEqBandGainDb(selectedTrack, moduleIndex, bandIndex, value);
+    else
+        engine.setSendBusEqBandGainDb(selectedSendBus, moduleIndex, bandIndex, value);
+}
+
+float TrackControlChain::getEqBandQ(int moduleIndex, int bandIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackEqBandQ(selectedTrack, moduleIndex, bandIndex)
+                           : engine.getSendBusEqBandQ(selectedSendBus, moduleIndex, bandIndex);
+}
+
+void TrackControlChain::setEqBandQ(int moduleIndex, int bandIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackEqBandQ(selectedTrack, moduleIndex, bandIndex, value);
+    else
+        engine.setSendBusEqBandQ(selectedSendBus, moduleIndex, bandIndex, value);
+}
+
+float TrackControlChain::getEqBandFrequency(int moduleIndex, int bandIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackEqBandFrequency(selectedTrack, moduleIndex, bandIndex)
+                           : engine.getSendBusEqBandFrequency(selectedSendBus, moduleIndex, bandIndex);
+}
+
+void TrackControlChain::setEqBandFrequency(int moduleIndex, int bandIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackEqBandFrequency(selectedTrack, moduleIndex, bandIndex, value);
+    else
+        engine.setSendBusEqBandFrequency(selectedSendBus, moduleIndex, bandIndex, value);
+}
+
+float TrackControlChain::getCompressorThresholdDb(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackCompressorThresholdDb(selectedTrack, moduleIndex)
+                           : engine.getSendBusCompressorThresholdDb(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setCompressorThresholdDb(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackCompressorThresholdDb(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusCompressorThresholdDb(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getCompressorRatio(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackCompressorRatio(selectedTrack, moduleIndex)
+                           : engine.getSendBusCompressorRatio(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setCompressorRatio(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackCompressorRatio(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusCompressorRatio(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getCompressorAttackMs(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackCompressorAttackMs(selectedTrack, moduleIndex)
+                           : engine.getSendBusCompressorAttackMs(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setCompressorAttackMs(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackCompressorAttackMs(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusCompressorAttackMs(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getCompressorReleaseMs(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackCompressorReleaseMs(selectedTrack, moduleIndex)
+                           : engine.getSendBusCompressorReleaseMs(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setCompressorReleaseMs(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackCompressorReleaseMs(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusCompressorReleaseMs(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getCompressorMakeupGainDb(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackCompressorMakeupGainDb(selectedTrack, moduleIndex)
+                           : engine.getSendBusCompressorMakeupGainDb(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setCompressorMakeupGainDb(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackCompressorMakeupGainDb(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusCompressorMakeupGainDb(selectedSendBus, moduleIndex, value);
+}
+
+SaturationMode TrackControlChain::getSaturationMode(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackSaturationMode(selectedTrack, moduleIndex)
+                           : engine.getSendBusSaturationMode(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setSaturationMode(int moduleIndex, SaturationMode mode)
+{
+    if (isTrackTarget())
+        engine.setTrackSaturationMode(selectedTrack, moduleIndex, mode);
+    else
+        engine.setSendBusSaturationMode(selectedSendBus, moduleIndex, mode);
+}
+
+float TrackControlChain::getSaturationAmount(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackSaturationAmount(selectedTrack, moduleIndex)
+                           : engine.getSendBusSaturationAmount(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setSaturationAmount(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackSaturationAmount(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusSaturationAmount(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getDelayTimeMs(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackDelayTimeMs(selectedTrack, moduleIndex)
+                           : engine.getSendBusDelayTimeMs(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setDelayTimeMs(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackDelayTimeMs(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusDelayTimeMs(selectedSendBus, moduleIndex, value);
+}
+
+bool TrackControlChain::isDelaySyncEnabled(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.isTrackDelaySyncEnabled(selectedTrack, moduleIndex)
+                           : engine.isSendBusDelaySyncEnabled(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setDelaySyncEnabled(int moduleIndex, bool shouldBeEnabled)
+{
+    if (isTrackTarget())
+        engine.setTrackDelaySyncEnabled(selectedTrack, moduleIndex, shouldBeEnabled);
+    else
+        engine.setSendBusDelaySyncEnabled(selectedSendBus, moduleIndex, shouldBeEnabled);
+}
+
+int TrackControlChain::getDelaySyncIndex(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackDelaySyncIndex(selectedTrack, moduleIndex)
+                           : engine.getSendBusDelaySyncIndex(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setDelaySyncIndex(int moduleIndex, int index)
+{
+    if (isTrackTarget())
+        engine.setTrackDelaySyncIndex(selectedTrack, moduleIndex, index);
+    else
+        engine.setSendBusDelaySyncIndex(selectedSendBus, moduleIndex, index);
+}
+
+float TrackControlChain::getResolvedDelayTimeMs(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackResolvedDelayTimeMs(selectedTrack, moduleIndex)
+                           : engine.getSendBusResolvedDelayTimeMs(selectedSendBus, moduleIndex);
+}
+
+float TrackControlChain::getDelayFeedback(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackDelayFeedback(selectedTrack, moduleIndex)
+                           : engine.getSendBusDelayFeedback(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setDelayFeedback(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackDelayFeedback(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusDelayFeedback(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getDelayMix(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackDelayMix(selectedTrack, moduleIndex)
+                           : engine.getSendBusDelayMix(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setDelayMix(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackDelayMix(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusDelayMix(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getReverbSize(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackReverbSize(selectedTrack, moduleIndex)
+                           : engine.getSendBusReverbSize(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setReverbSize(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackReverbSize(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusReverbSize(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getReverbDamping(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackReverbDamping(selectedTrack, moduleIndex)
+                           : engine.getSendBusReverbDamping(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setReverbDamping(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackReverbDamping(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusReverbDamping(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getReverbMix(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackReverbMix(selectedTrack, moduleIndex)
+                           : engine.getSendBusReverbMix(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setReverbMix(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackReverbMix(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusReverbMix(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getGainModuleGainDb(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackGainModuleGainDb(selectedTrack, moduleIndex)
+                           : engine.getSendBusGainModuleGainDb(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setGainModuleGainDb(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackGainModuleGainDb(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusGainModuleGainDb(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getGainModulePan(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackGainModulePan(selectedTrack, moduleIndex)
+                           : engine.getSendBusGainModulePan(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setGainModulePan(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackGainModulePan(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusGainModulePan(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getModuleInputMeter(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackModuleInputMeter(selectedTrack, moduleIndex)
+                           : engine.getSendBusModuleInputMeter(selectedSendBus, moduleIndex);
+}
+
+float TrackControlChain::getModuleOutputMeter(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackModuleOutputMeter(selectedTrack, moduleIndex)
+                           : engine.getSendBusModuleOutputMeter(selectedSendBus, moduleIndex);
+}
+
 void TrackControlChain::refreshFromEngine()
 {
     updateAccentColours();
-    inputGainSlider.setValue(engine.getTrackInputGain(selectedTrack), juce::dontSendNotification);
 
-    if (inputSourceBox.getNumItems() > 0)
+    if (isTrackTarget())
     {
-        const auto selectedSourceId = engine.getTrackInputSource(selectedTrack);
-        inputSourceBox.setSelectedId(selectedSourceId + 1, juce::dontSendNotification);
+        inputGainSlider.setValue(engine.getTrackInputGain(selectedTrack), juce::dontSendNotification);
 
-        if (inputSourceBox.getSelectedId() == 0 && inputOptions.isEmpty() == false)
+        if (inputSourceBox.getNumItems() > 0)
         {
-            inputSourceBox.setSelectedId(inputOptions[0].sourceId + 1, juce::dontSendNotification);
-            engine.setTrackInputSource(selectedTrack, inputOptions[0].sourceId);
+            const auto selectedSourceId = engine.getTrackInputSource(selectedTrack);
+            inputSourceBox.setSelectedId(selectedSourceId + 1, juce::dontSendNotification);
+
+            if (inputSourceBox.getSelectedId() == 0 && inputOptions.isEmpty() == false)
+            {
+                inputSourceBox.setSelectedId(inputOptions[0].sourceId + 1, juce::dontSendNotification);
+                engine.setTrackInputSource(selectedTrack, inputOptions[0].sourceId);
+            }
         }
     }
 
     for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
     {
-        bypassButtons[(size_t) moduleIndex].setToggleState(engine.isTrackModuleBypassed(selectedTrack, moduleIndex),
-                                                           juce::dontSendNotification);
-        filterSliders[(size_t) moduleIndex].setValue(engine.getTrackFilterMorph(selectedTrack, moduleIndex), juce::dontSendNotification);
-        saturationAmountSliders[(size_t) moduleIndex].setValue(engine.getTrackSaturationAmount(selectedTrack, moduleIndex), juce::dontSendNotification);
-        saturationModeButtons[(size_t) moduleIndex].setToggleState(engine.getTrackSaturationMode(selectedTrack, moduleIndex) == SaturationMode::heavy,
+        bypassButtons[(size_t) moduleIndex].setToggleState(isModuleBypassed(moduleIndex), juce::dontSendNotification);
+        filterSliders[(size_t) moduleIndex].setValue(getFilterMorph(moduleIndex), juce::dontSendNotification);
+        saturationAmountSliders[(size_t) moduleIndex].setValue(getSaturationAmount(moduleIndex), juce::dontSendNotification);
+        saturationModeButtons[(size_t) moduleIndex].setToggleState(getSaturationMode(moduleIndex) == SaturationMode::heavy,
                                                                    juce::dontSendNotification);
-        if (engine.isTrackDelaySyncEnabled(selectedTrack, moduleIndex))
+        if (isDelaySyncEnabled(moduleIndex))
         {
             delaySliders[(size_t) moduleIndex][0].setRange(0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0);
             delaySliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 2.0);
-            delaySliders[(size_t) moduleIndex][0].setValue((double) engine.getTrackDelaySyncIndex(selectedTrack, moduleIndex),
-                                                           juce::dontSendNotification);
-            delayTimeModeButtons[(size_t) moduleIndex].setButtonText(TapeEngine::getDelaySyncLabel(engine.getTrackDelaySyncIndex(selectedTrack,
-                                                                                                                                moduleIndex)));
+            delaySliders[(size_t) moduleIndex][0].setValue((double) getDelaySyncIndex(moduleIndex), juce::dontSendNotification);
+            delayTimeModeButtons[(size_t) moduleIndex].setButtonText(TapeEngine::getDelaySyncLabel(getDelaySyncIndex(moduleIndex)));
         }
         else
         {
             delaySliders[(size_t) moduleIndex][0].setRange(20.0, 2000.0, 1.0);
             delaySliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 380.0);
-            delaySliders[(size_t) moduleIndex][0].setValue(engine.getTrackDelayTimeMs(selectedTrack, moduleIndex), juce::dontSendNotification);
-            delayTimeModeButtons[(size_t) moduleIndex].setButtonText(juce::String((int) std::round(engine.getTrackDelayTimeMs(selectedTrack,
-                                                                                                                               moduleIndex)))
-                                                                     + "ms");
+            delaySliders[(size_t) moduleIndex][0].setValue(getDelayTimeMs(moduleIndex), juce::dontSendNotification);
+            delayTimeModeButtons[(size_t) moduleIndex].setButtonText(juce::String((int) std::round(getDelayTimeMs(moduleIndex))) + "ms");
         }
-        delaySliders[(size_t) moduleIndex][1].setValue(engine.getTrackDelayFeedback(selectedTrack, moduleIndex), juce::dontSendNotification);
-        delaySliders[(size_t) moduleIndex][2].setValue(engine.getTrackDelayMix(selectedTrack, moduleIndex), juce::dontSendNotification);
-        reverbSliders[(size_t) moduleIndex][0].setValue(engine.getTrackReverbSize(selectedTrack, moduleIndex), juce::dontSendNotification);
-        reverbSliders[(size_t) moduleIndex][1].setValue(engine.getTrackReverbDamping(selectedTrack, moduleIndex), juce::dontSendNotification);
-        reverbSliders[(size_t) moduleIndex][2].setValue(engine.getTrackReverbMix(selectedTrack, moduleIndex), juce::dontSendNotification);
-        gainModuleSliders[(size_t) moduleIndex].setValue(engine.getTrackGainModuleGainDb(selectedTrack, moduleIndex), juce::dontSendNotification);
+        delaySliders[(size_t) moduleIndex][1].setValue(getDelayFeedback(moduleIndex), juce::dontSendNotification);
+        delaySliders[(size_t) moduleIndex][2].setValue(getDelayMix(moduleIndex), juce::dontSendNotification);
+        reverbSliders[(size_t) moduleIndex][0].setValue(getReverbSize(moduleIndex), juce::dontSendNotification);
+        reverbSliders[(size_t) moduleIndex][1].setValue(getReverbDamping(moduleIndex), juce::dontSendNotification);
+        reverbSliders[(size_t) moduleIndex][2].setValue(getReverbMix(moduleIndex), juce::dontSendNotification);
+        gainModuleSliders[(size_t) moduleIndex][0].setValue(getGainModuleGainDb(moduleIndex), juce::dontSendNotification);
+        gainModuleSliders[(size_t) moduleIndex][1].setValue(getGainModulePan(moduleIndex), juce::dontSendNotification);
 
-        compressorSliders[(size_t) moduleIndex][0].setValue(engine.getTrackCompressorThresholdDb(selectedTrack, moduleIndex), juce::dontSendNotification);
-        compressorSliders[(size_t) moduleIndex][1].setValue(engine.getTrackCompressorRatio(selectedTrack, moduleIndex), juce::dontSendNotification);
-        compressorSliders[(size_t) moduleIndex][2].setValue(engine.getTrackCompressorAttackMs(selectedTrack, moduleIndex), juce::dontSendNotification);
-        compressorSliders[(size_t) moduleIndex][3].setValue(engine.getTrackCompressorReleaseMs(selectedTrack, moduleIndex), juce::dontSendNotification);
-        compressorSliders[(size_t) moduleIndex][4].setValue(engine.getTrackCompressorMakeupGainDb(selectedTrack, moduleIndex), juce::dontSendNotification);
+        compressorSliders[(size_t) moduleIndex][0].setValue(getCompressorThresholdDb(moduleIndex), juce::dontSendNotification);
+        compressorSliders[(size_t) moduleIndex][1].setValue(getCompressorRatio(moduleIndex), juce::dontSendNotification);
+        compressorSliders[(size_t) moduleIndex][2].setValue(getCompressorAttackMs(moduleIndex), juce::dontSendNotification);
+        compressorSliders[(size_t) moduleIndex][3].setValue(getCompressorReleaseMs(moduleIndex), juce::dontSendNotification);
+        compressorSliders[(size_t) moduleIndex][4].setValue(getCompressorMakeupGainDb(moduleIndex), juce::dontSendNotification);
 
         for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
         {
-            eqGainSliders[(size_t) moduleIndex][(size_t) bandIndex].setValue(engine.getTrackEqBandGainDb(selectedTrack, moduleIndex, bandIndex),
-                                                                             juce::dontSendNotification);
-            eqQSliders[(size_t) moduleIndex][(size_t) bandIndex].setValue(engine.getTrackEqBandQ(selectedTrack, moduleIndex, bandIndex),
-                                                                          juce::dontSendNotification);
+            eqGainSliders[(size_t) moduleIndex][(size_t) bandIndex].setValue(getEqBandGainDb(moduleIndex, bandIndex), juce::dontSendNotification);
+            eqQSliders[(size_t) moduleIndex][(size_t) bandIndex].setValue(getEqBandQ(moduleIndex, bandIndex), juce::dontSendNotification);
         }
     }
 
@@ -515,7 +896,7 @@ void TrackControlChain::refreshFromEngine()
 
 void TrackControlChain::updateAccentColours()
 {
-    const auto accent = getChainAccentColour(selectedTrack);
+    const auto accent = getAccentColour();
     inputGainSlider.setColour(juce::Slider::rotarySliderFillColourId, accent);
 
     for (auto& slider : filterSliders)
@@ -564,8 +945,11 @@ void TrackControlChain::updateAccentColours()
             slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
     }
 
-    for (auto& slider : gainModuleSliders)
-        slider.setColour(juce::Slider::thumbColourId, accent);
+    for (auto& slot : gainModuleSliders)
+    {
+        for (auto& slider : slot)
+            slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+    }
 
     for (auto& button : saturationModeButtons)
         button.setAccentColour(accent);
@@ -580,7 +964,7 @@ void TrackControlChain::updateVisibleModules()
 
     for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
     {
-        const auto type = engine.getTrackModuleType(selectedTrack, moduleIndex);
+        const auto type = getModuleType(moduleIndex);
 
         if (type == ChainModuleType::none)
             continue;
@@ -602,21 +986,22 @@ void TrackControlChain::syncFrequencyEditorsFromEngine(bool force)
             if (! force && editor.hasKeyboardFocus(true))
                 continue;
 
-            editor.setText(formatFrequencyValue(engine.getTrackEqBandFrequency(selectedTrack, moduleIndex, bandIndex)),
-                           juce::dontSendNotification);
+            editor.setText(formatFrequencyValue(getEqBandFrequency(moduleIndex, bandIndex)), juce::dontSendNotification);
         }
     }
 }
 
 void TrackControlChain::updateModuleVisibility()
 {
-    const auto canAddModule = engine.getTrackModuleCount(selectedTrack) < Track::maxChainModules;
+    const auto canAddModule = getModuleCount() < Track::maxChainModules;
     addModuleButton.setEnabled(canAddModule);
     addModuleButton.setVisible(true);
+    inputSourceBox.setVisible(showsInputModule());
+    inputGainSlider.setVisible(showsInputModule());
 
     for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
     {
-        const auto type = engine.getTrackModuleType(selectedTrack, moduleIndex);
+        const auto type = getModuleType(moduleIndex);
         const auto isVisible = type != ChainModuleType::none;
 
         bypassButtons[(size_t) moduleIndex].setVisible(isVisible);
@@ -629,7 +1014,8 @@ void TrackControlChain::updateModuleVisibility()
             delaySliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::delay);
         for (int controlIndex = 0; controlIndex < reverbControlCount; ++controlIndex)
             reverbSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::reverb);
-        gainModuleSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::gain);
+        for (int controlIndex = 0; controlIndex < utilityControlCount; ++controlIndex)
+            gainModuleSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::gain);
 
         for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
         {

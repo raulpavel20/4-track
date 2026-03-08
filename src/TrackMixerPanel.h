@@ -33,6 +33,7 @@ private:
     ContentComponent contentComponent;
     std::array<juce::Slider, TapeEngine::numTracks> gainSliders;
     std::array<juce::Slider, TapeEngine::numTracks> panSliders;
+    std::array<std::array<juce::Slider, TapeEngine::numTracks>, TapeEngine::numSendBuses> sendSliders;
     juce::ComboBox exportFormatBox;
     juce::ComboBox exportSampleRateBox;
     juce::ComboBox exportBitDepthBox;
@@ -40,6 +41,7 @@ private:
     juce::TextButton exportButton { "Export" };
     std::unique_ptr<juce::FileChooser> exportChooser;
     std::array<juce::Rectangle<int>, TapeEngine::numTracks> trackModuleBounds {};
+    std::array<juce::Rectangle<int>, TapeEngine::numSendBuses> sendModuleBounds {};
     juce::Rectangle<int> exportModuleBounds;
 
     void timerCallback() override;

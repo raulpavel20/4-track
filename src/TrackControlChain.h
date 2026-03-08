@@ -19,12 +19,21 @@ public:
 
     void setSelectedTrack(int trackIndex);
     int getSelectedTrack() const noexcept;
+    void setSendBusIndex(int sendIndex);
+    int getSendBusIndex() const noexcept;
     void setInputOptions(const juce::Array<TapeEngine::InputSourceOption>& options);
 
 private:
     static constexpr int compressorControlCount = 5;
     static constexpr int delayControlCount = 3;
     static constexpr int reverbControlCount = 3;
+    static constexpr int utilityControlCount = 2;
+
+    enum class TargetType
+    {
+        track = 0,
+        sendBus
+    };
 
     class CloseButton : public juce::Button
     {
@@ -66,7 +75,9 @@ private:
     };
 
     TapeEngine& engine;
+    TargetType targetType = TargetType::track;
     int selectedTrack = 0;
+    int selectedSendBus = 0;
     juce::Array<TapeEngine::InputSourceOption> inputOptions;
     juce::Viewport modulesViewport;
     ContentComponent contentComponent;
@@ -85,7 +96,7 @@ private:
     std::array<std::array<juce::Slider, delayControlCount>, Track::maxChainModules> delaySliders;
     std::array<juce::TextButton, Track::maxChainModules> delayTimeModeButtons;
     std::array<std::array<juce::Slider, reverbControlCount>, Track::maxChainModules> reverbSliders;
-    std::array<juce::Slider, Track::maxChainModules> gainModuleSliders;
+    std::array<std::array<juce::Slider, utilityControlCount>, Track::maxChainModules> gainModuleSliders;
     std::array<int, Track::maxChainModules> visibleSlots {};
     std::array<ChainModuleType, Track::maxChainModules> visibleTypes {};
     std::array<juce::Rectangle<int>, Track::maxChainModules> moduleBounds {};
@@ -95,6 +106,60 @@ private:
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
     void paintContent(juce::Graphics& g);
     void refreshFromEngine();
+    bool showsInputModule() const noexcept;
+    bool isTrackTarget() const noexcept;
+    juce::Colour getAccentColour() const;
+    int addModule(ChainModuleType type);
+    void removeModule(int moduleIndex);
+    int getModuleCount() const noexcept;
+    ChainModuleType getModuleType(int moduleIndex) const noexcept;
+    bool isModuleBypassed(int moduleIndex) const noexcept;
+    void setModuleBypassed(int moduleIndex, bool shouldBeBypassed);
+    float getFilterMorph(int moduleIndex) const noexcept;
+    void setFilterMorph(int moduleIndex, float value);
+    float getEqBandGainDb(int moduleIndex, int bandIndex) const noexcept;
+    void setEqBandGainDb(int moduleIndex, int bandIndex, float value);
+    float getEqBandQ(int moduleIndex, int bandIndex) const noexcept;
+    void setEqBandQ(int moduleIndex, int bandIndex, float value);
+    float getEqBandFrequency(int moduleIndex, int bandIndex) const noexcept;
+    void setEqBandFrequency(int moduleIndex, int bandIndex, float value);
+    float getCompressorThresholdDb(int moduleIndex) const noexcept;
+    void setCompressorThresholdDb(int moduleIndex, float value);
+    float getCompressorRatio(int moduleIndex) const noexcept;
+    void setCompressorRatio(int moduleIndex, float value);
+    float getCompressorAttackMs(int moduleIndex) const noexcept;
+    void setCompressorAttackMs(int moduleIndex, float value);
+    float getCompressorReleaseMs(int moduleIndex) const noexcept;
+    void setCompressorReleaseMs(int moduleIndex, float value);
+    float getCompressorMakeupGainDb(int moduleIndex) const noexcept;
+    void setCompressorMakeupGainDb(int moduleIndex, float value);
+    SaturationMode getSaturationMode(int moduleIndex) const noexcept;
+    void setSaturationMode(int moduleIndex, SaturationMode mode);
+    float getSaturationAmount(int moduleIndex) const noexcept;
+    void setSaturationAmount(int moduleIndex, float value);
+    float getDelayTimeMs(int moduleIndex) const noexcept;
+    void setDelayTimeMs(int moduleIndex, float value);
+    bool isDelaySyncEnabled(int moduleIndex) const noexcept;
+    void setDelaySyncEnabled(int moduleIndex, bool shouldBeEnabled);
+    int getDelaySyncIndex(int moduleIndex) const noexcept;
+    void setDelaySyncIndex(int moduleIndex, int index);
+    float getResolvedDelayTimeMs(int moduleIndex) const noexcept;
+    float getDelayFeedback(int moduleIndex) const noexcept;
+    void setDelayFeedback(int moduleIndex, float value);
+    float getDelayMix(int moduleIndex) const noexcept;
+    void setDelayMix(int moduleIndex, float value);
+    float getReverbSize(int moduleIndex) const noexcept;
+    void setReverbSize(int moduleIndex, float value);
+    float getReverbDamping(int moduleIndex) const noexcept;
+    void setReverbDamping(int moduleIndex, float value);
+    float getReverbMix(int moduleIndex) const noexcept;
+    void setReverbMix(int moduleIndex, float value);
+    float getGainModuleGainDb(int moduleIndex) const noexcept;
+    void setGainModuleGainDb(int moduleIndex, float value);
+    float getGainModulePan(int moduleIndex) const noexcept;
+    void setGainModulePan(int moduleIndex, float value);
+    float getModuleInputMeter(int moduleIndex) const noexcept;
+    float getModuleOutputMeter(int moduleIndex) const noexcept;
     void updateAccentColours();
     void updateVisibleModules();
     void updateModuleVisibility();

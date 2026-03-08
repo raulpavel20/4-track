@@ -1,16 +1,10 @@
 #include "../../TrackControlChain.h"
 
 #include "../../AppFonts.h"
-#include "../../AppSettings.h"
 
 namespace
 {
 constexpr int bypassCircleSize = 10;
-
-juce::Colour getChainAccentColour(int trackIndex)
-{
-    return AppSettings::getInstance().getTrackColour(juce::jlimit(0, TapeEngine::numTracks - 1, trackIndex));
-}
 
 juce::String getModuleTitle(ChainModuleType type)
 {
@@ -29,7 +23,7 @@ juce::String getModuleTitle(ChainModuleType type)
         case ChainModuleType::reverb:
             return "Reverb";
         case ChainModuleType::gain:
-            return "Gain";
+            return "Utility";
         case ChainModuleType::none:
             break;
     }
@@ -42,10 +36,10 @@ void TrackControlChain::paintContent(juce::Graphics& g)
 {
     g.fillAll(juce::Colours::black);
 
-    const auto accent = getChainAccentColour(selectedTrack);
-    const auto inputBounds = getInputModuleBounds();
+    const auto accent = getAccentColour();
 
-    paintInputModule(g, accent, inputBounds);
+    if (showsInputModule())
+        paintInputModule(g, accent, getInputModuleBounds());
 
     static const std::array<juce::String, compressorControlCount> compressorLabels { "Thr", "Rat", "Atk", "Rel", "Make" };
 

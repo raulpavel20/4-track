@@ -94,6 +94,9 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
         auto mixedLeft = 0.0f;
         auto mixedRight = 0.0f;
         std::array<std::array<float, Track::numChannels>, numTracks> trackDryContributions {};
+        std::array<bool, numTracks> suppressTrackSendFeed {};
+        std::array<std::array<float, numTracks>, numSendBuses> sendAttributionWeights {};
+        std::array<float, numSendBuses> sendTotalWeights {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
         {
@@ -101,6 +104,11 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
             const auto recordMode = (TrackRecordMode) track.recordMode.load(std::memory_order_acquire);
             const auto isMuted = track.muted.load(std::memory_order_acquire);
             const auto isAudible = (soloedTrack < 0 || soloedTrack == trackIndex) && ! isMuted;
+            const auto sourceId = juce::jmax(0, track.inputSource.load(std::memory_order_acquire));
+            const auto sourceType = getInputSourceTypeFromId(sourceId);
+            const auto suppressOwnSendFeed = recordMode != TrackRecordMode::off
+                                             && (sourceType == InputSourceType::trackBus || sourceType == InputSourceType::masterBus);
+            suppressTrackSendFeed[(size_t) trackIndex] = suppressOwnSendFeed;
 
             const auto transportReadsTape = transportRunning || shouldReversePlay;
             auto trackLeft = transportReadsTape ? readTrackSample(track, 0, tapeSample) : 0.0f;
@@ -174,6 +182,23 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 mixedRight += postMixerRight;
                 trackDryContributions[(size_t) trackIndex][0] = postMixerLeft;
                 trackDryContributions[(size_t) trackIndex][1] = postMixerRight;
+
+                if (! suppressOwnSendFeed)
+                {
+                    const auto sendWeightBase = std::abs(postMixerLeft) + std::abs(postMixerRight);
+
+                    for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
+                    {
+                        const auto sendLevel = track.sendLevels[(size_t) sendIndex].load(std::memory_order_relaxed);
+
+                        if (sendLevel <= 0.0f)
+                            continue;
+
+                        const auto weight = sendLevel * sendWeightBase;
+                        sendAttributionWeights[(size_t) sendIndex][(size_t) trackIndex] += weight;
+                        sendTotalWeights[(size_t) sendIndex] += weight;
+                    }
+                }
             }
 
             const auto peak = juce::jmax(std::abs(audibleLeft), std::abs(audibleRight));
@@ -187,6 +212,56 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
             currentTrackInputBuses[(size_t) trackIndex] = trackDryContributions[(size_t) trackIndex];
+
+        for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
+        {
+            auto sendLeft = 0.0f;
+            auto sendRight = 0.0f;
+
+            for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+            {
+                if (suppressTrackSendFeed[(size_t) trackIndex])
+                    continue;
+
+                const auto sendLevel = tracks[(size_t) trackIndex].sendLevels[(size_t) sendIndex].load(std::memory_order_relaxed);
+
+                if (sendLevel <= 0.0f)
+                    continue;
+
+                sendLeft += trackDryContributions[(size_t) trackIndex][0] * sendLevel;
+                sendRight += trackDryContributions[(size_t) trackIndex][1] * sendLevel;
+            }
+
+            auto& sendBus = sendBuses[(size_t) sendIndex];
+            auto sendReturnLeft = sendLeft;
+            auto sendReturnRight = sendRight;
+
+            for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
+            {
+                if ((ChainModuleType) sendBus.activeModuleTypes[(size_t) moduleIndex] == ChainModuleType::none)
+                    continue;
+
+                sendReturnLeft = processChainModule(sendBus, moduleIndex, 0, sendReturnLeft);
+                sendReturnRight = processChainModule(sendBus, moduleIndex, 1, sendReturnRight);
+            }
+
+            mixedLeft += sendReturnLeft;
+            mixedRight += sendReturnRight;
+            sendBus.outputBlockPeak = juce::jmax(sendBus.outputBlockPeak,
+                                                 juce::jmax(std::abs(sendReturnLeft), std::abs(sendReturnRight)));
+
+            const auto totalWeight = sendTotalWeights[(size_t) sendIndex];
+
+            if (totalWeight > 0.0f)
+            {
+                for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+                {
+                    const auto share = sendAttributionWeights[(size_t) sendIndex][(size_t) trackIndex] / totalWeight;
+                    currentTrackInputBuses[(size_t) trackIndex][0] += sendReturnLeft * share;
+                    currentTrackInputBuses[(size_t) trackIndex][1] += sendReturnRight * share;
+                }
+            }
+        }
 
         lastMasterInputBus[0] = mixedLeft;
         lastMasterInputBus[1] = mixedRight;
@@ -355,6 +430,13 @@ void TapeEngine::prepareTrackRuntimePeaksForBlock() noexcept
         track.moduleBlockOutputPeaks.fill(0.0f);
         track.mixerBlockPeak = 0.0f;
     }
+
+    for (auto& sendBus : sendBuses)
+    {
+        sendBus.moduleBlockInputPeaks.fill(0.0f);
+        sendBus.moduleBlockOutputPeaks.fill(0.0f);
+        sendBus.outputBlockPeak = 0.0f;
+    }
 }
 
 void TapeEngine::updateTrackMetersFromBlockPeaks(const std::array<float, numTracks>& blockPeaks,
@@ -377,6 +459,22 @@ void TapeEngine::updateTrackMetersFromBlockPeaks(const std::array<float, numTrac
                                                                 std::memory_order_relaxed);
             track.moduleOutputMeters[(size_t) moduleIndex].store(juce::jmax(track.moduleBlockOutputPeaks[(size_t) moduleIndex], previousOutput),
                                                                  std::memory_order_relaxed);
+        }
+    }
+
+    for (auto& sendBus : sendBuses)
+    {
+        const auto previousOutputPeak = sendBus.outputMeter.load(std::memory_order_relaxed) * 0.82f;
+        sendBus.outputMeter.store(juce::jmax(sendBus.outputBlockPeak, previousOutputPeak), std::memory_order_relaxed);
+
+        for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
+        {
+            const auto previousInput = sendBus.moduleInputMeters[(size_t) moduleIndex].load(std::memory_order_relaxed) * 0.82f;
+            const auto previousOutput = sendBus.moduleOutputMeters[(size_t) moduleIndex].load(std::memory_order_relaxed) * 0.82f;
+            sendBus.moduleInputMeters[(size_t) moduleIndex].store(juce::jmax(sendBus.moduleBlockInputPeaks[(size_t) moduleIndex], previousInput),
+                                                                  std::memory_order_relaxed);
+            sendBus.moduleOutputMeters[(size_t) moduleIndex].store(juce::jmax(sendBus.moduleBlockOutputPeaks[(size_t) moduleIndex], previousOutput),
+                                                                   std::memory_order_relaxed);
         }
     }
 }

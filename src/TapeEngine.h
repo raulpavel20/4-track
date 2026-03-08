@@ -32,6 +32,7 @@ public:
     };
 
     static constexpr int numTracks = 4;
+    static constexpr int numSendBuses = Track::numSendBuses;
     static constexpr int initialChunkCount = 8;
     static constexpr int allocationLeadChunks = 8;
     static constexpr double rewindSpeedMultiplier = 12.0;
@@ -85,6 +86,8 @@ public:
     int getTrackInputSource(int trackIndex) const noexcept;
     juce::Array<InputSourceOption> getAvailableInputSources(const juce::StringArray& hardwareInputNames,
                                                             int destinationTrackIndex) const;
+    void setTrackSendLevel(int trackIndex, int sendIndex, float amount);
+    float getTrackSendLevel(int trackIndex, int sendIndex) const noexcept;
 
     int addTrackModule(int trackIndex, ChainModuleType type);
     void removeTrackModule(int trackIndex, int moduleIndex);
@@ -136,8 +139,65 @@ public:
     float getTrackReverbMix(int trackIndex, int moduleIndex) const noexcept;
     void setTrackGainModuleGainDb(int trackIndex, int moduleIndex, float gainDb);
     float getTrackGainModuleGainDb(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackGainModulePan(int trackIndex, int moduleIndex, float pan);
+    float getTrackGainModulePan(int trackIndex, int moduleIndex) const noexcept;
     float getTrackModuleInputMeter(int trackIndex, int moduleIndex) const noexcept;
     float getTrackModuleOutputMeter(int trackIndex, int moduleIndex) const noexcept;
+
+    int addSendBusModule(int sendIndex, ChainModuleType type);
+    void removeSendBusModule(int sendIndex, int moduleIndex);
+    int getSendBusModuleCount(int sendIndex) const noexcept;
+    ChainModuleType getSendBusModuleType(int sendIndex, int moduleIndex) const noexcept;
+    bool isSendBusModulePresent(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusModuleBypassed(int sendIndex, int moduleIndex, bool shouldBeBypassed);
+    bool isSendBusModuleBypassed(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusFilterMorph(int sendIndex, int moduleIndex, float morph);
+    float getSendBusFilterMorph(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusEqBandGainDb(int sendIndex, int moduleIndex, int bandIndex, float gainDb);
+    float getSendBusEqBandGainDb(int sendIndex, int moduleIndex, int bandIndex) const noexcept;
+    void setSendBusEqBandQ(int sendIndex, int moduleIndex, int bandIndex, float q);
+    float getSendBusEqBandQ(int sendIndex, int moduleIndex, int bandIndex) const noexcept;
+    void setSendBusEqBandFrequency(int sendIndex, int moduleIndex, int bandIndex, float frequencyHz);
+    float getSendBusEqBandFrequency(int sendIndex, int moduleIndex, int bandIndex) const noexcept;
+    void setSendBusCompressorThresholdDb(int sendIndex, int moduleIndex, float thresholdDb);
+    float getSendBusCompressorThresholdDb(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusCompressorRatio(int sendIndex, int moduleIndex, float ratio);
+    float getSendBusCompressorRatio(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusCompressorAttackMs(int sendIndex, int moduleIndex, float attackMs);
+    float getSendBusCompressorAttackMs(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusCompressorReleaseMs(int sendIndex, int moduleIndex, float releaseMs);
+    float getSendBusCompressorReleaseMs(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusCompressorMakeupGainDb(int sendIndex, int moduleIndex, float gainDb);
+    float getSendBusCompressorMakeupGainDb(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusSaturationMode(int sendIndex, int moduleIndex, SaturationMode mode);
+    SaturationMode getSendBusSaturationMode(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusSaturationAmount(int sendIndex, int moduleIndex, float amount);
+    float getSendBusSaturationAmount(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusDelayTimeMs(int sendIndex, int moduleIndex, float timeMs);
+    float getSendBusDelayTimeMs(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusDelaySyncEnabled(int sendIndex, int moduleIndex, bool shouldBeEnabled);
+    bool isSendBusDelaySyncEnabled(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusDelaySyncIndex(int sendIndex, int moduleIndex, int index);
+    int getSendBusDelaySyncIndex(int sendIndex, int moduleIndex) const noexcept;
+    float getSendBusResolvedDelayTimeMs(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusDelayFeedback(int sendIndex, int moduleIndex, float feedback);
+    float getSendBusDelayFeedback(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusDelayMix(int sendIndex, int moduleIndex, float mix);
+    float getSendBusDelayMix(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusReverbSize(int sendIndex, int moduleIndex, float size);
+    float getSendBusReverbSize(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusReverbDamping(int sendIndex, int moduleIndex, float damping);
+    float getSendBusReverbDamping(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusReverbMix(int sendIndex, int moduleIndex, float mix);
+    float getSendBusReverbMix(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusGainModuleGainDb(int sendIndex, int moduleIndex, float gainDb);
+    float getSendBusGainModuleGainDb(int sendIndex, int moduleIndex) const noexcept;
+    void setSendBusGainModulePan(int sendIndex, int moduleIndex, float pan);
+    float getSendBusGainModulePan(int sendIndex, int moduleIndex) const noexcept;
+    float getSendBusModuleInputMeter(int sendIndex, int moduleIndex) const noexcept;
+    float getSendBusModuleOutputMeter(int sendIndex, int moduleIndex) const noexcept;
+    float getSendBusOutputMeter(int sendIndex) const noexcept;
+
     void setTrackMuted(int trackIndex, bool shouldBeMuted);
     bool isTrackMuted(int trackIndex) const noexcept;
     void setTrackSolo(int trackIndex, bool shouldBeSoloed);
@@ -169,6 +229,7 @@ public:
 
 private:
     std::array<Track, numTracks> tracks;
+    std::array<SendBus, numSendBuses> sendBuses;
     std::atomic<bool> playing { false };
     std::atomic<bool> rewinding { false };
     std::atomic<bool> reversePlaying { false };
@@ -210,22 +271,23 @@ private:
                                  int outputChannel,
                                  int sampleIndex) const noexcept;
     void applyPendingModuleChanges() noexcept;
-    void resetModuleState(Track& track, int moduleIndex, ChainModuleType type) noexcept;
-    void resetModuleParameters(Track& track, int moduleIndex, ChainModuleType type) noexcept;
-    float processInputSample(Track& track, int channel, float sample) noexcept;
-    float processChainModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
-    float processFilterModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
-    float processEqModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
-    float processCompressorModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
-    float processSaturationModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
-    float processDelayModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
-    float processReverbModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
-    float processGainModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
+    void resetModuleState(ModuleChain& chain, int moduleIndex, ChainModuleType type) noexcept;
+    void resetModuleParameters(ModuleChain& chain, int moduleIndex, ChainModuleType type) noexcept;
+    float processInputSample(Track& track, int channel, float sample) const noexcept;
+    float processChainModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processFilterModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processEqModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processCompressorModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processSaturationModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processDelayModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processReverbModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
+    float processGainModule(ModuleChain& chain, int moduleIndex, int channel, float sample) const noexcept;
     void applyTrackMixer(float pan, float& left, float& right) const noexcept;
     bool shouldStartCountIn() const noexcept;
     void resetCountInState() noexcept;
     void triggerMetronomePulse(bool isBarStart) noexcept;
     void resetTrackRuntimeState(Track& track) noexcept;
+    void resetSendBusRuntimeState(SendBus& sendBus) noexcept;
     float readTrackSample(const Track& track, int channel, int samplePosition) const noexcept;
     float readTrackSampleInterpolated(const Track& track, int channel, double samplePosition) const noexcept;
     bool writeTrackSample(Track& track, int channel, int samplePosition, float value) noexcept;
@@ -244,7 +306,7 @@ private:
     void beginCountInIfRequestedForBlock(int currentBeatsPerBar) noexcept;
     void prepareTransportStartForBlock(int localPlayhead) noexcept;
     void prepareTrackRuntimePeaksForBlock() noexcept;
-    float getResolvedTrackDelayTimeMs(const Track& track, int moduleIndex) const noexcept;
+    float getResolvedDelayTimeMs(const ModuleChain& chain, int moduleIndex) const noexcept;
     void updateTrackMetersFromBlockPeaks(const std::array<float, numTracks>& blockPeaks,
                                          const std::array<bool, numTracks>& blockClips) noexcept;
     void finalizeStoppedTransportForBlock(bool shouldReversePlay,

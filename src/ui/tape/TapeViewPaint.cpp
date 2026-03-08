@@ -226,6 +226,7 @@ void TapeView::paint(juce::Graphics& g)
     const auto playButtonBounds = getPlayStopButtonBounds().toFloat();
     const auto metronomeButtonBounds = getMetronomeButtonBounds().toFloat();
     const auto loopButtonBounds = getLoopButtonBounds().toFloat();
+    const auto loopButtonEnabled = engine.canEditLoopMarkers();
     const auto drawRoundedButton = [&] (juce::Rectangle<float> bounds, bool active, juce::Colour activeColour)
     {
         g.setColour(active ? activeColour : juce::Colours::black);
@@ -240,7 +241,10 @@ void TapeView::paint(juce::Graphics& g)
     const auto metronomeActive = engine.isMetronomeEnabled();
     const auto metronomeColour = accent.brighter((float) (metronomeBlinkLevel * 0.18));
     drawRoundedButton(metronomeButtonBounds, metronomeActive, metronomeColour);
+    g.saveState();
+    g.setOpacity(loopButtonEnabled ? 1.0f : 0.4f);
     drawRoundedButton(loopButtonBounds, engine.hasLoopMarkerNearPlayhead(), accent);
+    g.restoreState();
 
     const auto buttonIconColour = [] (bool active)
     {
@@ -255,7 +259,7 @@ void TapeView::paint(juce::Graphics& g)
     g.setColour(buttonIconColour(metronomeActive));
     g.strokePath(createMetronomeIcon(metronomeButtonBounds.reduced(17.0f, 15.0f)),
                  juce::PathStrokeType(1.9f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
-    g.setColour(buttonIconColour(engine.hasLoopMarkerNearPlayhead()));
+    g.setColour(buttonIconColour(engine.hasLoopMarkerNearPlayhead()).withAlpha(loopButtonEnabled ? 1.0f : 0.4f));
     g.strokePath(createLoopIcon(loopButtonBounds.reduced(18.0f, 15.0f)),
                  juce::PathStrokeType(1.8f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
@@ -388,7 +392,7 @@ void TapeView::paint(juce::Graphics& g)
                 const auto markerRadius = isBarStart ? 4.5f : 4.0f;
                 g.setColour(juce::Colours::white);
                 g.fillEllipse(beatX - markerRadius,
-                              (float) waveformBounds.getY() + 8.0f - markerRadius,
+                              (float) waveformBounds.getY() - 10.0f - markerRadius,
                               markerRadius * 2.0f,
                               markerRadius * 2.0f);
             }

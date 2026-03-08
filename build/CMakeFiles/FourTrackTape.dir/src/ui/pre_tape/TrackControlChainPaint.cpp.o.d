@@ -1585,5 +1585,4 @@ CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainPaint.cpp.o: \
   /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../TapeEngine.h \
   /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../Track.h \
   /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../AppFonts.h \
-  /Users/pavel/Documents/Projects/4-track/build/juce_binarydata_FourTrackAssets/JuceLibraryCode/FourTrackBinaryData.h \
-  /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../AppSettings.h
+  /Users/pavel/Documents/Projects/4-track/build/juce_binarydata_FourTrackAssets/JuceLibraryCode/FourTrackBinaryData.h

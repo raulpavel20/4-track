@@ -69,7 +69,7 @@ void TrackControlChain::paintFilterModule(juce::Graphics& g, juce::Colour accent
     g.drawRoundedRectangle(visualizerBounds.toFloat(), 10.0f, 1.0f);
 
     juce::Path responsePath;
-    const auto morph = engine.getTrackFilterMorph(selectedTrack, slot);
+    const auto morph = getFilterMorph(slot);
 
     for (int x = 0; x < visualizerBounds.getWidth(); ++x)
     {

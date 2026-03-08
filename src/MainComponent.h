@@ -48,16 +48,25 @@ private:
     enum class BottomPanelMode
     {
         preTape = 0,
-        mixer
+        mixer,
+        send1,
+        send2,
+        send3
     };
 
     AudioDeviceController audioDeviceController;
     TapeEngine tapeEngine;
     TapeView tapeView;
     TrackControlChain trackControlChain;
+    TrackControlChain send1ControlChain;
+    TrackControlChain send2ControlChain;
+    TrackControlChain send3ControlChain;
     TrackMixerPanel trackMixerPanel;
     juce::TextButton preTapeTabButton { "PRE-TAPE" };
     juce::TextButton mixerTabButton { "MIXER" };
+    juce::TextButton send1TabButton { "SEND 1" };
+    juce::TextButton send2TabButton { "SEND 2" };
+    juce::TextButton send3TabButton { "SEND 3" };
     SettingsButton settingsButton;
     HelpButton shortcutsHelpButton;
     BottomPanelMode bottomPanelMode = BottomPanelMode::preTape;

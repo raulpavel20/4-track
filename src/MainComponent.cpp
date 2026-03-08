@@ -94,20 +94,32 @@ void MainComponent::SettingsWindow::closeButtonPressed()
 MainComponent::MainComponent()
     : tapeView(tapeEngine),
       trackControlChain(tapeEngine),
+      send1ControlChain(tapeEngine),
+      send2ControlChain(tapeEngine),
+      send3ControlChain(tapeEngine),
       trackMixerPanel(tapeEngine)
 {
     setWantsKeyboardFocus(true);
     setMouseClickGrabsKeyboardFocus(true);
     addAndMakeVisible(tapeView);
     addAndMakeVisible(trackControlChain);
+    addChildComponent(send1ControlChain);
+    addChildComponent(send2ControlChain);
+    addChildComponent(send3ControlChain);
     addChildComponent(trackMixerPanel);
     addAndMakeVisible(preTapeTabButton);
     addAndMakeVisible(mixerTabButton);
+    addAndMakeVisible(send1TabButton);
+    addAndMakeVisible(send2TabButton);
+    addAndMakeVisible(send3TabButton);
     addAndMakeVisible(settingsButton);
     addAndMakeVisible(shortcutsHelpButton);
 
     preTapeTabButton.onClick = [this] { setBottomPanelMode(BottomPanelMode::preTape); };
     mixerTabButton.onClick = [this] { setBottomPanelMode(BottomPanelMode::mixer); };
+    send1TabButton.onClick = [this] { setBottomPanelMode(BottomPanelMode::send1); };
+    send2TabButton.onClick = [this] { setBottomPanelMode(BottomPanelMode::send2); };
+    send3TabButton.onClick = [this] { setBottomPanelMode(BottomPanelMode::send3); };
     settingsButton.onClick = [this]
     {
         showSettingsWindow();
@@ -125,6 +137,9 @@ MainComponent::MainComponent()
         refreshInputOptions();
     };
     trackControlChain.setSelectedTrack(0);
+    send1ControlChain.setSendBusIndex(0);
+    send2ControlChain.setSendBusIndex(1);
+    send3ControlChain.setSendBusIndex(2);
     setBottomPanelMode(BottomPanelMode::preTape);
 
     if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
@@ -145,9 +160,15 @@ MainComponent::MainComponent()
 
     addKeyListenerRecursive(tapeView);
     addKeyListenerRecursive(trackControlChain);
+    addKeyListenerRecursive(send1ControlChain);
+    addKeyListenerRecursive(send2ControlChain);
+    addKeyListenerRecursive(send3ControlChain);
     addKeyListenerRecursive(trackMixerPanel);
     addKeyListenerRecursive(preTapeTabButton);
     addKeyListenerRecursive(mixerTabButton);
+    addKeyListenerRecursive(send1TabButton);
+    addKeyListenerRecursive(send2TabButton);
+    addKeyListenerRecursive(send3TabButton);
     addKeyListenerRecursive(settingsButton);
     addKeyListenerRecursive(shortcutsHelpButton);
 
@@ -159,9 +180,15 @@ MainComponent::~MainComponent()
     closeSettingsWindow();
     removeKeyListenerRecursive(tapeView);
     removeKeyListenerRecursive(trackControlChain);
+    removeKeyListenerRecursive(send1ControlChain);
+    removeKeyListenerRecursive(send2ControlChain);
+    removeKeyListenerRecursive(send3ControlChain);
     removeKeyListenerRecursive(trackMixerPanel);
     removeKeyListenerRecursive(preTapeTabButton);
     removeKeyListenerRecursive(mixerTabButton);
+    removeKeyListenerRecursive(send1TabButton);
+    removeKeyListenerRecursive(send2TabButton);
+    removeKeyListenerRecursive(send3TabButton);
     removeKeyListenerRecursive(settingsButton);
     removeKeyListenerRecursive(shortcutsHelpButton);
 }
@@ -179,8 +206,9 @@ void MainComponent::resized()
     const auto buttonHeight = 24;
     const auto preTapeWidth = 98;
     const auto mixerWidth = 82;
+    const auto sendWidth = 84;
     const auto tabGap = 8;
-    const auto totalWidth = preTapeWidth + mixerWidth + tabGap;
+    const auto totalWidth = preTapeWidth + mixerWidth + sendWidth * 3 + tabGap * 4;
     const auto helpButtonSize = 24;
     const auto settingsButtonSize = 24;
     const auto utilityGap = 8;
@@ -191,6 +219,12 @@ void MainComponent::resized()
     preTapeTabButton.setBounds(selectorBounds.removeFromLeft(preTapeWidth));
     selectorBounds.removeFromLeft(tabGap);
     mixerTabButton.setBounds(selectorBounds.removeFromLeft(mixerWidth));
+    selectorBounds.removeFromLeft(tabGap);
+    send1TabButton.setBounds(selectorBounds.removeFromLeft(sendWidth));
+    selectorBounds.removeFromLeft(tabGap);
+    send2TabButton.setBounds(selectorBounds.removeFromLeft(sendWidth));
+    selectorBounds.removeFromLeft(tabGap);
+    send3TabButton.setBounds(selectorBounds.removeFromLeft(sendWidth));
     shortcutsHelpButton.setBounds(bounds.getRight() - helpButtonSize,
                                   tabArea.getY() + ((tabArea.getHeight() - helpButtonSize) / 2),
                                   helpButtonSize,
@@ -200,6 +234,9 @@ void MainComponent::resized()
                              settingsButtonSize,
                              settingsButtonSize);
     trackControlChain.setBounds(panelBounds);
+    send1ControlChain.setBounds(panelBounds);
+    send2ControlChain.setBounds(panelBounds);
+    send3ControlChain.setBounds(panelBounds);
     trackMixerPanel.setBounds(panelBounds);
     tapeView.setBounds(bounds);
 }
@@ -225,6 +262,9 @@ void MainComponent::setBottomPanelMode(BottomPanelMode newMode)
     bottomPanelMode = newMode;
     trackControlChain.setVisible(bottomPanelMode == BottomPanelMode::preTape);
     trackMixerPanel.setVisible(bottomPanelMode == BottomPanelMode::mixer);
+    send1ControlChain.setVisible(bottomPanelMode == BottomPanelMode::send1);
+    send2ControlChain.setVisible(bottomPanelMode == BottomPanelMode::send2);
+    send3ControlChain.setVisible(bottomPanelMode == BottomPanelMode::send3);
     updateTabButtonStyles();
 }
 
@@ -240,7 +280,10 @@ void MainComponent::updateTabButtonStyles()
     };
 
     applyStyle(preTapeTabButton, bottomPanelMode == BottomPanelMode::preTape, juce::Button::ConnectedOnRight);
-    applyStyle(mixerTabButton, bottomPanelMode == BottomPanelMode::mixer, juce::Button::ConnectedOnLeft);
+    applyStyle(mixerTabButton, bottomPanelMode == BottomPanelMode::mixer, (juce::Button::ConnectedEdgeFlags) (juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight));
+    applyStyle(send1TabButton, bottomPanelMode == BottomPanelMode::send1, (juce::Button::ConnectedEdgeFlags) (juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight));
+    applyStyle(send2TabButton, bottomPanelMode == BottomPanelMode::send2, (juce::Button::ConnectedEdgeFlags) (juce::Button::ConnectedOnLeft | juce::Button::ConnectedOnRight));
+    applyStyle(send3TabButton, bottomPanelMode == BottomPanelMode::send3, juce::Button::ConnectedOnLeft);
     repaint();
 }
 
@@ -253,6 +296,7 @@ bool MainComponent::keyPressed(const juce::KeyPress& key, juce::Component* origi
 
     const auto modifiers = key.getModifiers();
     const auto keyCode = key.getKeyCode();
+    const auto character = juce::CharacterFunctions::toLowerCase(key.getTextCharacter());
 
     if (keyCode == juce::KeyPress::spaceKey)
     {
@@ -292,7 +336,24 @@ bool MainComponent::keyPressed(const juce::KeyPress& key, juce::Component* origi
         return true;
     }
 
-    const auto character = juce::CharacterFunctions::toLowerCase(key.getTextCharacter());
+    if (! modifiers.isAnyModifierKeyDown())
+    {
+        if (character >= '1' && character <= '5')
+        {
+            if (character == '1')
+                setBottomPanelMode(BottomPanelMode::preTape);
+            else if (character == '2')
+                setBottomPanelMode(BottomPanelMode::mixer);
+            else if (character == '3')
+                setBottomPanelMode(BottomPanelMode::send1);
+            else if (character == '4')
+                setBottomPanelMode(BottomPanelMode::send2);
+            else
+                setBottomPanelMode(BottomPanelMode::send3);
+
+            return true;
+        }
+    }
 
     if (character == 's')
     {
@@ -450,6 +511,11 @@ void MainComponent::showShortcutsHelp()
     juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
                                            "Keyboard Shortcuts",
                                            "Space: Play / Stop\n"
+                                           "1: Open PRE-TAPE\n"
+                                           "2: Open MIXER\n"
+                                           "3: Open SEND 1\n"
+                                           "4: Open SEND 2\n"
+                                           "5: Open SEND 3\n"
                                            "Left / Right: Previous / Next beat\n"
                                            "Shift + Left / Right: Previous / Next loop marker\n"
                                            "T: Toggle metronome\n"

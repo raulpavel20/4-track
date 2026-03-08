@@ -40,7 +40,7 @@ void TrackControlChain::paintDelayModule(juce::Graphics& g, juce::Colour accent,
     content.removeFromTop(24);
     auto visualizerBounds = content.removeFromTop(84).reduced(10, 10).translated(0, -4);
 
-    const auto timeMs = juce::jlimit(20.0f, 2000.0f, engine.getTrackResolvedDelayTimeMs(selectedTrack, slot));
+    const auto timeMs = juce::jlimit(20.0f, 2000.0f, getResolvedDelayTimeMs(slot));
     const auto feedback = juce::jlimit(0.0f, 0.95f, (float) delaySliders[(size_t) slot][1].getValue());
     const auto mix = juce::jlimit(0.0f, 1.0f, (float) delaySliders[(size_t) slot][2].getValue());
     const auto waveCount = juce::roundToInt(juce::jmap(timeMs, 20.0f, 2000.0f, 6.0f, 3.0f));

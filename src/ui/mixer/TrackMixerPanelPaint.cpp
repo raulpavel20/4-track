@@ -39,6 +39,11 @@ juce::String formatPanValue(float value)
     return value < 0.0f ? "L" + juce::String(std::abs(value), 2) : "R" + juce::String(value, 2);
 }
 
+juce::String formatPercentValue(float value)
+{
+    return juce::String((int) std::round(juce::jlimit(0.0f, 1.0f, value) * 100.0f)) + "%";
+}
+
 juce::String formatSampleRateValue(double value)
 {
     if (value >= 1000.0)
@@ -95,6 +100,33 @@ void TrackMixerPanel::paintContent(juce::Graphics& g)
                    bounds.getWidth(),
                    14,
                    juce::Justification::centred);
+    }
+
+    for (int sendIndex = 0; sendIndex < TapeEngine::numSendBuses; ++sendIndex)
+    {
+        const auto bounds = sendModuleBounds[(size_t) sendIndex];
+        g.setColour(juce::Colours::white.withAlpha(0.22f));
+        g.drawRoundedRectangle(bounds.toFloat().reduced(0.5f), 14.0f, 1.0f);
+        g.setColour(juce::Colours::white);
+        g.setFont(AppFonts::getFont(12.0f));
+        g.drawText("SEND " + juce::String(sendIndex + 1),
+                   bounds.getX(),
+                   bounds.getY() + 6,
+                   bounds.getWidth(),
+                   16,
+                   juce::Justification::centred);
+
+        g.setFont(AppFonts::getFont(10.0f));
+        g.setColour(juce::Colours::white.withAlpha(0.72f));
+
+        for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
+        {
+            const auto sliderBounds = sendSliders[(size_t) sendIndex][(size_t) trackIndex].getBounds();
+            g.drawText(formatPercentValue((float) sendSliders[(size_t) sendIndex][(size_t) trackIndex].getValue()),
+                       juce::Rectangle<int>(sliderBounds.getX() - 12, sliderBounds.getBottom() - 6, sliderBounds.getWidth() + 24, 14),
+                       juce::Justification::centred,
+                       false);
+        }
     }
 
     g.setColour(juce::Colours::white.withAlpha(0.22f));

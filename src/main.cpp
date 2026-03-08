@@ -11,12 +11,12 @@ public:
 
     const juce::String getApplicationName() override
     {
-        return "4-Track Tape";
+        return "4-Track";
     }
 
     const juce::String getApplicationVersion() override
     {
-        return "0.1.0";
+        return "26.1";
     }
 
     bool moreThanOneInstanceAllowed() override

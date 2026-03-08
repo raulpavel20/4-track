@@ -10,7 +10,7 @@ constexpr int compressorModuleWidth = 260;
 constexpr int saturationModuleWidth = 140;
 constexpr int delayModuleWidth = 214;
 constexpr int reverbModuleWidth = 214;
-constexpr int gainModuleWidth = 78;
+constexpr int gainModuleWidth = 100;
 constexpr int moduleVerticalInset = 10;
 constexpr int moduleInnerPadding = 10;
 constexpr int addButtonSize = 32;
@@ -49,8 +49,11 @@ void TrackControlChain::layoutContent()
     const auto contentHeight = juce::jmax(1, viewportBounds.getHeight());
 
     auto x = 0;
-    const auto inputBounds = juce::Rectangle<int>(x, 0, inputModuleWidth, contentHeight);
-    x += inputBounds.getWidth() + moduleGap;
+    const auto inputWidth = showsInputModule() ? inputModuleWidth : 0;
+    const auto inputBounds = juce::Rectangle<int>(x, 0, inputWidth, contentHeight);
+
+    if (showsInputModule())
+        x += inputBounds.getWidth() + moduleGap;
 
     for (int visibleIndex = 0; visibleIndex < visibleModuleCount; ++visibleIndex)
     {
@@ -63,7 +66,8 @@ void TrackControlChain::layoutContent()
     const auto requiredWidth = addBounds.getRight();
     contentComponent.setSize(juce::jmax(viewportBounds.getWidth(), requiredWidth), contentHeight);
 
-    layoutInputModule(inputBounds);
+    if (showsInputModule())
+        layoutInputModule(inputBounds);
 
     for (int visibleIndex = 0; visibleIndex < visibleModuleCount; ++visibleIndex)
     {
@@ -113,12 +117,15 @@ juce::Rectangle<int> TrackControlChain::getViewportBounds() const
 
 juce::Rectangle<int> TrackControlChain::getInputModuleBounds() const
 {
-    return juce::Rectangle<int>(0, 0, inputModuleWidth, contentComponent.getHeight());
+    return juce::Rectangle<int>(0, 0, showsInputModule() ? inputModuleWidth : 0, contentComponent.getHeight());
 }
 
 juce::Rectangle<int> TrackControlChain::getAddButtonBounds() const
 {
-    auto x = inputModuleWidth + moduleGap;
+    auto x = 0;
+
+    if (showsInputModule())
+        x = inputModuleWidth + moduleGap;
 
     for (int visibleIndex = 0; visibleIndex < visibleModuleCount; ++visibleIndex)
         x += getModuleWidth(visibleTypes[(size_t) visibleIndex]) + moduleGap;

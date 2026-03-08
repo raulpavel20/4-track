@@ -30,6 +30,9 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     for (auto& track : tracks)
         resetTrackRuntimeState(track);
 
+    for (auto& sendBus : sendBuses)
+        resetSendBusRuntimeState(sendBus);
+
     servicePendingAllocations();
 }
 
@@ -48,4 +51,7 @@ void TapeEngine::audioDeviceStopped()
 
     for (auto& trackBus : lastTrackInputBuses)
         trackBus.fill(0.0f);
+
+    for (auto& sendBus : sendBuses)
+        resetSendBusRuntimeState(sendBus);
 }

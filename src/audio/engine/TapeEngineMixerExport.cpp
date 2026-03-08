@@ -78,6 +78,22 @@ void TapeEngine::setTrackMixerPan(int trackIndex, float pan)
     tracks[(size_t) trackIndex].mixerPan.store(clampPan(pan), std::memory_order_release);
 }
 
+void TapeEngine::setTrackSendLevel(int trackIndex, int sendIndex, float amount)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(sendIndex, numSendBuses))
+        return;
+
+    tracks[(size_t) trackIndex].sendLevels[(size_t) sendIndex].store(juce::jlimit(0.0f, 1.0f, amount), std::memory_order_release);
+}
+
+float TapeEngine::getTrackSendLevel(int trackIndex, int sendIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(sendIndex, numSendBuses))
+        return 0.0f;
+
+    return tracks[(size_t) trackIndex].sendLevels[(size_t) sendIndex].load(std::memory_order_acquire);
+}
+
 float TapeEngine::getTrackMixerPan(int trackIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))
@@ -155,6 +171,8 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
     std::array<bool, numTracks> mutedSnapshots {};
     std::array<float, numTracks> gainSnapshots {};
     std::array<float, numTracks> panSnapshots {};
+    std::array<std::array<float, numSendBuses>, numTracks> sendSnapshots {};
+    std::array<SendBus, numSendBuses> localSendBuses;
 
     for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
     {
@@ -162,6 +180,76 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
         mutedSnapshots[(size_t) trackIndex] = track.muted.load(std::memory_order_acquire);
         gainSnapshots[(size_t) trackIndex] = track.mixerGainDb.load(std::memory_order_acquire);
         panSnapshots[(size_t) trackIndex] = track.mixerPan.load(std::memory_order_acquire);
+
+        for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
+            sendSnapshots[(size_t) trackIndex][(size_t) sendIndex] = track.sendLevels[(size_t) sendIndex].load(std::memory_order_acquire);
+    }
+
+    for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
+    {
+        const auto& sourceSendBus = sendBuses[(size_t) sendIndex];
+        auto& localSendBus = localSendBuses[(size_t) sendIndex];
+
+        for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
+        {
+            const auto type = (ChainModuleType) sourceSendBus.moduleTypes[(size_t) moduleIndex].load(std::memory_order_acquire);
+            localSendBus.moduleTypes[(size_t) moduleIndex].store((int) type, std::memory_order_relaxed);
+            localSendBus.activeModuleTypes[(size_t) moduleIndex] = (int) type;
+            localSendBus.moduleBypassed[(size_t) moduleIndex].store(sourceSendBus.moduleBypassed[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                    std::memory_order_relaxed);
+            localSendBus.filterMorphs[(size_t) moduleIndex].store(sourceSendBus.filterMorphs[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                  std::memory_order_relaxed);
+            localSendBus.compressorThresholdsDb[(size_t) moduleIndex].store(sourceSendBus.compressorThresholdsDb[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                            std::memory_order_relaxed);
+            localSendBus.compressorRatios[(size_t) moduleIndex].store(sourceSendBus.compressorRatios[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                      std::memory_order_relaxed);
+            localSendBus.compressorAttacksMs[(size_t) moduleIndex].store(sourceSendBus.compressorAttacksMs[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                         std::memory_order_relaxed);
+            localSendBus.compressorReleasesMs[(size_t) moduleIndex].store(sourceSendBus.compressorReleasesMs[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                          std::memory_order_relaxed);
+            localSendBus.compressorMakeupGainsDb[(size_t) moduleIndex].store(sourceSendBus.compressorMakeupGainsDb[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                             std::memory_order_relaxed);
+            localSendBus.saturationModes[(size_t) moduleIndex].store(sourceSendBus.saturationModes[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                     std::memory_order_relaxed);
+            localSendBus.saturationAmounts[(size_t) moduleIndex].store(sourceSendBus.saturationAmounts[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                       std::memory_order_relaxed);
+            localSendBus.delayTimesMs[(size_t) moduleIndex].store(sourceSendBus.delayTimesMs[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                  std::memory_order_relaxed);
+            localSendBus.delaySyncEnableds[(size_t) moduleIndex].store(sourceSendBus.delaySyncEnableds[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                       std::memory_order_relaxed);
+            localSendBus.delaySyncIndices[(size_t) moduleIndex].store(sourceSendBus.delaySyncIndices[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                      std::memory_order_relaxed);
+            localSendBus.delayFeedbacks[(size_t) moduleIndex].store(sourceSendBus.delayFeedbacks[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                    std::memory_order_relaxed);
+            localSendBus.delayMixes[(size_t) moduleIndex].store(sourceSendBus.delayMixes[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                std::memory_order_relaxed);
+            localSendBus.reverbSizes[(size_t) moduleIndex].store(sourceSendBus.reverbSizes[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                 std::memory_order_relaxed);
+            localSendBus.reverbDampings[(size_t) moduleIndex].store(sourceSendBus.reverbDampings[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                    std::memory_order_relaxed);
+            localSendBus.reverbMixes[(size_t) moduleIndex].store(sourceSendBus.reverbMixes[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                 std::memory_order_relaxed);
+            localSendBus.gainModuleGainsDb[(size_t) moduleIndex].store(sourceSendBus.gainModuleGainsDb[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                       std::memory_order_relaxed);
+            localSendBus.gainModulePans[(size_t) moduleIndex].store(sourceSendBus.gainModulePans[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                    std::memory_order_relaxed);
+
+            for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
+            {
+                localSendBus.eqBandGainsDb[(size_t) moduleIndex][(size_t) bandIndex].store(sourceSendBus.eqBandGainsDb[(size_t) moduleIndex][(size_t) bandIndex].load(std::memory_order_acquire),
+                                                                                           std::memory_order_relaxed);
+                localSendBus.eqBandQs[(size_t) moduleIndex][(size_t) bandIndex].store(sourceSendBus.eqBandQs[(size_t) moduleIndex][(size_t) bandIndex].load(std::memory_order_acquire),
+                                                                                      std::memory_order_relaxed);
+                localSendBus.eqBandFrequencies[(size_t) moduleIndex][(size_t) bandIndex].store(sourceSendBus.eqBandFrequencies[(size_t) moduleIndex][(size_t) bandIndex].load(std::memory_order_acquire),
+                                                                                               std::memory_order_relaxed);
+            }
+
+            if (type == ChainModuleType::delay)
+                localSendBus.delayStates[(size_t) moduleIndex].prepare(targetSampleRate);
+
+            if (type == ChainModuleType::reverb)
+                localSendBus.reverbStates[(size_t) moduleIndex].prepare(targetSampleRate);
+        }
     }
 
     if (file.existsAsFile() && ! file.deleteFile())
@@ -205,6 +293,7 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
         {
             auto mixedLeft = 0.0f;
             auto mixedRight = 0.0f;
+            std::array<std::array<float, Track::numChannels>, numTracks> trackPostMixer {};
 
             for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
             {
@@ -218,8 +307,43 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
                 trackLeft *= gain;
                 trackRight *= gain;
                 applyTrackMixer(panSnapshots[(size_t) trackIndex], trackLeft, trackRight);
+                trackPostMixer[(size_t) trackIndex][0] = trackLeft;
+                trackPostMixer[(size_t) trackIndex][1] = trackRight;
                 mixedLeft += trackLeft;
                 mixedRight += trackRight;
+            }
+
+            for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
+            {
+                auto sendLeft = 0.0f;
+                auto sendRight = 0.0f;
+
+                for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
+                {
+                    const auto sendLevel = sendSnapshots[(size_t) trackIndex][(size_t) sendIndex];
+
+                    if (sendLevel <= 0.0f)
+                        continue;
+
+                    sendLeft += trackPostMixer[(size_t) trackIndex][0] * sendLevel;
+                    sendRight += trackPostMixer[(size_t) trackIndex][1] * sendLevel;
+                }
+
+                auto& localSendBus = localSendBuses[(size_t) sendIndex];
+                auto sendReturnLeft = sendLeft;
+                auto sendReturnRight = sendRight;
+
+                for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
+                {
+                    if ((ChainModuleType) localSendBus.activeModuleTypes[(size_t) moduleIndex] == ChainModuleType::none)
+                        continue;
+
+                    sendReturnLeft = processChainModule(localSendBus, moduleIndex, 0, sendReturnLeft);
+                    sendReturnRight = processChainModule(localSendBus, moduleIndex, 1, sendReturnRight);
+                }
+
+                mixedLeft += sendReturnLeft;
+                mixedRight += sendReturnRight;
             }
 
             renderBuffer.setSample(0, sampleIndex, mixedLeft);

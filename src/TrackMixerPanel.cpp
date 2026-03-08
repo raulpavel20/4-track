@@ -88,6 +88,23 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
         contentComponent.addAndMakeVisible(panSlider);
     }
 
+    for (int sendIndex = 0; sendIndex < TapeEngine::numSendBuses; ++sendIndex)
+    {
+        for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
+        {
+            auto& sendSlider = sendSliders[(size_t) sendIndex][(size_t) trackIndex];
+            configureRotarySlider(sendSlider, 0.0, 1.0, 0.01, 0.0);
+            sendSlider.onValueChange = [this, sendIndex, trackIndex]
+            {
+                engine.setTrackSendLevel(trackIndex,
+                                         sendIndex,
+                                         (float) sendSliders[(size_t) sendIndex][(size_t) trackIndex].getValue());
+                contentComponent.repaint();
+            };
+            contentComponent.addAndMakeVisible(sendSlider);
+        }
+    }
+
     auto configureExportBox = [] (juce::ComboBox& box)
     {
         box.setColour(juce::ComboBox::backgroundColourId, juce::Colours::black);
@@ -221,6 +238,14 @@ void TrackMixerPanel::refreshFromEngine()
         gainSliders[(size_t) trackIndex].setValue(engine.getTrackMixerGainDb(trackIndex), juce::dontSendNotification);
         panSliders[(size_t) trackIndex].setValue(engine.getTrackMixerPan(trackIndex), juce::dontSendNotification);
     }
+
+    for (int sendIndex = 0; sendIndex < TapeEngine::numSendBuses; ++sendIndex)
+    {
+        for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
+            sendSliders[(size_t) sendIndex][(size_t) trackIndex].setValue(engine.getTrackSendLevel(trackIndex, sendIndex),
+                                                                          juce::dontSendNotification);
+    }
+
     layoutContent();
     repaint();
     contentComponent.repaint();
@@ -233,6 +258,9 @@ void TrackMixerPanel::updateColours()
         const auto colour = getTrackColour(trackIndex);
         gainSliders[(size_t) trackIndex].setColour(juce::Slider::thumbColourId, colour);
         panSliders[(size_t) trackIndex].setColour(juce::Slider::rotarySliderFillColourId, colour);
+
+        for (int sendIndex = 0; sendIndex < TapeEngine::numSendBuses; ++sendIndex)
+            sendSliders[(size_t) sendIndex][(size_t) trackIndex].setColour(juce::Slider::rotarySliderFillColourId, colour);
     }
 }
 
