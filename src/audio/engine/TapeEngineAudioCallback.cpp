@@ -93,10 +93,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
         auto mixedLeft = 0.0f;
         auto mixedRight = 0.0f;
-        auto delayBusLeft = 0.0f;
-        auto delayBusRight = 0.0f;
         std::array<std::array<float, Track::numChannels>, numTracks> trackDryContributions {};
-        std::array<std::array<float, Track::numChannels>, numTracks> trackDelayContributions {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
         {
@@ -173,15 +170,10 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
             if (isAudible)
             {
-                const auto delaySendAmount = track.delaySend.load(std::memory_order_relaxed);
                 mixedLeft += postMixerLeft;
                 mixedRight += postMixerRight;
-                delayBusLeft += postMixerLeft * delaySendAmount;
-                delayBusRight += postMixerRight * delaySendAmount;
                 trackDryContributions[(size_t) trackIndex][0] = postMixerLeft;
                 trackDryContributions[(size_t) trackIndex][1] = postMixerRight;
-                trackDelayContributions[(size_t) trackIndex][0] = postMixerLeft * delaySendAmount;
-                trackDelayContributions[(size_t) trackIndex][1] = postMixerRight * delaySendAmount;
             }
 
             const auto peak = juce::jmax(std::abs(audibleLeft), std::abs(audibleRight));
@@ -191,25 +183,10 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                                               juce::jmax(std::abs(postMixerLeft), std::abs(postMixerRight)));
         }
 
-        auto delayReturnLeft = 0.0f;
-        auto delayReturnRight = 0.0f;
-        processDelayReturn(delayBusLeft, delayBusRight, delayReturnLeft, delayReturnRight);
-        mixedLeft += delayReturnLeft;
-        mixedRight += delayReturnRight;
-
-        auto totalDelayWeight = 0.0f;
         std::array<std::array<float, Track::numChannels>, numTracks> currentTrackInputBuses {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
-            totalDelayWeight += std::abs(trackDelayContributions[(size_t) trackIndex][0]) + std::abs(trackDelayContributions[(size_t) trackIndex][1]);
-
-        for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
-        {
-            const auto delayWeight = std::abs(trackDelayContributions[(size_t) trackIndex][0]) + std::abs(trackDelayContributions[(size_t) trackIndex][1]);
-            const auto delayShare = totalDelayWeight > 0.0f ? delayWeight / totalDelayWeight : 0.0f;
-            currentTrackInputBuses[(size_t) trackIndex][0] = trackDryContributions[(size_t) trackIndex][0] + (delayReturnLeft * delayShare);
-            currentTrackInputBuses[(size_t) trackIndex][1] = trackDryContributions[(size_t) trackIndex][1] + (delayReturnRight * delayShare);
-        }
+            currentTrackInputBuses[(size_t) trackIndex] = trackDryContributions[(size_t) trackIndex];
 
         lastMasterInputBus[0] = mixedLeft;
         lastMasterInputBus[1] = mixedRight;

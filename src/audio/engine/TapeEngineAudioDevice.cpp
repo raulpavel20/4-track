@@ -8,10 +8,6 @@ void TapeEngine::audioDeviceAboutToStart(juce::AudioIODevice* device)
     preparedBlockSize = juce::jmax(256, device->getCurrentBufferSizeSamples());
     inputScratch.setSize(Track::numChannels, preparedBlockSize, false, false, true);
     inputScratch.clear();
-    maxDelaySamples = juce::jmax(1, (int) std::ceil(sampleRate * 2.0));
-    delayBuffer.setSize(Track::numChannels, maxDelaySamples, false, false, true);
-    delayBuffer.clear();
-    delayWritePosition = 0;
     lastMasterInputBus.fill(0.0f);
 
     for (auto& trackBus : lastTrackInputBuses)
@@ -48,8 +44,6 @@ void TapeEngine::audioDeviceStopped()
     countInTotalBeats = 0;
     countInAudible.store(false, std::memory_order_release);
     transportStartPulsePending.store(false, std::memory_order_release);
-    delayWritePosition = 0;
-    delayBuffer.clear();
     lastMasterInputBus.fill(0.0f);
 
     for (auto& trackBus : lastTrackInputBuses)

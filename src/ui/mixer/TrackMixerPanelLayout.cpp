@@ -4,15 +4,12 @@ namespace
 {
 constexpr int moduleGap = 10;
 constexpr int trackModuleWidth = 83;
-constexpr int fxModuleWidth = 210;
 constexpr int exportModuleWidth = 232;
 constexpr int moduleVerticalInset = 10;
 constexpr int moduleInnerPadding = 10;
 constexpr int gainSliderWidth = 20;
 constexpr int gainSliderHeight = 110;
 constexpr int panKnobSize = 54;
-constexpr int sendKnobSize = 40;
-constexpr int fxKnobSize = 68;
 }
 
 void TrackMixerPanel::layoutContent()
@@ -28,8 +25,6 @@ void TrackMixerPanel::layoutContent()
         x += trackModuleWidth + moduleGap;
     }
 
-    delayModuleBounds = juce::Rectangle<int>(x, 0, fxModuleWidth, contentHeight);
-    x += fxModuleWidth + moduleGap;
     exportModuleBounds = juce::Rectangle<int>(x, 0, exportModuleWidth, contentHeight);
     const auto requiredWidth = exportModuleBounds.getRight();
     contentComponent.setSize(juce::jmax(viewportBounds.getWidth(), requiredWidth), contentHeight);
@@ -48,45 +43,6 @@ void TrackMixerPanel::layoutContent()
                                                   panKnobSize,
                                                   panKnobSize);
     }
-
-    auto layoutFxModule = [&] (juce::Rectangle<int> bounds,
-                               std::array<juce::Slider, TapeEngine::numTracks>& sendSliders,
-                               std::array<juce::Slider, 3>& controlSliders)
-    {
-        auto content = bounds.reduced(moduleInnerPadding, moduleVerticalInset);
-        content.removeFromTop(24);
-        auto sendRow = content.removeFromTop(62);
-        const auto sendCellWidth = sendRow.getWidth() / TapeEngine::numTracks;
-
-        for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
-        {
-            auto cell = sendRow.removeFromLeft(trackIndex == TapeEngine::numTracks - 1 ? sendRow.getWidth() : sendCellWidth);
-            sendSliders[(size_t) trackIndex].setBounds(cell.getCentreX() - (sendKnobSize / 2),
-                                                       cell.getY() + 12,
-                                                       sendKnobSize,
-                                                       sendKnobSize);
-        }
-
-        content.removeFromTop(8);
-        const auto controlCellWidth = content.getWidth() / 3;
-
-        for (int controlIndex = 0; controlIndex < 3; ++controlIndex)
-        {
-            auto cell = content.removeFromLeft(controlIndex == 2 ? content.getWidth() : controlCellWidth);
-            controlSliders[(size_t) controlIndex].setBounds(cell.getCentreX() - (fxKnobSize / 2),
-                                                            cell.getCentreY() - (fxKnobSize / 2) + 6,
-                                                            fxKnobSize,
-                                                            fxKnobSize);
-
-            if (&controlSliders == &delayControlSliders && controlIndex == 0)
-            {
-                const auto buttonWidth = cell.getWidth() / 2 + 8;
-                delayTimeModeButton.setBounds(cell.getX() + (buttonWidth / 2) - 7, cell.getBottom() - 14, buttonWidth, 16);
-            }
-        }
-    };
-
-    layoutFxModule(delayModuleBounds, delaySendSliders, delayControlSliders);
 
     auto exportContent = exportModuleBounds.reduced(moduleInnerPadding, moduleVerticalInset);
     exportContent.removeFromTop(28);

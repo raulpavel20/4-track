@@ -39,11 +39,6 @@ juce::String formatPanValue(float value)
     return value < 0.0f ? "L" + juce::String(std::abs(value), 2) : "R" + juce::String(value, 2);
 }
 
-juce::String formatPercentValue(float value)
-{
-    return juce::String((int) std::round(value * 100.0f)) + "%";
-}
-
 juce::String formatSampleRateValue(double value)
 {
     if (value >= 1000.0)
@@ -101,81 +96,6 @@ void TrackMixerPanel::paintContent(juce::Graphics& g)
                    14,
                    juce::Justification::centred);
     }
-
-    auto paintFxModule = [&] (juce::Rectangle<int> bounds,
-                              const juce::String& title,
-                              const std::array<juce::Slider, TapeEngine::numTracks>& sendSliders,
-                              const std::array<juce::String, 3>& controlLabels,
-                              const std::array<juce::String, 3>& controlValues)
-    {
-        g.setColour(juce::Colours::white.withAlpha(0.22f));
-        g.drawRoundedRectangle(bounds.toFloat().reduced(0.5f), 14.0f, 1.0f);
-        g.setColour(juce::Colours::white);
-        g.setFont(AppFonts::getFont(12.0f));
-        g.drawText(title,
-                   bounds.getX(),
-                   bounds.getY() + 6,
-                   bounds.getWidth(),
-                   16,
-                   juce::Justification::centred);
-
-        auto content = bounds.reduced(moduleInnerPadding, moduleVerticalInset);
-        content.removeFromTop(24);
-        auto sendRow = content.removeFromTop(62);
-        const auto sendCellWidth = sendRow.getWidth() / TapeEngine::numTracks;
-
-        for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
-        {
-            auto cell = sendRow.removeFromLeft(trackIndex == TapeEngine::numTracks - 1 ? sendRow.getWidth() : sendCellWidth);
-            const auto colour = getTrackColour(trackIndex);
-            g.setColour(juce::Colours::white.withAlpha(0.7f));
-            g.setFont(AppFonts::getFont(10.0f));
-            g.drawText(juce::String(trackIndex + 1),
-                       cell.getX(),
-                       cell.getY(),
-                       cell.getWidth(),
-                       12,
-                       juce::Justification::centred);
-            g.setColour(colour);
-            g.drawText(formatPercentValue((float) sendSliders[(size_t) trackIndex].getValue()),
-                       cell.getX(),
-                       cell.getBottom() - 14,
-                       cell.getWidth(),
-                       12,
-                       juce::Justification::centred);
-        }
-
-        content.removeFromTop(8);
-        const auto controlCellWidth = content.getWidth() / 3;
-
-        for (int controlIndex = 0; controlIndex < 3; ++controlIndex)
-        {
-            auto cell = content.removeFromLeft(controlIndex == 2 ? content.getWidth() : controlCellWidth);
-            g.setColour(juce::Colours::white.withAlpha(0.8f));
-            g.setFont(AppFonts::getFont(10.0f));
-            g.drawText(controlLabels[(size_t) controlIndex],
-                       cell.getX(),
-                       cell.getY() + 10,
-                       cell.getWidth(),
-                       12,
-                       juce::Justification::centred);
-            if (! (title == "DELAY" && controlIndex == 0))
-                g.drawText(controlValues[(size_t) controlIndex],
-                           cell.getX(),
-                           cell.getBottom() - 14,
-                           cell.getWidth(),
-                           12,
-                           juce::Justification::centred);
-        }
-    };
-
-    paintFxModule(delayModuleBounds,
-                  "DELAY",
-                  delaySendSliders,
-                  { "TIME", "FDBK", "MIX" },
-                  { delayTimeModeButton.getButtonText(),
-                    formatPercentValue((float) delayControlSliders[1].getValue()),
-                    formatPercentValue((float) delayControlSliders[2].getValue()) });
 
     g.setColour(juce::Colours::white.withAlpha(0.22f));
     g.drawRoundedRectangle(exportModuleBounds.toFloat().reduced(0.5f), 14.0f, 1.0f);

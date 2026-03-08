@@ -36,11 +36,6 @@ void configureVerticalSlider(juce::Slider& slider, double min, double max, doubl
     slider.setColour(juce::Slider::backgroundColourId, juce::Colours::black);
 }
 
-juce::String formatTimeValue(float value)
-{
-    return juce::String((int) std::round(value)) + " ms";
-}
-
 juce::String formatSampleRateValue(double value)
 {
     if (value >= 1000.0)
@@ -91,45 +86,7 @@ TrackMixerPanel::TrackMixerPanel(TapeEngine& engineToUse)
             contentComponent.repaint();
         };
         contentComponent.addAndMakeVisible(panSlider);
-
-        auto& delaySendSlider = delaySendSliders[(size_t) trackIndex];
-        configureRotarySlider(delaySendSlider, 0.0, 1.0, 0.01, 0.0);
-        delaySendSlider.onValueChange = [this, trackIndex]
-        {
-            engine.setTrackDelaySend(trackIndex, (float) delaySendSliders[(size_t) trackIndex].getValue());
-            contentComponent.repaint();
-        };
-        contentComponent.addAndMakeVisible(delaySendSlider);
     }
-
-    configureRotarySlider(delayControlSliders[0], 0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0, 2.0);
-    configureRotarySlider(delayControlSliders[1], 0.0, 0.95, 0.01, 0.35);
-    configureRotarySlider(delayControlSliders[2], 0.0, 1.0, 0.01, 0.25);
-    delayControlSliders[0].onValueChange = [this]
-    {
-        if (engine.isDelaySyncEnabled())
-            engine.setDelaySyncIndex(juce::roundToInt((float) delayControlSliders[0].getValue()));
-        else
-            engine.setDelayTimeMs((float) delayControlSliders[0].getValue());
-
-        refreshFromEngine();
-    };
-    delayControlSliders[1].onValueChange = [this] { engine.setDelayFeedback((float) delayControlSliders[1].getValue()); contentComponent.repaint(); };
-    delayControlSliders[2].onValueChange = [this] { engine.setDelayMix((float) delayControlSliders[2].getValue()); contentComponent.repaint(); };
-
-    for (auto& slider : delayControlSliders)
-        contentComponent.addAndMakeVisible(slider);
-
-    delayTimeModeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
-    delayTimeModeButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
-    delayTimeModeButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white.withAlpha(0.8f));
-    delayTimeModeButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
-    delayTimeModeButton.onClick = [this]
-    {
-        engine.setDelaySyncEnabled(! engine.isDelaySyncEnabled());
-        refreshFromEngine();
-    };
-    contentComponent.addAndMakeVisible(delayTimeModeButton);
 
     auto configureExportBox = [] (juce::ComboBox& box)
     {
@@ -263,26 +220,7 @@ void TrackMixerPanel::refreshFromEngine()
     {
         gainSliders[(size_t) trackIndex].setValue(engine.getTrackMixerGainDb(trackIndex), juce::dontSendNotification);
         panSliders[(size_t) trackIndex].setValue(engine.getTrackMixerPan(trackIndex), juce::dontSendNotification);
-        delaySendSliders[(size_t) trackIndex].setValue(engine.getTrackDelaySend(trackIndex), juce::dontSendNotification);
     }
-
-    if (engine.isDelaySyncEnabled())
-    {
-        delayControlSliders[0].setRange(0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0);
-        delayControlSliders[0].setDoubleClickReturnValue(true, 2.0);
-        delayControlSliders[0].setValue((double) engine.getDelaySyncIndex(), juce::dontSendNotification);
-    }
-    else
-    {
-        delayControlSliders[0].setRange(20.0, 2000.0, 1.0);
-        delayControlSliders[0].setDoubleClickReturnValue(true, 380.0);
-        delayControlSliders[0].setValue(engine.getDelayTimeMs(), juce::dontSendNotification);
-    }
-
-    delayControlSliders[1].setValue(engine.getDelayFeedback(), juce::dontSendNotification);
-    delayControlSliders[2].setValue(engine.getDelayMix(), juce::dontSendNotification);
-    delayTimeModeButton.setButtonText(engine.isDelaySyncEnabled() ? TapeEngine::getDelaySyncLabel(engine.getDelaySyncIndex())
-                                                                  : formatTimeValue(engine.getDelayTimeMs()));
     layoutContent();
     repaint();
     contentComponent.repaint();
@@ -295,14 +233,7 @@ void TrackMixerPanel::updateColours()
         const auto colour = getTrackColour(trackIndex);
         gainSliders[(size_t) trackIndex].setColour(juce::Slider::thumbColourId, colour);
         panSliders[(size_t) trackIndex].setColour(juce::Slider::rotarySliderFillColourId, colour);
-        delaySendSliders[(size_t) trackIndex].setColour(juce::Slider::rotarySliderFillColourId, colour);
     }
-
-    for (auto& slider : delayControlSliders)
-        slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::white);
-
-    delayTimeModeButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white.withAlpha(0.8f));
-    delayTimeModeButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
 }
 
 void TrackMixerPanel::syncExportDefaultsFromSettings()

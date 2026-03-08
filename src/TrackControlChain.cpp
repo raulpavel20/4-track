@@ -126,8 +126,9 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         menu.addItem(2, "EQ");
         menu.addItem(3, "Compressor");
         menu.addItem(4, "Saturation");
-        menu.addItem(5, "Reverb");
-        menu.addItem(6, "Gain");
+        menu.addItem(5, "Delay");
+        menu.addItem(6, "Reverb");
+        menu.addItem(7, "Gain");
         menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
                            [safeThis](int result)
                            {
@@ -145,8 +146,10 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                else if (result == 4)
                                    moduleType = ChainModuleType::saturation;
                                else if (result == 5)
-                                   moduleType = ChainModuleType::reverb;
+                                   moduleType = ChainModuleType::delay;
                                else if (result == 6)
+                                   moduleType = ChainModuleType::reverb;
+                               else if (result == 7)
                                    moduleType = ChainModuleType::gain;
 
                                safeThis->engine.addTrackModule(safeThis->selectedTrack, moduleType);
@@ -292,6 +295,55 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         };
         contentComponent.addAndMakeVisible(saturationAmountSlider);
 
+        auto& delayTimeModeButton = delayTimeModeButtons[(size_t) moduleIndex];
+        delayTimeModeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+        delayTimeModeButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+        delayTimeModeButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white.withAlpha(0.72f));
+        delayTimeModeButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+        delayTimeModeButton.onClick = [this, moduleIndex]
+        {
+            engine.setTrackDelaySyncEnabled(selectedTrack,
+                                           moduleIndex,
+                                           ! engine.isTrackDelaySyncEnabled(selectedTrack, moduleIndex));
+            refreshFromEngine();
+        };
+        contentComponent.addAndMakeVisible(delayTimeModeButton);
+
+        for (int controlIndex = 0; controlIndex < delayControlCount; ++controlIndex)
+        {
+            auto& slider = delaySliders[(size_t) moduleIndex][(size_t) controlIndex];
+
+            if (controlIndex == 0)
+                configureRotarySlider(slider, 20.0, 2000.0, 1.0, 380.0);
+            else if (controlIndex == 1)
+                configureRotarySlider(slider, 0.0, 0.95, 0.01, 0.35);
+            else
+                configureRotarySlider(slider, 0.0, 1.0, 0.01, 0.25);
+
+            slider.onValueChange = [this, moduleIndex, controlIndex]
+            {
+                const auto value = (float) delaySliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
+
+                if (controlIndex == 0)
+                {
+                    if (engine.isTrackDelaySyncEnabled(selectedTrack, moduleIndex))
+                        engine.setTrackDelaySyncIndex(selectedTrack, moduleIndex, juce::roundToInt(value));
+                    else
+                        engine.setTrackDelayTimeMs(selectedTrack, moduleIndex, value);
+
+                    refreshFromEngine();
+                    return;
+                }
+                else if (controlIndex == 1)
+                    engine.setTrackDelayFeedback(selectedTrack, moduleIndex, value);
+                else
+                    engine.setTrackDelayMix(selectedTrack, moduleIndex, value);
+
+                contentComponent.repaint();
+            };
+            contentComponent.addAndMakeVisible(slider);
+        }
+
         for (int controlIndex = 0; controlIndex < reverbControlCount; ++controlIndex)
         {
             auto& slider = reverbSliders[(size_t) moduleIndex][(size_t) controlIndex];
@@ -413,6 +465,26 @@ void TrackControlChain::refreshFromEngine()
         saturationAmountSliders[(size_t) moduleIndex].setValue(engine.getTrackSaturationAmount(selectedTrack, moduleIndex), juce::dontSendNotification);
         saturationModeButtons[(size_t) moduleIndex].setToggleState(engine.getTrackSaturationMode(selectedTrack, moduleIndex) == SaturationMode::heavy,
                                                                    juce::dontSendNotification);
+        if (engine.isTrackDelaySyncEnabled(selectedTrack, moduleIndex))
+        {
+            delaySliders[(size_t) moduleIndex][0].setRange(0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0);
+            delaySliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 2.0);
+            delaySliders[(size_t) moduleIndex][0].setValue((double) engine.getTrackDelaySyncIndex(selectedTrack, moduleIndex),
+                                                           juce::dontSendNotification);
+            delayTimeModeButtons[(size_t) moduleIndex].setButtonText(TapeEngine::getDelaySyncLabel(engine.getTrackDelaySyncIndex(selectedTrack,
+                                                                                                                                moduleIndex)));
+        }
+        else
+        {
+            delaySliders[(size_t) moduleIndex][0].setRange(20.0, 2000.0, 1.0);
+            delaySliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 380.0);
+            delaySliders[(size_t) moduleIndex][0].setValue(engine.getTrackDelayTimeMs(selectedTrack, moduleIndex), juce::dontSendNotification);
+            delayTimeModeButtons[(size_t) moduleIndex].setButtonText(juce::String((int) std::round(engine.getTrackDelayTimeMs(selectedTrack,
+                                                                                                                               moduleIndex)))
+                                                                     + "ms");
+        }
+        delaySliders[(size_t) moduleIndex][1].setValue(engine.getTrackDelayFeedback(selectedTrack, moduleIndex), juce::dontSendNotification);
+        delaySliders[(size_t) moduleIndex][2].setValue(engine.getTrackDelayMix(selectedTrack, moduleIndex), juce::dontSendNotification);
         reverbSliders[(size_t) moduleIndex][0].setValue(engine.getTrackReverbSize(selectedTrack, moduleIndex), juce::dontSendNotification);
         reverbSliders[(size_t) moduleIndex][1].setValue(engine.getTrackReverbDamping(selectedTrack, moduleIndex), juce::dontSendNotification);
         reverbSliders[(size_t) moduleIndex][2].setValue(engine.getTrackReverbMix(selectedTrack, moduleIndex), juce::dontSendNotification);
@@ -480,6 +552,12 @@ void TrackControlChain::updateAccentColours()
     for (auto& slider : saturationAmountSliders)
         slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
 
+    for (auto& slot : delaySliders)
+    {
+        for (auto& slider : slot)
+            slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+    }
+
     for (auto& slot : reverbSliders)
     {
         for (auto& slider : slot)
@@ -546,6 +624,9 @@ void TrackControlChain::updateModuleVisibility()
         filterSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::filter);
         saturationModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
         saturationAmountSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
+        delayTimeModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::delay);
+        for (int controlIndex = 0; controlIndex < delayControlCount; ++controlIndex)
+            delaySliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::delay);
         for (int controlIndex = 0; controlIndex < reverbControlCount; ++controlIndex)
             reverbSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::reverb);
         gainModuleSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::gain);

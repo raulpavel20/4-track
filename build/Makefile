@@ -1028,6 +1028,30 @@ src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s
 .PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.cpp.s
 
+src/ui/pre_tape/TrackControlChainDelayModule.o: src/ui/pre_tape/TrackControlChainDelayModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainDelayModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainDelayModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainDelayModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainDelayModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainDelayModule.i: src/ui/pre_tape/TrackControlChainDelayModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainDelayModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainDelayModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainDelayModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainDelayModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainDelayModule.s: src/ui/pre_tape/TrackControlChainDelayModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainDelayModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainDelayModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainDelayModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainDelayModule.cpp.s
+
 src/ui/pre_tape/TrackControlChainEqModule.o: src/ui/pre_tape/TrackControlChainEqModule.cpp.o
 .PHONY : src/ui/pre_tape/TrackControlChainEqModule.o
 
@@ -1507,6 +1531,9 @@ help:
 	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.o"
 	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.i"
 	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainDelayModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainDelayModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainDelayModule.s"
 	@echo "... src/ui/pre_tape/TrackControlChainEqModule.o"
 	@echo "... src/ui/pre_tape/TrackControlChainEqModule.i"
 	@echo "... src/ui/pre_tape/TrackControlChainEqModule.s"

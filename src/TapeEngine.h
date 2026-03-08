@@ -115,6 +115,19 @@ public:
     SaturationMode getTrackSaturationMode(int trackIndex, int moduleIndex) const noexcept;
     void setTrackSaturationAmount(int trackIndex, int moduleIndex, float amount);
     float getTrackSaturationAmount(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackDelayTimeMs(int trackIndex, int moduleIndex, float timeMs);
+    float getTrackDelayTimeMs(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackDelaySyncEnabled(int trackIndex, int moduleIndex, bool shouldBeEnabled);
+    bool isTrackDelaySyncEnabled(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackDelaySyncIndex(int trackIndex, int moduleIndex, int index);
+    int getTrackDelaySyncIndex(int trackIndex, int moduleIndex) const noexcept;
+    float getTrackResolvedDelayTimeMs(int trackIndex, int moduleIndex) const noexcept;
+    static int getNumDelaySyncOptions() noexcept;
+    static juce::String getDelaySyncLabel(int index);
+    void setTrackDelayFeedback(int trackIndex, int moduleIndex, float feedback);
+    float getTrackDelayFeedback(int trackIndex, int moduleIndex) const noexcept;
+    void setTrackDelayMix(int trackIndex, int moduleIndex, float mix);
+    float getTrackDelayMix(int trackIndex, int moduleIndex) const noexcept;
     void setTrackReverbSize(int trackIndex, int moduleIndex, float size);
     float getTrackReverbSize(int trackIndex, int moduleIndex) const noexcept;
     void setTrackReverbDamping(int trackIndex, int moduleIndex, float damping);
@@ -134,21 +147,7 @@ public:
     float getTrackMixerGainDb(int trackIndex) const noexcept;
     void setTrackMixerPan(int trackIndex, float pan);
     float getTrackMixerPan(int trackIndex) const noexcept;
-    void setTrackDelaySend(int trackIndex, float amount);
-    float getTrackDelaySend(int trackIndex) const noexcept;
     float getTrackMixerMeter(int trackIndex) const noexcept;
-    void setDelayTimeMs(float timeMs);
-    float getDelayTimeMs() const noexcept;
-    void setDelaySyncEnabled(bool shouldBeEnabled);
-    bool isDelaySyncEnabled() const noexcept;
-    void setDelaySyncIndex(int index);
-    int getDelaySyncIndex() const noexcept;
-    static int getNumDelaySyncOptions() noexcept;
-    static juce::String getDelaySyncLabel(int index);
-    void setDelayFeedback(float feedback);
-    float getDelayFeedback() const noexcept;
-    void setDelayMix(float mix);
-    float getDelayMix() const noexcept;
 
     float getTrackPeakMeter(int trackIndex) const noexcept;
     bool getTrackClipping(int trackIndex) const noexcept;
@@ -188,20 +187,12 @@ private:
     std::atomic<double> requestedPlayhead { -1.0 };
     std::atomic<int> requiredChunkCount { initialChunkCount };
     std::atomic<int> soloTrack { -1 };
-    std::atomic<float> delayTimeMs { 380.0f };
-    std::atomic<bool> delaySyncEnabled { true };
-    std::atomic<int> delaySyncIndex { 2 };
-    std::atomic<float> delayFeedback { 0.35f };
-    std::atomic<float> delayMix { 0.25f };
     std::array<std::atomic<int64_t>, maxLoopMarkers> loopMarkerBeats;
     std::atomic<int> loopMarkerCount { 0 };
     std::atomic<int> loopMarkerRevision { 0 };
     double sampleRate = 44100.0;
     int preparedBlockSize = 512;
     juce::AudioBuffer<float> inputScratch;
-    juce::AudioBuffer<float> delayBuffer;
-    int delayWritePosition = 0;
-    int maxDelaySamples = 1;
     std::array<std::array<float, Track::numChannels>, numTracks> lastTrackInputBuses {};
     std::array<float, Track::numChannels> lastMasterInputBus {};
     int clickSamplesRemaining = 0;
@@ -227,11 +218,10 @@ private:
     float processEqModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processCompressorModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processSaturationModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
+    float processDelayModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processReverbModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     float processGainModule(Track& track, int moduleIndex, int channel, float sample) noexcept;
     void applyTrackMixer(float pan, float& left, float& right) const noexcept;
-    void processDelayReturn(float inputLeft, float inputRight, float& outputLeft, float& outputRight) noexcept;
-    float getResolvedDelayTimeMs() const noexcept;
     bool shouldStartCountIn() const noexcept;
     void resetCountInState() noexcept;
     void triggerMetronomePulse(bool isBarStart) noexcept;
@@ -254,6 +244,7 @@ private:
     void beginCountInIfRequestedForBlock(int currentBeatsPerBar) noexcept;
     void prepareTransportStartForBlock(int localPlayhead) noexcept;
     void prepareTrackRuntimePeaksForBlock() noexcept;
+    float getResolvedTrackDelayTimeMs(const Track& track, int moduleIndex) const noexcept;
     void updateTrackMetersFromBlockPeaks(const std::array<float, numTracks>& blockPeaks,
                                          const std::array<bool, numTracks>& blockClips) noexcept;
     void finalizeStoppedTransportForBlock(bool shouldReversePlay,

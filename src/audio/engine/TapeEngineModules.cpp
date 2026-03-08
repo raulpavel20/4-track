@@ -24,6 +24,29 @@ float clampUnit(float value) noexcept
     return juce::jlimit(0.0f, 1.0f, value);
 }
 
+float clampDelayTimeMs(float value) noexcept
+{
+    return juce::jlimit(20.0f, 2000.0f, value);
+}
+
+struct DelaySyncOption
+{
+    const char* label;
+    double beats;
+};
+
+constexpr std::array<DelaySyncOption, 8> delaySyncOptions
+{{
+    { "1/1", 4.0 },
+    { "1/2", 2.0 },
+    { "1/4", 1.0 },
+    { "1/8", 0.5 },
+    { "1/8.", 0.75 },
+    { "1/8T", 1.0 / 3.0 },
+    { "1/16", 0.25 },
+    { "1/16T", 1.0 / 6.0 }
+}};
+
 float calculatePeakFilterSample(float input, EqBandState& state, size_t channelIndex) noexcept
 {
     const auto output = (state.b0 * input) + state.z1[channelIndex];
@@ -177,6 +200,10 @@ int TapeEngine::addTrackModule(int trackIndex, ChainModuleType type)
         return -1;
 
     resetModuleParameters(track, targetIndex, type);
+
+    if (type == ChainModuleType::delay)
+        track.delayStates[(size_t) targetIndex].prepare(sampleRate);
+
     track.moduleTypes[(size_t) targetIndex].store((int) type, std::memory_order_release);
     track.moduleResetRequested[(size_t) targetIndex].store(true, std::memory_order_release);
     return targetIndex;
@@ -453,6 +480,107 @@ float TapeEngine::getTrackSaturationAmount(int trackIndex, int moduleIndex) cons
     return tracks[(size_t) trackIndex].saturationAmounts[(size_t) moduleIndex].load(std::memory_order_acquire);
 }
 
+void TapeEngine::setTrackDelayTimeMs(int trackIndex, int moduleIndex, float timeMs)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].delayTimesMs[(size_t) moduleIndex].store(clampDelayTimeMs(timeMs), std::memory_order_release);
+}
+
+float TapeEngine::getTrackDelayTimeMs(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 380.0f;
+
+    return tracks[(size_t) trackIndex].delayTimesMs[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackDelaySyncEnabled(int trackIndex, int moduleIndex, bool shouldBeEnabled)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].delaySyncEnableds[(size_t) moduleIndex].store(shouldBeEnabled, std::memory_order_release);
+}
+
+bool TapeEngine::isTrackDelaySyncEnabled(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return true;
+
+    return tracks[(size_t) trackIndex].delaySyncEnableds[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackDelaySyncIndex(int trackIndex, int moduleIndex, int index)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].delaySyncIndices[(size_t) moduleIndex].store(juce::jlimit(0, getNumDelaySyncOptions() - 1, index),
+                                                                              std::memory_order_release);
+}
+
+int TapeEngine::getTrackDelaySyncIndex(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 2;
+
+    return juce::jlimit(0,
+                        getNumDelaySyncOptions() - 1,
+                        tracks[(size_t) trackIndex].delaySyncIndices[(size_t) moduleIndex].load(std::memory_order_acquire));
+}
+
+float TapeEngine::getTrackResolvedDelayTimeMs(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 380.0f;
+
+    return getResolvedTrackDelayTimeMs(tracks[(size_t) trackIndex], moduleIndex);
+}
+
+int TapeEngine::getNumDelaySyncOptions() noexcept
+{
+    return (int) delaySyncOptions.size();
+}
+
+juce::String TapeEngine::getDelaySyncLabel(int index)
+{
+    return delaySyncOptions[(size_t) juce::jlimit(0, getNumDelaySyncOptions() - 1, index)].label;
+}
+
+void TapeEngine::setTrackDelayFeedback(int trackIndex, int moduleIndex, float feedback)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].delayFeedbacks[(size_t) moduleIndex].store(juce::jlimit(0.0f, 0.95f, feedback), std::memory_order_release);
+}
+
+float TapeEngine::getTrackDelayFeedback(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.35f;
+
+    return tracks[(size_t) trackIndex].delayFeedbacks[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackDelayMix(int trackIndex, int moduleIndex, float mix)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].delayMixes[(size_t) moduleIndex].store(clampUnit(mix), std::memory_order_release);
+}
+
+float TapeEngine::getTrackDelayMix(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.25f;
+
+    return tracks[(size_t) trackIndex].delayMixes[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
 void TapeEngine::setTrackReverbSize(int trackIndex, int moduleIndex, float size)
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
@@ -570,6 +698,7 @@ void TapeEngine::resetModuleState(Track& track, int moduleIndex, ChainModuleType
 {
     track.filterStates[(size_t) moduleIndex].reset();
     track.compressorStates[(size_t) moduleIndex].reset();
+    track.delayStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
     track.moduleBlockInputPeaks[(size_t) moduleIndex] = 0.0f;
@@ -594,6 +723,11 @@ void TapeEngine::resetModuleParameters(Track& track, int moduleIndex, ChainModul
     track.compressorMakeupGainsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
     track.saturationModes[(size_t) moduleIndex].store((int) SaturationMode::light, std::memory_order_relaxed);
     track.saturationAmounts[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
+    track.delayTimesMs[(size_t) moduleIndex].store(380.0f, std::memory_order_relaxed);
+    track.delaySyncEnableds[(size_t) moduleIndex].store(true, std::memory_order_relaxed);
+    track.delaySyncIndices[(size_t) moduleIndex].store(2, std::memory_order_relaxed);
+    track.delayFeedbacks[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
+    track.delayMixes[(size_t) moduleIndex].store(0.25f, std::memory_order_relaxed);
     track.reverbSizes[(size_t) moduleIndex].store(0.45f, std::memory_order_relaxed);
     track.reverbDampings[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
     track.reverbMixes[(size_t) moduleIndex].store(0.25f, std::memory_order_relaxed);
@@ -653,6 +787,9 @@ float TapeEngine::processChainModule(Track& track, int moduleIndex, int channel,
             break;
         case ChainModuleType::saturation:
             output = processSaturationModule(track, moduleIndex, channel, sample);
+            break;
+        case ChainModuleType::delay:
+            output = processDelayModule(track, moduleIndex, channel, sample);
             break;
         case ChainModuleType::reverb:
             output = processReverbModule(track, moduleIndex, channel, sample);
@@ -766,6 +903,44 @@ float TapeEngine::processSaturationModule(Track& track, int moduleIndex, int cha
     return pushed / (1.0f + (0.6f * std::abs(pushed)));
 }
 
+float TapeEngine::processDelayModule(Track& track, int moduleIndex, int channel, float sample) noexcept
+{
+    auto& state = track.delayStates[(size_t) moduleIndex];
+
+    if (state.buffer.getNumSamples() <= 0)
+        return sample;
+
+    const auto channelIndex = juce::jlimit(0, Track::numChannels - 1, channel);
+    const auto delaySamples = juce::jlimit(1,
+                                           juce::jmax(1, state.maxDelaySamples - 1),
+                                           (int) std::round((sampleRate * getResolvedTrackDelayTimeMs(track, moduleIndex)) * 0.001));
+    const auto readPosition = (state.writePosition - delaySamples + state.maxDelaySamples) % state.maxDelaySamples;
+    const auto feedback = track.delayFeedbacks[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto mix = track.delayMixes[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto delayed = state.buffer.getSample(channelIndex, readPosition);
+    state.buffer.setSample(channelIndex, state.writePosition, sample + (delayed * feedback));
+
+    if (channelIndex == Track::numChannels - 1)
+        state.writePosition = (state.writePosition + 1) % state.maxDelaySamples;
+
+    return delayed * mix + sample * (1.0f - mix);
+}
+
+float TapeEngine::getResolvedTrackDelayTimeMs(const Track& track, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 380.0f;
+
+    if (! track.delaySyncEnableds[(size_t) moduleIndex].load(std::memory_order_relaxed))
+        return clampDelayTimeMs(track.delayTimesMs[(size_t) moduleIndex].load(std::memory_order_relaxed));
+
+    const auto beats = delaySyncOptions[(size_t) juce::jlimit(0,
+                                                              getNumDelaySyncOptions() - 1,
+                                                              track.delaySyncIndices[(size_t) moduleIndex].load(std::memory_order_relaxed))].beats;
+    const auto currentBpm = juce::jmax(30.0, (double) bpm.load(std::memory_order_relaxed));
+    return clampDelayTimeMs((float) ((60000.0 / currentBpm) * beats));
+}
+
 float TapeEngine::processReverbModule(Track& track, int moduleIndex, int channel, float sample) noexcept
 {
     const auto channelIndex = juce::jlimit(0, Track::numChannels - 1, channel);
@@ -801,6 +976,8 @@ void TapeEngine::resetTrackRuntimeState(Track& track) noexcept
         track.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
         track.filterStates[(size_t) moduleIndex].reset();
         track.compressorStates[(size_t) moduleIndex].reset();
+        track.delayStates[(size_t) moduleIndex].prepare(sampleRate);
+        track.delayStates[(size_t) moduleIndex].reset();
         track.reverbStates[(size_t) moduleIndex].reset();
         track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
 

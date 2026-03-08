@@ -22,6 +22,7 @@ enum class ChainModuleType : int
     eq,
     compressor,
     saturation,
+    delay,
     reverb,
     gain
 };
@@ -110,6 +111,38 @@ struct CompressorModuleState
     void reset() noexcept
     {
         envelopes.fill(0.0f);
+    }
+};
+
+struct DelayModuleState
+{
+    juce::AudioBuffer<float> buffer;
+    int writePosition = 0;
+    int maxDelaySamples = 1;
+    double preparedSampleRate = 0.0;
+
+    void reset() noexcept
+    {
+        writePosition = 0;
+
+        if (buffer.getNumSamples() > 0)
+            buffer.clear();
+    }
+
+    void prepare(double sampleRate)
+    {
+        if (sampleRate <= 0.0)
+            return;
+
+        const auto requiredSamples = juce::jmax(1, (int) std::ceil(sampleRate * 2.0));
+
+        if (buffer.getNumChannels() != 2 || buffer.getNumSamples() != requiredSamples)
+            buffer.setSize(2, requiredSamples, false, false, true);
+
+        buffer.clear();
+        writePosition = 0;
+        maxDelaySamples = requiredSamples;
+        preparedSampleRate = sampleRate;
     }
 };
 
@@ -202,6 +235,11 @@ struct Track
     std::array<std::atomic<float>, maxChainModules> compressorMakeupGainsDb;
     std::array<std::atomic<int>, maxChainModules> saturationModes;
     std::array<std::atomic<float>, maxChainModules> saturationAmounts;
+    std::array<std::atomic<float>, maxChainModules> delayTimesMs;
+    std::array<std::atomic<bool>, maxChainModules> delaySyncEnableds;
+    std::array<std::atomic<int>, maxChainModules> delaySyncIndices;
+    std::array<std::atomic<float>, maxChainModules> delayFeedbacks;
+    std::array<std::atomic<float>, maxChainModules> delayMixes;
     std::array<std::atomic<float>, maxChainModules> reverbSizes;
     std::array<std::atomic<float>, maxChainModules> reverbDampings;
     std::array<std::atomic<float>, maxChainModules> reverbMixes;
@@ -210,7 +248,6 @@ struct Track
     std::array<std::atomic<float>, maxChainModules> moduleOutputMeters;
     std::atomic<float> mixerGainDb { 0.0f };
     std::atomic<float> mixerPan { 0.0f };
-    std::atomic<float> delaySend { 0.0f };
     std::atomic<float> mixerMeter { 0.0f };
     std::atomic<bool> muted { false };
     std::atomic<float> peakMeter { 0.0f };
@@ -220,6 +257,7 @@ struct Track
     std::array<FilterModuleState, maxChainModules> filterStates;
     std::array<std::array<EqBandState, maxEqBands>, maxChainModules> eqStates;
     std::array<CompressorModuleState, maxChainModules> compressorStates;
+    std::array<DelayModuleState, maxChainModules> delayStates;
     std::array<ReverbModuleState, maxChainModules> reverbStates;
     std::array<float, maxChainModules> moduleBlockInputPeaks {};
     std::array<float, maxChainModules> moduleBlockOutputPeaks {};
@@ -245,7 +283,6 @@ struct Track
         inputSource.store(0, std::memory_order_relaxed);
         mixerGainDb.store(0.0f, std::memory_order_relaxed);
         mixerPan.store(0.0f, std::memory_order_relaxed);
-        delaySend.store(0.0f, std::memory_order_relaxed);
         mixerMeter.store(0.0f, std::memory_order_relaxed);
         mixerBlockPeak = 0.0f;
         resetModuleConfiguration();
@@ -297,6 +334,11 @@ struct Track
             compressorMakeupGainsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
             saturationModes[(size_t) moduleIndex].store((int) SaturationMode::light, std::memory_order_relaxed);
             saturationAmounts[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
+            delayTimesMs[(size_t) moduleIndex].store(380.0f, std::memory_order_relaxed);
+            delaySyncEnableds[(size_t) moduleIndex].store(true, std::memory_order_relaxed);
+            delaySyncIndices[(size_t) moduleIndex].store(2, std::memory_order_relaxed);
+            delayFeedbacks[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
+            delayMixes[(size_t) moduleIndex].store(0.25f, std::memory_order_relaxed);
             reverbSizes[(size_t) moduleIndex].store(0.45f, std::memory_order_relaxed);
             reverbDampings[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
             reverbMixes[(size_t) moduleIndex].store(0.25f, std::memory_order_relaxed);
@@ -307,6 +349,7 @@ struct Track
             moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
             filterStates[(size_t) moduleIndex].reset();
             compressorStates[(size_t) moduleIndex].reset();
+            delayStates[(size_t) moduleIndex].reset();
             reverbStates[(size_t) moduleIndex].reset();
 
             for (int bandIndex = 0; bandIndex < maxEqBands; ++bandIndex)

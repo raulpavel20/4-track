@@ -23,6 +23,7 @@ public:
 
 private:
     static constexpr int compressorControlCount = 5;
+    static constexpr int delayControlCount = 3;
     static constexpr int reverbControlCount = 3;
 
     class CloseButton : public juce::Button
@@ -81,6 +82,8 @@ private:
     std::array<std::array<juce::Slider, compressorControlCount>, Track::maxChainModules> compressorSliders;
     std::array<SaturationModeButton, Track::maxChainModules> saturationModeButtons;
     std::array<juce::Slider, Track::maxChainModules> saturationAmountSliders;
+    std::array<std::array<juce::Slider, delayControlCount>, Track::maxChainModules> delaySliders;
+    std::array<juce::TextButton, Track::maxChainModules> delayTimeModeButtons;
     std::array<std::array<juce::Slider, reverbControlCount>, Track::maxChainModules> reverbSliders;
     std::array<juce::Slider, Track::maxChainModules> gainModuleSliders;
     std::array<int, Track::maxChainModules> visibleSlots {};
@@ -101,6 +104,7 @@ private:
     void layoutEqModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutCompressorModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutSaturationModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutDelayModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutReverbModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutGainModule(int slot, juce::Rectangle<int> moduleArea);
     void paintInputModule(juce::Graphics& g, juce::Colour accent, juce::Rectangle<int> inputBounds);
@@ -108,6 +112,7 @@ private:
     void paintEqModule(juce::Graphics& g, int slot);
     void paintCompressorModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintSaturationModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintDelayModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintReverbModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintGainModule(juce::Graphics& g, int slot, juce::Rectangle<int> bounds);
     void syncFrequencyEditorsFromEngine(bool force);
