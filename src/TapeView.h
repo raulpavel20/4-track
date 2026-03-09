@@ -55,9 +55,15 @@ private:
     juce::Rectangle<int> getLoopButtonBounds() const;
     juce::Rectangle<int> getBpmEditorBounds() const;
     juce::Rectangle<int> getBeatsPerBarEditorBounds() const;
+    float getControlScale(int trackIndex) const noexcept;
+    int getControlButtonSize(int trackIndex) const noexcept;
+    int getControlGap(int trackIndex) const noexcept;
+    int getMonitoringControlHeight(int trackIndex) const noexcept;
     juce::Rectangle<int> getControlClusterBounds(int trackIndex) const;
     juce::Rectangle<int> getModeButtonBounds(int trackIndex, int buttonIndex) const;
     juce::Rectangle<int> getUtilityButtonBounds(int trackIndex, int buttonIndex) const;
+    juce::Rectangle<int> getMonitoringModeBounds(int trackIndex) const;
+    juce::Rectangle<int> getMonitoringModeSegmentBounds(int trackIndex, int segmentIndex) const;
     juce::Rectangle<int> getZoomSliderBounds() const;
     juce::Rectangle<int> getWaveformBounds(int trackIndex) const;
     juce::Rectangle<int> getMeterBounds(int trackIndex) const;

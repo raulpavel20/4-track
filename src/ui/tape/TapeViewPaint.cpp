@@ -279,6 +279,7 @@ void TapeView::paint(juce::Graphics& g)
         for (int buttonIndex = 0; buttonIndex < 3; ++buttonIndex)
         {
             const auto buttonBounds = getModeButtonBounds(trackIndex, buttonIndex).toFloat();
+            const auto buttonCorner = juce::jmin(9.0f, buttonBounds.getHeight() * 0.35f);
             const auto recordMode = buttonIndex == 0 ? TrackRecordMode::overdub
                                                      : buttonIndex == 1 ? TrackRecordMode::replace
                                                                         : TrackRecordMode::erase;
@@ -290,11 +291,11 @@ void TapeView::paint(juce::Graphics& g)
                                                                    : 1.0f);
 
             g.setColour(active ? buttonBaseColour : juce::Colours::black);
-            g.fillRoundedRectangle(buttonBounds, 9.0f);
+            g.fillRoundedRectangle(buttonBounds, buttonCorner);
             g.setColour(active ? buttonBaseColour : juce::Colours::white.withAlpha(0.2f));
-            g.drawRoundedRectangle(buttonBounds, 9.0f, 1.0f);
+            g.drawRoundedRectangle(buttonBounds, buttonCorner, 1.0f);
 
-            auto iconBounds = buttonBounds.reduced(8.0f);
+            auto iconBounds = buttonBounds.reduced(juce::jmax(4.0f, buttonBounds.getWidth() * 0.3f));
             g.setColour(active ? juce::Colours::black : juce::Colours::white);
 
             if (buttonIndex == 0)
@@ -309,16 +310,56 @@ void TapeView::paint(juce::Graphics& g)
         for (int buttonIndex = 0; buttonIndex < 2; ++buttonIndex)
         {
             const auto buttonBounds = getUtilityButtonBounds(trackIndex, buttonIndex).toFloat();
+            const auto buttonCorner = juce::jmin(9.0f, buttonBounds.getHeight() * 0.35f);
             const auto active = buttonIndex == 0 ? engine.isTrackSolo(trackIndex)
                                                  : engine.isTrackMuted(trackIndex);
 
             g.setColour(active ? colour : juce::Colours::black);
-            g.fillRoundedRectangle(buttonBounds, 9.0f);
+            g.fillRoundedRectangle(buttonBounds, buttonCorner);
             g.setColour(active ? colour : juce::Colours::white.withAlpha(0.2f));
-            g.drawRoundedRectangle(buttonBounds, 9.0f, 1.0f);
+            g.drawRoundedRectangle(buttonBounds, buttonCorner, 1.0f);
             g.setColour(active ? juce::Colours::black : juce::Colours::white);
-            g.setFont(AppFonts::getFont(12.0f));
+            g.setFont(AppFonts::getFont(juce::jlimit(8.0f, 12.0f, buttonBounds.getHeight() * 0.46f)));
             g.drawText(buttonIndex == 0 ? "S" : "M", buttonBounds, juce::Justification::centred, false);
+        }
+
+        const auto monitoringBounds = getMonitoringModeBounds(trackIndex).toFloat();
+        const auto monitoringCorner = juce::jmin(8.0f, monitoringBounds.getHeight() * 0.45f);
+        const auto monitoringDividerInset = juce::jmin(3.0f, monitoringBounds.getHeight() * 0.18f);
+        const auto monitoringMode = engine.getTrackMonitoringMode(trackIndex);
+        const auto activeMonitoringSegment = monitoringMode == TrackMonitoringMode::in ? 0
+                                          : monitoringMode == TrackMonitoringMode::off ? 2
+                                                                                       : 1;
+        static const std::array<juce::String, 3> monitoringLabels { "IN", "AUTO", "OFF" };
+
+        g.setColour(juce::Colours::black);
+        g.fillRoundedRectangle(monitoringBounds, monitoringCorner);
+        g.saveState();
+        g.reduceClipRegion(getMonitoringModeSegmentBounds(trackIndex, activeMonitoringSegment));
+        g.setColour(colour);
+        g.fillRoundedRectangle(monitoringBounds, monitoringCorner);
+        g.restoreState();
+        g.setColour(juce::Colours::white.withAlpha(0.2f));
+        g.drawRoundedRectangle(monitoringBounds, monitoringCorner, 1.0f);
+        g.setColour(juce::Colours::white.withAlpha(0.12f));
+
+        for (int segmentIndex = 1; segmentIndex < 3; ++segmentIndex)
+        {
+            const auto segmentBounds = getMonitoringModeSegmentBounds(trackIndex, segmentIndex);
+            g.drawLine((float) segmentBounds.getX(),
+                       monitoringBounds.getY() + monitoringDividerInset,
+                       (float) segmentBounds.getX(),
+                       monitoringBounds.getBottom() - monitoringDividerInset,
+                       1.0f);
+        }
+
+        g.setFont(AppFonts::getFont(juce::jlimit(7.0f, 10.0f, monitoringBounds.getHeight() * 0.56f)));
+
+        for (int segmentIndex = 0; segmentIndex < 3; ++segmentIndex)
+        {
+            const auto segmentBounds = getMonitoringModeSegmentBounds(trackIndex, segmentIndex).toFloat();
+            g.setColour(segmentIndex == activeMonitoringSegment ? juce::Colours::black : juce::Colours::white);
+            g.drawText(monitoringLabels[(size_t) segmentIndex], segmentBounds, juce::Justification::centred, false);
         }
 
         const auto visibleSamples = getVisibleSamples();

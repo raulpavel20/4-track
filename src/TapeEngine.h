@@ -78,6 +78,8 @@ public:
     void requestTrackRecordMode(int trackIndex, TrackRecordMode mode);
     TrackRecordMode getTrackRecordMode(int trackIndex) const noexcept;
     TrackRecordMode getPendingTrackRecordMode(int trackIndex) const noexcept;
+    void setTrackMonitoringMode(int trackIndex, TrackMonitoringMode mode);
+    TrackMonitoringMode getTrackMonitoringMode(int trackIndex) const noexcept;
 
     void setTrackInputGain(int trackIndex, float gain);
     float getTrackInputGain(int trackIndex) const noexcept;

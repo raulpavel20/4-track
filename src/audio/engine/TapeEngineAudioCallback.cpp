@@ -93,20 +93,26 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
 
         auto mixedLeft = 0.0f;
         auto mixedRight = 0.0f;
-        std::array<std::array<float, Track::numChannels>, numTracks> trackDryContributions {};
+        auto routedMixedLeft = 0.0f;
+        auto routedMixedRight = 0.0f;
+        std::array<std::array<float, Track::numChannels>, numTracks> routedTrackContributions {};
         std::array<bool, numTracks> suppressTrackSendFeed {};
         std::array<std::array<float, numTracks>, numSendBuses> sendAttributionWeights {};
         std::array<float, numSendBuses> sendTotalWeights {};
+        std::array<float, numSendBuses> audibleSendTotalWeights {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
         {
             auto& track = tracks[(size_t) trackIndex];
             const auto recordMode = (TrackRecordMode) track.recordMode.load(std::memory_order_acquire);
+            const auto monitoringMode = (TrackMonitoringMode) track.monitoringMode.load(std::memory_order_acquire);
             const auto isMuted = track.muted.load(std::memory_order_acquire);
-            const auto isAudible = (soloedTrack < 0 || soloedTrack == trackIndex) && ! isMuted;
+            const auto isRouted = (soloedTrack < 0 || soloedTrack == trackIndex) && ! isMuted;
             const auto sourceId = juce::jmax(0, track.inputSource.load(std::memory_order_acquire));
             const auto sourceType = getInputSourceTypeFromId(sourceId);
-            const auto suppressOwnSendFeed = recordMode != TrackRecordMode::off
+            const auto shouldProcessInput = monitoringMode == TrackMonitoringMode::in
+                                            || (recordMode != TrackRecordMode::off && recordMode != TrackRecordMode::erase);
+            const auto suppressOwnSendFeed = shouldProcessInput
                                              && (sourceType == InputSourceType::trackBus || sourceType == InputSourceType::masterBus);
             suppressTrackSendFeed[(size_t) trackIndex] = suppressOwnSendFeed;
 
@@ -119,7 +125,7 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
             auto processedLeft = 0.0f;
             auto processedRight = 0.0f;
 
-            if (recordMode != TrackRecordMode::off && recordMode != TrackRecordMode::erase)
+            if (shouldProcessInput)
             {
                 processedLeft = processInputSample(track,
                                                    0,
@@ -170,22 +176,23 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 monitorRight = processedRight;
             }
 
-            const auto audibleLeft = trackLeft + monitorLeft;
-            const auto audibleRight = trackRight + monitorRight;
-            auto postMixerLeft = audibleLeft * juce::Decibels::decibelsToGain(track.mixerGainDb.load(std::memory_order_relaxed));
-            auto postMixerRight = audibleRight * juce::Decibels::decibelsToGain(track.mixerGainDb.load(std::memory_order_relaxed));
-            applyTrackMixer(track.mixerPan.load(std::memory_order_relaxed), postMixerLeft, postMixerRight);
+            const auto routedLeft = trackLeft + monitorLeft;
+            const auto routedRight = trackRight + monitorRight;
+            auto routedPostMixerLeft = routedLeft * juce::Decibels::decibelsToGain(track.mixerGainDb.load(std::memory_order_relaxed));
+            auto routedPostMixerRight = routedRight * juce::Decibels::decibelsToGain(track.mixerGainDb.load(std::memory_order_relaxed));
+            applyTrackMixer(track.mixerPan.load(std::memory_order_relaxed), routedPostMixerLeft, routedPostMixerRight);
+            const auto isDirectlyAudible = isRouted && monitoringMode != TrackMonitoringMode::off;
 
-            if (isAudible)
+            if (isRouted)
             {
-                mixedLeft += postMixerLeft;
-                mixedRight += postMixerRight;
-                trackDryContributions[(size_t) trackIndex][0] = postMixerLeft;
-                trackDryContributions[(size_t) trackIndex][1] = postMixerRight;
+                routedMixedLeft += routedPostMixerLeft;
+                routedMixedRight += routedPostMixerRight;
+                routedTrackContributions[(size_t) trackIndex][0] = routedPostMixerLeft;
+                routedTrackContributions[(size_t) trackIndex][1] = routedPostMixerRight;
 
                 if (! suppressOwnSendFeed)
                 {
-                    const auto sendWeightBase = std::abs(postMixerLeft) + std::abs(postMixerRight);
+                    const auto sendWeightBase = std::abs(routedPostMixerLeft) + std::abs(routedPostMixerRight);
 
                     for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
                     {
@@ -201,17 +208,38 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 }
             }
 
-            const auto peak = juce::jmax(std::abs(audibleLeft), std::abs(audibleRight));
+            if (isDirectlyAudible)
+            {
+                mixedLeft += routedPostMixerLeft;
+                mixedRight += routedPostMixerRight;
+
+                if (! suppressOwnSendFeed)
+                {
+                    const auto audibleSendWeightBase = std::abs(routedPostMixerLeft) + std::abs(routedPostMixerRight);
+
+                    for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
+                    {
+                        const auto sendLevel = track.sendLevels[(size_t) sendIndex].load(std::memory_order_relaxed);
+
+                        if (sendLevel <= 0.0f)
+                            continue;
+
+                        audibleSendTotalWeights[(size_t) sendIndex] += sendLevel * audibleSendWeightBase;
+                    }
+                }
+            }
+
+            const auto peak = juce::jmax(std::abs(routedLeft), std::abs(routedRight));
             blockPeaks[(size_t) trackIndex] = juce::jmax(blockPeaks[(size_t) trackIndex], peak);
             blockClips[(size_t) trackIndex] = blockClips[(size_t) trackIndex] || peak > 1.0f;
             track.mixerBlockPeak = juce::jmax(track.mixerBlockPeak,
-                                              juce::jmax(std::abs(postMixerLeft), std::abs(postMixerRight)));
+                                              juce::jmax(std::abs(routedPostMixerLeft), std::abs(routedPostMixerRight)));
         }
 
         std::array<std::array<float, Track::numChannels>, numTracks> currentTrackInputBuses {};
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
-            currentTrackInputBuses[(size_t) trackIndex] = trackDryContributions[(size_t) trackIndex];
+            currentTrackInputBuses[(size_t) trackIndex] = routedTrackContributions[(size_t) trackIndex];
 
         for (int sendIndex = 0; sendIndex < numSendBuses; ++sendIndex)
         {
@@ -228,8 +256,8 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 if (sendLevel <= 0.0f)
                     continue;
 
-                sendLeft += trackDryContributions[(size_t) trackIndex][0] * sendLevel;
-                sendRight += trackDryContributions[(size_t) trackIndex][1] * sendLevel;
+                sendLeft += routedTrackContributions[(size_t) trackIndex][0] * sendLevel;
+                sendRight += routedTrackContributions[(size_t) trackIndex][1] * sendLevel;
             }
 
             auto& sendBus = sendBuses[(size_t) sendIndex];
@@ -245,12 +273,17 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
                 sendReturnRight = processChainModule(sendBus, moduleIndex, 1, sendReturnRight);
             }
 
-            mixedLeft += sendReturnLeft;
-            mixedRight += sendReturnRight;
-            sendBus.outputBlockPeak = juce::jmax(sendBus.outputBlockPeak,
-                                                 juce::jmax(std::abs(sendReturnLeft), std::abs(sendReturnRight)));
-
+            routedMixedLeft += sendReturnLeft;
+            routedMixedRight += sendReturnRight;
             const auto totalWeight = sendTotalWeights[(size_t) sendIndex];
+            const auto audibleWeight = audibleSendTotalWeights[(size_t) sendIndex];
+            const auto audibleScale = totalWeight > 0.0f ? juce::jlimit(0.0f, 1.0f, audibleWeight / totalWeight)
+                                                         : 0.0f;
+            mixedLeft += sendReturnLeft * audibleScale;
+            mixedRight += sendReturnRight * audibleScale;
+            sendBus.outputBlockPeak = juce::jmax(sendBus.outputBlockPeak,
+                                                 juce::jmax(std::abs(sendReturnLeft * audibleScale),
+                                                            std::abs(sendReturnRight * audibleScale)));
 
             if (totalWeight > 0.0f)
             {
@@ -263,8 +296,8 @@ void TapeEngine::audioDeviceIOCallbackWithContext(const float* const* inputChann
             }
         }
 
-        lastMasterInputBus[0] = mixedLeft;
-        lastMasterInputBus[1] = mixedRight;
+        lastMasterInputBus[0] = routedMixedLeft;
+        lastMasterInputBus[1] = routedMixedRight;
 
         for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
             lastTrackInputBuses[(size_t) trackIndex] = currentTrackInputBuses[(size_t) trackIndex];

@@ -16,6 +16,13 @@ enum class TrackRecordMode : int
     erase
 };
 
+enum class TrackMonitoringMode : int
+{
+    in = 0,
+    autoMode,
+    off
+};
+
 enum class ChainModuleType : int
 {
     none = 0,
@@ -455,6 +462,7 @@ struct Track : ModuleChain
     std::array<std::atomic<juce::AudioBuffer<float>*>, maxChunks> chunkPointers;
     std::atomic<int> recordMode { (int) TrackRecordMode::off };
     std::atomic<int> pendingRecordMode { (int) TrackRecordMode::off };
+    std::atomic<int> monitoringMode { (int) TrackMonitoringMode::autoMode };
     std::atomic<int> inputSource { 0 };
     std::atomic<float> inputGain { 1.0f };
     std::atomic<float> mixerGainDb { 0.0f };
@@ -484,6 +492,7 @@ struct Track : ModuleChain
         clipping.store(false, std::memory_order_relaxed);
         muted.store(false, std::memory_order_relaxed);
         pendingRecordMode.store((int) TrackRecordMode::off, std::memory_order_relaxed);
+        monitoringMode.store((int) TrackMonitoringMode::autoMode, std::memory_order_relaxed);
         inputGain.store(1.0f, std::memory_order_relaxed);
         inputSource.store(0, std::memory_order_relaxed);
         mixerGainDb.store(0.0f, std::memory_order_relaxed);

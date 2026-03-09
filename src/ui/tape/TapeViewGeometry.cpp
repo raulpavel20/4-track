@@ -74,18 +74,45 @@ juce::Rectangle<int> TapeView::getBeatsPerBarEditorBounds() const
     return bpmBounds.translated(0, bpmBounds.getHeight() + 10).withWidth(40);
 }
 
+float TapeView::getControlScale(int trackIndex) const noexcept
+{
+    auto laneBounds = getLaneBounds(trackIndex).reduced(10, 6);
+    const auto availableHeight = juce::jmax(1, laneBounds.getHeight());
+    return juce::jlimit(0.62f, 1.0f, (float) availableHeight / 82.0f);
+}
+
+int TapeView::getControlButtonSize(int trackIndex) const noexcept
+{
+    return juce::jmax(16, juce::roundToInt(26.0f * getControlScale(trackIndex)));
+}
+
+int TapeView::getControlGap(int trackIndex) const noexcept
+{
+    return juce::jmax(3, juce::roundToInt(6.0f * getControlScale(trackIndex)));
+}
+
+int TapeView::getMonitoringControlHeight(int trackIndex) const noexcept
+{
+    return juce::jmax(12, juce::roundToInt(18.0f * getControlScale(trackIndex)));
+}
+
 juce::Rectangle<int> TapeView::getControlClusterBounds(int trackIndex) const
 {
     auto laneBounds = getLaneBounds(trackIndex).reduced(10, 6);
     laneBounds.removeFromLeft(8);
-    return juce::Rectangle<int>(laneBounds.getX(), laneBounds.getCentreY() - 29, 92, 58);
+    const auto buttonSize = getControlButtonSize(trackIndex);
+    const auto gap = getControlGap(trackIndex);
+    const auto monitoringHeight = getMonitoringControlHeight(trackIndex);
+    const auto width = juce::jmax(66, juce::jmin(92, juce::roundToInt(92.0f * getControlScale(trackIndex))));
+    const auto height = (buttonSize * 2) + (gap * 2) + monitoringHeight;
+    return juce::Rectangle<int>(laneBounds.getX(), laneBounds.getCentreY() - (height / 2), width, height);
 }
 
 juce::Rectangle<int> TapeView::getModeButtonBounds(int trackIndex, int buttonIndex) const
 {
     auto bounds = getControlClusterBounds(trackIndex);
-    const auto buttonSize = 26;
-    const auto gap = 6;
+    const auto buttonSize = getControlButtonSize(trackIndex);
+    const auto gap = getControlGap(trackIndex);
     return juce::Rectangle<int>(bounds.getX() + (buttonIndex * (buttonSize + gap)),
                                 bounds.getY(),
                                 buttonSize,
@@ -95,14 +122,32 @@ juce::Rectangle<int> TapeView::getModeButtonBounds(int trackIndex, int buttonInd
 juce::Rectangle<int> TapeView::getUtilityButtonBounds(int trackIndex, int buttonIndex) const
 {
     auto bounds = getControlClusterBounds(trackIndex);
-    const auto buttonSize = 26;
-    const auto gap = 6;
+    const auto buttonSize = getControlButtonSize(trackIndex);
+    const auto gap = getControlGap(trackIndex);
     const auto rowWidth = (buttonSize * 2) + gap;
     const auto startX = bounds.getX() + ((bounds.getWidth() - rowWidth) / 2);
     return juce::Rectangle<int>(startX + (buttonIndex * (buttonSize + gap)),
-                                bounds.getBottom() - buttonSize,
+                                bounds.getY() + buttonSize + gap,
                                 buttonSize,
                                 buttonSize);
+}
+
+juce::Rectangle<int> TapeView::getMonitoringModeBounds(int trackIndex) const
+{
+    auto bounds = getControlClusterBounds(trackIndex);
+    const auto monitoringHeight = getMonitoringControlHeight(trackIndex);
+    return juce::Rectangle<int>(bounds.getX(), bounds.getBottom() - monitoringHeight, bounds.getWidth(), monitoringHeight);
+}
+
+juce::Rectangle<int> TapeView::getMonitoringModeSegmentBounds(int trackIndex, int segmentIndex) const
+{
+    auto bounds = getMonitoringModeBounds(trackIndex);
+    const auto segmentWidth = bounds.getWidth() / 3;
+    return juce::Rectangle<int>(bounds.getX() + (segmentWidth * segmentIndex),
+                                bounds.getY(),
+                                segmentIndex == 2 ? bounds.getRight() - (bounds.getX() + (segmentWidth * segmentIndex))
+                                                  : segmentWidth,
+                                bounds.getHeight());
 }
 
 juce::Rectangle<int> TapeView::getZoomSliderBounds() const

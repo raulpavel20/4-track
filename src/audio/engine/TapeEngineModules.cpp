@@ -213,6 +213,30 @@ int TapeEngine::getTrackInputSource(int trackIndex) const noexcept
     return tracks[(size_t) trackIndex].inputSource.load(std::memory_order_acquire);
 }
 
+void TapeEngine::setTrackMonitoringMode(int trackIndex, TrackMonitoringMode mode)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return;
+
+    tracks[(size_t) trackIndex].monitoringMode.store((int) mode, std::memory_order_release);
+}
+
+TrackMonitoringMode TapeEngine::getTrackMonitoringMode(int trackIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return TrackMonitoringMode::autoMode;
+
+    const auto storedMode = tracks[(size_t) trackIndex].monitoringMode.load(std::memory_order_acquire);
+
+    if (storedMode == (int) TrackMonitoringMode::in)
+        return TrackMonitoringMode::in;
+
+    if (storedMode == (int) TrackMonitoringMode::off)
+        return TrackMonitoringMode::off;
+
+    return TrackMonitoringMode::autoMode;
+}
+
 juce::Array<TapeEngine::InputSourceOption> TapeEngine::getAvailableInputSources(const juce::StringArray& hardwareInputNames,
                                                                                 int destinationTrackIndex) const
 {

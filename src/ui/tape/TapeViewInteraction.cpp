@@ -96,6 +96,23 @@ void TapeView::mouseDown(const juce::MouseEvent& event)
 
     for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
     {
+        for (int segmentIndex = 0; segmentIndex < 3; ++segmentIndex)
+        {
+            if (! getMonitoringModeSegmentBounds(trackIndex, segmentIndex).contains(event.position.toInt()))
+                continue;
+
+            setSelectedTrack(trackIndex);
+            engine.setTrackMonitoringMode(trackIndex,
+                                          segmentIndex == 0 ? TrackMonitoringMode::in
+                                                            : segmentIndex == 2 ? TrackMonitoringMode::off
+                                                                                : TrackMonitoringMode::autoMode);
+            repaint();
+            return;
+        }
+    }
+
+    for (int trackIndex = 0; trackIndex < TapeEngine::numTracks; ++trackIndex)
+    {
         if (! getWaveformBounds(trackIndex).expanded(0, 16).contains(event.position.toInt()))
             continue;
 
