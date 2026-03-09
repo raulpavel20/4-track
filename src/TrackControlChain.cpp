@@ -82,7 +82,8 @@ void configureVerticalSlider(juce::Slider& slider, double min, double max, doubl
 
 TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
     : engine(engineToUse),
-      contentComponent(*this)
+      contentComponent(*this),
+      inputSourceBox(*this)
 {
     AppSettings::getInstance().addChangeListener(this);
     addAndMakeVisible(modulesViewport);
@@ -100,8 +101,20 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
     {
         const auto selectedId = inputSourceBox.getSelectedId();
 
-        if (selectedId > 0 && isTrackTarget())
-            engine.setTrackInputSource(selectedTrack, selectedId - 1);
+        if (selectedId <= 0 || ! isTrackTarget())
+            return;
+
+        const auto sourceId = selectedId - 1;
+        const auto sourceType = getInputSourceTypeFromId(sourceId);
+        const auto sourceIndex = getInputSourceIndexFromId(sourceId);
+
+        if (sourceType == InputSourceType::trackBus && sourceIndex == selectedTrack)
+        {
+            inputSourceBox.setSelectedId(engine.getTrackInputSource(selectedTrack) + 1, juce::dontSendNotification);
+            return;
+        }
+
+        engine.setTrackInputSource(selectedTrack, sourceId);
     };
     contentComponent.addAndMakeVisible(inputSourceBox);
 
@@ -448,6 +461,21 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
     refreshFromEngine();
 }
 
+TrackControlChain::InputSourceComboBox::InputSourceComboBox(TrackControlChain& ownerToUse)
+    : owner(ownerToUse)
+{
+}
+
+void TrackControlChain::InputSourceComboBox::mouseDown(const juce::MouseEvent& event)
+{
+    juce::ignoreUnused(event);
+
+    if (! isEnabled())
+        return;
+
+    owner.showInputSourceMenu();
+}
+
 TrackControlChain::~TrackControlChain()
 {
     AppSettings::getInstance().removeChangeListener(this);
@@ -509,6 +537,32 @@ void TrackControlChain::setInputOptions(const juce::Array<TapeEngine::InputSourc
 
     inputSourceBox.setEnabled(inputOptions.isEmpty() == false);
     refreshFromEngine();
+}
+
+void TrackControlChain::showInputSourceMenu()
+{
+    if (! isTrackTarget() || inputOptions.isEmpty())
+        return;
+
+    juce::PopupMenu menu;
+    const auto currentSourceId = engine.getTrackInputSource(selectedTrack);
+
+    for (const auto& option : inputOptions)
+    {
+        const auto sourceType = getInputSourceTypeFromId(option.sourceId);
+        const auto sourceIndex = getInputSourceIndexFromId(option.sourceId);
+        const auto isSelectable = ! (sourceType == InputSourceType::trackBus && sourceIndex == selectedTrack);
+        menu.addItem(option.sourceId + 1, option.label, isSelectable, option.sourceId == currentSourceId);
+    }
+
+    menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&inputSourceBox),
+                       [safeThis = juce::Component::SafePointer<TrackControlChain>(this)](int result)
+                       {
+                           if (safeThis == nullptr || result <= 0)
+                               return;
+
+                           safeThis->inputSourceBox.setSelectedId(result, juce::sendNotificationSync);
+                       });
 }
 
 void TrackControlChain::setSelectedTrack(int trackIndex)
@@ -1027,8 +1081,18 @@ void TrackControlChain::refreshFromEngine()
 
             if (inputSourceBox.getSelectedId() == 0 && inputOptions.isEmpty() == false)
             {
-                inputSourceBox.setSelectedId(inputOptions[0].sourceId + 1, juce::dontSendNotification);
-                engine.setTrackInputSource(selectedTrack, inputOptions[0].sourceId);
+                for (const auto& option : inputOptions)
+                {
+                    const auto sourceType = getInputSourceTypeFromId(option.sourceId);
+                    const auto sourceIndex = getInputSourceIndexFromId(option.sourceId);
+
+                    if (sourceType == InputSourceType::trackBus && sourceIndex == selectedTrack)
+                        continue;
+
+                    inputSourceBox.setSelectedId(option.sourceId + 1, juce::dontSendNotification);
+                    engine.setTrackInputSource(selectedTrack, option.sourceId);
+                    break;
+                }
             }
         }
     }

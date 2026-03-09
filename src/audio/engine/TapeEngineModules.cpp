@@ -240,6 +240,7 @@ TrackMonitoringMode TapeEngine::getTrackMonitoringMode(int trackIndex) const noe
 juce::Array<TapeEngine::InputSourceOption> TapeEngine::getAvailableInputSources(const juce::StringArray& hardwareInputNames,
                                                                                 int destinationTrackIndex) const
 {
+    juce::ignoreUnused(destinationTrackIndex);
     juce::Array<InputSourceOption> options;
 
     for (int pairIndex = 0; pairIndex + 1 < hardwareInputNames.size(); pairIndex += 2)
@@ -260,13 +261,8 @@ juce::Array<TapeEngine::InputSourceOption> TapeEngine::getAvailableInputSources(
     }
 
     for (int trackIndex = 0; trackIndex < numTracks; ++trackIndex)
-    {
-        if (trackIndex == destinationTrackIndex)
-            continue;
-
         options.add({ makeInputSourceId(InputSourceType::trackBus, trackIndex),
                       "Track " + juce::String(trackIndex + 1) });
-    }
 
     options.add({ makeInputSourceId(InputSourceType::masterBus, 0), "Master" });
 

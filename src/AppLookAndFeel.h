@@ -111,9 +111,14 @@ public:
             g.fillRect(itemArea);
         }
 
-        g.setColour(textColour != nullptr ? *textColour
-                                          : (isHighlighted ? findColour(juce::PopupMenu::highlightedTextColourId)
-                                                           : findColour(juce::PopupMenu::textColourId)));
+        auto colour = textColour != nullptr ? *textColour
+                                            : (isHighlighted ? findColour(juce::PopupMenu::highlightedTextColourId)
+                                                             : findColour(juce::PopupMenu::textColourId));
+
+        if (! isActive)
+            colour = colour.withAlpha(0.32f);
+
+        g.setColour(colour);
         g.setFont(AppFonts::getFont(14.0f));
         g.drawText(text,
                    area.reduced(12, 0),

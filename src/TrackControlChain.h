@@ -75,6 +75,16 @@ private:
         TrackControlChain& owner;
     };
 
+    class InputSourceComboBox : public juce::ComboBox
+    {
+    public:
+        explicit InputSourceComboBox(TrackControlChain& ownerToUse);
+        void mouseDown(const juce::MouseEvent& event) override;
+
+    private:
+        TrackControlChain& owner;
+    };
+
     TapeEngine& engine;
     TargetType targetType = TargetType::track;
     int selectedTrack = 0;
@@ -82,7 +92,7 @@ private:
     juce::Array<TapeEngine::InputSourceOption> inputOptions;
     juce::Viewport modulesViewport;
     ContentComponent contentComponent;
-    juce::ComboBox inputSourceBox;
+    InputSourceComboBox inputSourceBox;
     juce::Slider inputGainSlider;
     juce::TextButton addModuleButton { "+" };
     std::array<BypassButton, Track::maxChainModules> bypassButtons;
@@ -207,6 +217,7 @@ private:
     void paintSpectrumAnalyzerModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintGainModule(juce::Graphics& g, int slot, juce::Rectangle<int> bounds);
     void syncFrequencyEditorsFromEngine(bool force);
+    void showInputSourceMenu();
     juce::Rectangle<int> getFrameBounds() const;
     juce::Rectangle<int> getViewportBounds() const;
     juce::Rectangle<int> getInputModuleBounds() const;
