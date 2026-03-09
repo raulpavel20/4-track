@@ -145,6 +145,7 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         menu.addItem(7, "Utility");
         menu.addItem(8, "Spectrum Analyzer");
         menu.addItem(9, "Phaser");
+        menu.addItem(10, "Chorus");
         menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
                            [safeThis](int result)
                            {
@@ -171,6 +172,8 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                    moduleType = ChainModuleType::spectrumAnalyzer;
                                else if (result == 9)
                                    moduleType = ChainModuleType::phaser;
+                               else if (result == 10)
+                                   moduleType = ChainModuleType::chorus;
 
                                safeThis->addModule(moduleType);
                                safeThis->refreshFromEngine();
@@ -322,6 +325,18 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         };
         contentComponent.addAndMakeVisible(delayTimeModeButton);
 
+        auto& chorusRateModeButton = chorusRateModeButtons[(size_t) moduleIndex];
+        chorusRateModeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
+        chorusRateModeButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
+        chorusRateModeButton.setColour(juce::TextButton::textColourOffId, juce::Colours::white.withAlpha(0.72f));
+        chorusRateModeButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+        chorusRateModeButton.onClick = [this, moduleIndex]
+        {
+            setChorusSyncEnabled(moduleIndex, ! isChorusSyncEnabled(moduleIndex));
+            refreshFromEngine();
+        };
+        contentComponent.addAndMakeVisible(chorusRateModeButton);
+
         auto& phaserRateModeButton = phaserRateModeButtons[(size_t) moduleIndex];
         phaserRateModeButton.setColour(juce::TextButton::buttonColourId, juce::Colours::transparentBlack);
         phaserRateModeButton.setColour(juce::TextButton::buttonOnColourId, juce::Colours::transparentBlack);
@@ -388,6 +403,49 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                     setReverbDamping(moduleIndex, value);
                 else
                     setReverbMix(moduleIndex, value);
+
+                contentComponent.repaint();
+            };
+            contentComponent.addAndMakeVisible(slider);
+        }
+
+        for (int controlIndex = 0; controlIndex < chorusControlCount; ++controlIndex)
+        {
+            auto& slider = chorusSliders[(size_t) moduleIndex][(size_t) controlIndex];
+
+            if (controlIndex == 0)
+                configureRotarySlider(slider, 0.05, 10.0, 0.01, 0.5);
+            else if (controlIndex == 1)
+                configureRotarySlider(slider, 0.0, 1.0, 0.01, 0.8);
+            else if (controlIndex == 2)
+                configureRotarySlider(slider, 200.0, 2000.0, 1.0, 700.0);
+            else if (controlIndex == 3)
+                configureRotarySlider(slider, 0.0, 0.95, 0.01, 0.3);
+            else
+                configureRotarySlider(slider, 0.0, 1.0, 0.01, 0.5);
+
+            slider.onValueChange = [this, moduleIndex, controlIndex]
+            {
+                const auto value = (float) chorusSliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
+
+                if (controlIndex == 0)
+                {
+                    if (isChorusSyncEnabled(moduleIndex))
+                        setChorusSyncIndex(moduleIndex, juce::roundToInt(value));
+                    else
+                        setChorusRate(moduleIndex, value);
+
+                    refreshFromEngine();
+                    return;
+                }
+                else if (controlIndex == 1)
+                    setChorusDepth(moduleIndex, value);
+                else if (controlIndex == 2)
+                    setChorusCentreFrequency(moduleIndex, value);
+                else if (controlIndex == 3)
+                    setChorusFeedback(moduleIndex, value);
+                else
+                    setChorusMix(moduleIndex, value);
 
                 contentComponent.repaint();
             };
@@ -503,15 +561,29 @@ void TrackControlChain::timerCallback()
 
     for (int moduleIndex = 0; moduleIndex < Track::maxChainModules; ++moduleIndex)
     {
-        if (getModuleType(moduleIndex) != ChainModuleType::phaser || isModuleBypassed(moduleIndex))
+        const auto type = getModuleType(moduleIndex);
+
+        if (isModuleBypassed(moduleIndex))
             continue;
 
-                    const auto rate = juce::jlimit(0.05f, 10.0f, getResolvedPhaserRateHz(moduleIndex));
-        const auto rateNorm = (float) ((std::log((double) rate) - std::log(0.05)) / (std::log(10.0) - std::log(0.05)));
-        const auto targetVisualRate = juce::jmap(juce::jlimit(0.0f, 1.0f, rateNorm), 0.12f, 0.7f);
-        auto& smoothedVisualRate = phaserVisualRates[(size_t) moduleIndex];
-        smoothedVisualRate += (targetVisualRate - smoothedVisualRate) * 0.16f;
-        phaserVisualPhases[(size_t) moduleIndex] += (float) (deltaSeconds * (double) juce::MathConstants<float>::twoPi * smoothedVisualRate);
+        if (type == ChainModuleType::chorus)
+        {
+            const auto rate = juce::jlimit(0.05f, 10.0f, getResolvedChorusRateHz(moduleIndex));
+            const auto rateNorm = (float) ((std::log((double) rate) - std::log(0.05)) / (std::log(10.0) - std::log(0.05)));
+            const auto targetVisualRate = juce::jmap(juce::jlimit(0.0f, 1.0f, rateNorm), 0.12f, 0.7f);
+            auto& smoothedVisualRate = chorusVisualRates[(size_t) moduleIndex];
+            smoothedVisualRate += (targetVisualRate - smoothedVisualRate) * 0.16f;
+            chorusVisualPhases[(size_t) moduleIndex] += (float) (deltaSeconds * (double) juce::MathConstants<float>::twoPi * smoothedVisualRate);
+        }
+        else if (type == ChainModuleType::phaser)
+        {
+            const auto rate = juce::jlimit(0.05f, 10.0f, getResolvedPhaserRateHz(moduleIndex));
+            const auto rateNorm = (float) ((std::log((double) rate) - std::log(0.05)) / (std::log(10.0) - std::log(0.05)));
+            const auto targetVisualRate = juce::jmap(juce::jlimit(0.0f, 1.0f, rateNorm), 0.12f, 0.7f);
+            auto& smoothedVisualRate = phaserVisualRates[(size_t) moduleIndex];
+            smoothedVisualRate += (targetVisualRate - smoothedVisualRate) * 0.16f;
+            phaserVisualPhases[(size_t) moduleIndex] += (float) (deltaSeconds * (double) juce::MathConstants<float>::twoPi * smoothedVisualRate);
+        }
     }
 
     contentComponent.repaint();
@@ -916,6 +988,110 @@ void TrackControlChain::setReverbMix(int moduleIndex, float value)
         engine.setSendBusReverbMix(selectedSendBus, moduleIndex, value);
 }
 
+float TrackControlChain::getChorusRate(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackChorusRate(selectedTrack, moduleIndex)
+                           : engine.getSendBusChorusRate(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setChorusRate(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackChorusRate(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusChorusRate(selectedSendBus, moduleIndex, value);
+}
+
+bool TrackControlChain::isChorusSyncEnabled(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.isTrackChorusSyncEnabled(selectedTrack, moduleIndex)
+                           : engine.isSendBusChorusSyncEnabled(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setChorusSyncEnabled(int moduleIndex, bool shouldBeEnabled)
+{
+    if (isTrackTarget())
+        engine.setTrackChorusSyncEnabled(selectedTrack, moduleIndex, shouldBeEnabled);
+    else
+        engine.setSendBusChorusSyncEnabled(selectedSendBus, moduleIndex, shouldBeEnabled);
+}
+
+int TrackControlChain::getChorusSyncIndex(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackChorusSyncIndex(selectedTrack, moduleIndex)
+                           : engine.getSendBusChorusSyncIndex(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setChorusSyncIndex(int moduleIndex, int index)
+{
+    if (isTrackTarget())
+        engine.setTrackChorusSyncIndex(selectedTrack, moduleIndex, index);
+    else
+        engine.setSendBusChorusSyncIndex(selectedSendBus, moduleIndex, index);
+}
+
+float TrackControlChain::getResolvedChorusRateHz(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackResolvedChorusRateHz(selectedTrack, moduleIndex)
+                           : engine.getSendBusResolvedChorusRateHz(selectedSendBus, moduleIndex);
+}
+
+float TrackControlChain::getChorusDepth(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackChorusDepth(selectedTrack, moduleIndex)
+                           : engine.getSendBusChorusDepth(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setChorusDepth(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackChorusDepth(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusChorusDepth(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getChorusCentreFrequency(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackChorusCentreFrequency(selectedTrack, moduleIndex)
+                           : engine.getSendBusChorusCentreFrequency(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setChorusCentreFrequency(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackChorusCentreFrequency(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusChorusCentreFrequency(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getChorusFeedback(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackChorusFeedback(selectedTrack, moduleIndex)
+                           : engine.getSendBusChorusFeedback(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setChorusFeedback(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackChorusFeedback(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusChorusFeedback(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getChorusMix(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackChorusMix(selectedTrack, moduleIndex)
+                           : engine.getSendBusChorusMix(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setChorusMix(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackChorusMix(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusChorusMix(selectedSendBus, moduleIndex, value);
+}
+
 float TrackControlChain::getPhaserRate(int moduleIndex) const noexcept
 {
     return isTrackTarget() ? engine.getTrackPhaserRate(selectedTrack, moduleIndex)
@@ -1123,6 +1299,24 @@ void TrackControlChain::refreshFromEngine()
         reverbSliders[(size_t) moduleIndex][0].setValue(getReverbSize(moduleIndex), juce::dontSendNotification);
         reverbSliders[(size_t) moduleIndex][1].setValue(getReverbDamping(moduleIndex), juce::dontSendNotification);
         reverbSliders[(size_t) moduleIndex][2].setValue(getReverbMix(moduleIndex), juce::dontSendNotification);
+        if (isChorusSyncEnabled(moduleIndex))
+        {
+            chorusSliders[(size_t) moduleIndex][0].setRange(0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0);
+            chorusSliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 2.0);
+            chorusSliders[(size_t) moduleIndex][0].setValue((double) getChorusSyncIndex(moduleIndex), juce::dontSendNotification);
+            chorusRateModeButtons[(size_t) moduleIndex].setButtonText(TapeEngine::getDelaySyncLabel(getChorusSyncIndex(moduleIndex)));
+        }
+        else
+        {
+            chorusSliders[(size_t) moduleIndex][0].setRange(0.05, 10.0, 0.01);
+            chorusSliders[(size_t) moduleIndex][0].setDoubleClickReturnValue(true, 0.5);
+            chorusSliders[(size_t) moduleIndex][0].setValue(getChorusRate(moduleIndex), juce::dontSendNotification);
+            chorusRateModeButtons[(size_t) moduleIndex].setButtonText(juce::String(getChorusRate(moduleIndex), 2) + "Hz");
+        }
+        chorusSliders[(size_t) moduleIndex][1].setValue(getChorusDepth(moduleIndex), juce::dontSendNotification);
+        chorusSliders[(size_t) moduleIndex][2].setValue(getChorusCentreFrequency(moduleIndex), juce::dontSendNotification);
+        chorusSliders[(size_t) moduleIndex][3].setValue(getChorusFeedback(moduleIndex), juce::dontSendNotification);
+        chorusSliders[(size_t) moduleIndex][4].setValue(getChorusMix(moduleIndex), juce::dontSendNotification);
         if (isPhaserSyncEnabled(moduleIndex))
         {
             phaserSliders[(size_t) moduleIndex][0].setRange(0.0, (double) (TapeEngine::getNumDelaySyncOptions() - 1), 1.0);
@@ -1216,6 +1410,12 @@ void TrackControlChain::updateAccentColours()
             slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
     }
 
+    for (auto& slot : chorusSliders)
+    {
+        for (auto& slider : slot)
+            slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+    }
+
     for (auto& slot : phaserSliders)
     {
         for (auto& slider : slot)
@@ -1287,11 +1487,14 @@ void TrackControlChain::updateModuleVisibility()
         saturationModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
         saturationAmountSliders[(size_t) moduleIndex].setVisible(type == ChainModuleType::saturation);
         delayTimeModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::delay);
+        chorusRateModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::chorus);
         phaserRateModeButtons[(size_t) moduleIndex].setVisible(type == ChainModuleType::phaser);
         for (int controlIndex = 0; controlIndex < delayControlCount; ++controlIndex)
             delaySliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::delay);
         for (int controlIndex = 0; controlIndex < reverbControlCount; ++controlIndex)
             reverbSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::reverb);
+        for (int controlIndex = 0; controlIndex < chorusControlCount; ++controlIndex)
+            chorusSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::chorus);
         for (int controlIndex = 0; controlIndex < phaserControlCount; ++controlIndex)
             phaserSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::phaser);
         for (int controlIndex = 0; controlIndex < utilityControlCount; ++controlIndex)

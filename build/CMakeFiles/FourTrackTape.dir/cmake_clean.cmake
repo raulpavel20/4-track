@@ -67,6 +67,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelLayout.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.o.d"
+  "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainChorusModule.cpp.o"
+  "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainChorusModule.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o.d"
   "CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainDelayModule.cpp.o"

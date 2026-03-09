@@ -1028,6 +1028,30 @@ src/ui/mixer/TrackMixerPanelPaint.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/mixer/TrackMixerPanelPaint.cpp.s
 .PHONY : src/ui/mixer/TrackMixerPanelPaint.cpp.s
 
+src/ui/pre_tape/TrackControlChainChorusModule.o: src/ui/pre_tape/TrackControlChainChorusModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainChorusModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainChorusModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainChorusModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainChorusModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainChorusModule.i: src/ui/pre_tape/TrackControlChainChorusModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainChorusModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainChorusModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainChorusModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainChorusModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainChorusModule.s: src/ui/pre_tape/TrackControlChainChorusModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainChorusModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainChorusModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainChorusModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainChorusModule.cpp.s
+
 src/ui/pre_tape/TrackControlChainCompressorModule.o: src/ui/pre_tape/TrackControlChainCompressorModule.cpp.o
 .PHONY : src/ui/pre_tape/TrackControlChainCompressorModule.o
 
@@ -1603,6 +1627,9 @@ help:
 	@echo "... src/ui/mixer/TrackMixerPanelPaint.o"
 	@echo "... src/ui/mixer/TrackMixerPanelPaint.i"
 	@echo "... src/ui/mixer/TrackMixerPanelPaint.s"
+	@echo "... src/ui/pre_tape/TrackControlChainChorusModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainChorusModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainChorusModule.s"
 	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.o"
 	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.i"
 	@echo "... src/ui/pre_tape/TrackControlChainCompressorModule.s"

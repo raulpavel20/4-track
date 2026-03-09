@@ -32,6 +32,7 @@ enum class ChainModuleType : int
     saturation,
     delay,
     reverb,
+    chorus,
     phaser,
     spectrumAnalyzer,
     gain
@@ -293,6 +294,84 @@ struct PhaserModuleState
     }
 };
 
+struct ChorusModuleState
+{
+    std::array<juce::dsp::Chorus<float>, 2> choruses;
+    double preparedSampleRate = 0.0;
+    float lastRate = -1.0f;
+    float lastDepth = -1.0f;
+    float lastCentreDelayMs = -1.0f;
+    float lastFeedback = -2.0f;
+    float lastMix = -1.0f;
+
+    void reset() noexcept
+    {
+        for (auto& chorus : choruses)
+            chorus.reset();
+        preparedSampleRate = 0.0;
+        lastRate = -1.0f;
+        lastDepth = -1.0f;
+        lastCentreDelayMs = -1.0f;
+        lastFeedback = -2.0f;
+        lastMix = -1.0f;
+    }
+
+    void prepare(double sampleRate) noexcept
+    {
+        if (sampleRate <= 0.0)
+            return;
+
+        if (std::abs(preparedSampleRate - sampleRate) < 0.01)
+            return;
+
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = 1;
+        spec.numChannels = 1;
+
+        for (auto& chorus : choruses)
+        {
+            chorus.reset();
+            chorus.prepare(spec);
+        }
+
+        preparedSampleRate = sampleRate;
+        lastRate = -1.0f;
+        lastDepth = -1.0f;
+        lastCentreDelayMs = -1.0f;
+        lastFeedback = -2.0f;
+        lastMix = -1.0f;
+    }
+
+    void updateParameters(float rate, float depth, float centreDelayMs, float feedback, float mix) noexcept
+    {
+        if (preparedSampleRate <= 0.0)
+            return;
+
+        if (std::abs(lastRate - rate) < 0.0001f
+            && std::abs(lastDepth - depth) < 0.0001f
+            && std::abs(lastCentreDelayMs - centreDelayMs) < 0.01f
+            && std::abs(lastFeedback - feedback) < 0.0001f
+            && std::abs(lastMix - mix) < 0.0001f)
+            return;
+
+        for (auto& chorus : choruses)
+        {
+            chorus.setRate(rate);
+            chorus.setDepth(depth);
+            chorus.setCentreDelay(centreDelayMs);
+            chorus.setFeedback(feedback);
+            chorus.setMix(mix);
+        }
+
+        lastRate = rate;
+        lastDepth = depth;
+        lastCentreDelayMs = centreDelayMs;
+        lastFeedback = feedback;
+        lastMix = mix;
+    }
+};
+
 struct SpectrumAnalyzerState
 {
     static constexpr int fftOrder = 9;
@@ -350,6 +429,13 @@ struct ModuleChain
     std::array<std::atomic<float>, maxChainModules> reverbSizes;
     std::array<std::atomic<float>, maxChainModules> reverbDampings;
     std::array<std::atomic<float>, maxChainModules> reverbMixes;
+    std::array<std::atomic<float>, maxChainModules> chorusRates;
+    std::array<std::atomic<bool>, maxChainModules> chorusSyncEnableds;
+    std::array<std::atomic<int>, maxChainModules> chorusSyncIndices;
+    std::array<std::atomic<float>, maxChainModules> chorusDepths;
+    std::array<std::atomic<float>, maxChainModules> chorusCentreFrequencies;
+    std::array<std::atomic<float>, maxChainModules> chorusFeedbacks;
+    std::array<std::atomic<float>, maxChainModules> chorusMixes;
     std::array<std::atomic<float>, maxChainModules> phaserRates;
     std::array<std::atomic<bool>, maxChainModules> phaserSyncEnableds;
     std::array<std::atomic<int>, maxChainModules> phaserSyncIndices;
@@ -366,6 +452,7 @@ struct ModuleChain
     std::array<CompressorModuleState, maxChainModules> compressorStates;
     std::array<DelayModuleState, maxChainModules> delayStates;
     std::array<ReverbModuleState, maxChainModules> reverbStates;
+    std::array<ChorusModuleState, maxChainModules> chorusStates;
     std::array<PhaserModuleState, maxChainModules> phaserStates;
     std::array<SpectrumAnalyzerState, maxChainModules> spectrumAnalyzerStates;
     std::array<float, maxChainModules> moduleBlockInputPeaks {};
@@ -395,6 +482,13 @@ struct ModuleChain
             reverbSizes[(size_t) moduleIndex].store(0.45f, std::memory_order_relaxed);
             reverbDampings[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
             reverbMixes[(size_t) moduleIndex].store(0.25f, std::memory_order_relaxed);
+            chorusRates[(size_t) moduleIndex].store(0.5f, std::memory_order_relaxed);
+            chorusSyncEnableds[(size_t) moduleIndex].store(false, std::memory_order_relaxed);
+            chorusSyncIndices[(size_t) moduleIndex].store(2, std::memory_order_relaxed);
+            chorusDepths[(size_t) moduleIndex].store(0.8f, std::memory_order_relaxed);
+            chorusCentreFrequencies[(size_t) moduleIndex].store(700.0f, std::memory_order_relaxed);
+            chorusFeedbacks[(size_t) moduleIndex].store(0.3f, std::memory_order_relaxed);
+            chorusMixes[(size_t) moduleIndex].store(0.5f, std::memory_order_relaxed);
             phaserRates[(size_t) moduleIndex].store(0.5f, std::memory_order_relaxed);
             phaserSyncEnableds[(size_t) moduleIndex].store(false, std::memory_order_relaxed);
             phaserSyncIndices[(size_t) moduleIndex].store(2, std::memory_order_relaxed);
@@ -412,6 +506,7 @@ struct ModuleChain
             compressorStates[(size_t) moduleIndex].reset();
             delayStates[(size_t) moduleIndex].reset();
             reverbStates[(size_t) moduleIndex].reset();
+            chorusStates[(size_t) moduleIndex].reset();
             phaserStates[(size_t) moduleIndex].reset();
             spectrumAnalyzerStates[(size_t) moduleIndex].reset();
 

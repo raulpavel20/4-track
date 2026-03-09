@@ -30,6 +30,36 @@ float clampDelayTimeMs(float value) noexcept
     return juce::jlimit(20.0f, 2000.0f, value);
 }
 
+float clampChorusRate(float value) noexcept
+{
+    return juce::jlimit(0.05f, 10.0f, value);
+}
+
+float clampChorusDepth(float value) noexcept
+{
+    return juce::jlimit(0.0f, 1.0f, value);
+}
+
+float clampChorusCentreFrequency(float value) noexcept
+{
+    return juce::jlimit(200.0f, 2000.0f, value);
+}
+
+float clampChorusFeedback(float value) noexcept
+{
+    return juce::jlimit(0.0f, 0.95f, value);
+}
+
+float clampChorusMix(float value) noexcept
+{
+    return juce::jlimit(0.0f, 1.0f, value);
+}
+
+float mapChorusCentreFrequencyToDelayMs(float value) noexcept
+{
+    return juce::jmap(clampChorusCentreFrequency(value), 200.0f, 2000.0f, 4.0f, 28.0f);
+}
+
 float clampPhaserRate(float value) noexcept
 {
     return juce::jlimit(0.05f, 10.0f, value);
@@ -1108,6 +1138,254 @@ float TapeEngine::getSendBusDelayMix(int sendIndex, int moduleIndex) const noexc
     return sendBuses[(size_t) sendIndex].delayMixes[(size_t) moduleIndex].load(std::memory_order_acquire);
 }
 
+void TapeEngine::setTrackChorusSyncEnabled(int trackIndex, int moduleIndex, bool shouldBeEnabled)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].chorusSyncEnableds[(size_t) moduleIndex].store(shouldBeEnabled, std::memory_order_release);
+}
+
+void TapeEngine::setSendBusChorusSyncEnabled(int sendIndex, int moduleIndex, bool shouldBeEnabled)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].chorusSyncEnableds[(size_t) moduleIndex].store(shouldBeEnabled, std::memory_order_release);
+}
+
+bool TapeEngine::isTrackChorusSyncEnabled(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return false;
+
+    return tracks[(size_t) trackIndex].chorusSyncEnableds[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+bool TapeEngine::isSendBusChorusSyncEnabled(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return false;
+
+    return sendBuses[(size_t) sendIndex].chorusSyncEnableds[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackChorusSyncIndex(int trackIndex, int moduleIndex, int index)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].chorusSyncIndices[(size_t) moduleIndex].store(juce::jlimit(0, getNumDelaySyncOptions() - 1, index),
+                                                                               std::memory_order_release);
+}
+
+void TapeEngine::setSendBusChorusSyncIndex(int sendIndex, int moduleIndex, int index)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].chorusSyncIndices[(size_t) moduleIndex].store(juce::jlimit(0, getNumDelaySyncOptions() - 1, index),
+                                                                                 std::memory_order_release);
+}
+
+int TapeEngine::getTrackChorusSyncIndex(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 2;
+
+    return juce::jlimit(0,
+                        getNumDelaySyncOptions() - 1,
+                        tracks[(size_t) trackIndex].chorusSyncIndices[(size_t) moduleIndex].load(std::memory_order_acquire));
+}
+
+int TapeEngine::getSendBusChorusSyncIndex(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 2;
+
+    return juce::jlimit(0,
+                        getNumDelaySyncOptions() - 1,
+                        sendBuses[(size_t) sendIndex].chorusSyncIndices[(size_t) moduleIndex].load(std::memory_order_acquire));
+}
+
+float TapeEngine::getTrackResolvedChorusRateHz(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.5f;
+
+    return getResolvedChorusRateHz(tracks[(size_t) trackIndex], moduleIndex);
+}
+
+float TapeEngine::getSendBusResolvedChorusRateHz(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.5f;
+
+    return getResolvedChorusRateHz(sendBuses[(size_t) sendIndex], moduleIndex);
+}
+
+void TapeEngine::setTrackChorusRate(int trackIndex, int moduleIndex, float rate)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].chorusRates[(size_t) moduleIndex].store(clampChorusRate(rate), std::memory_order_release);
+}
+
+void TapeEngine::setSendBusChorusRate(int sendIndex, int moduleIndex, float rate)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].chorusRates[(size_t) moduleIndex].store(clampChorusRate(rate), std::memory_order_release);
+}
+
+float TapeEngine::getTrackChorusRate(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.5f;
+
+    return tracks[(size_t) trackIndex].chorusRates[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusChorusRate(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.5f;
+
+    return sendBuses[(size_t) sendIndex].chorusRates[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackChorusDepth(int trackIndex, int moduleIndex, float depth)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].chorusDepths[(size_t) moduleIndex].store(clampChorusDepth(depth), std::memory_order_release);
+}
+
+void TapeEngine::setSendBusChorusDepth(int sendIndex, int moduleIndex, float depth)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].chorusDepths[(size_t) moduleIndex].store(clampChorusDepth(depth), std::memory_order_release);
+}
+
+float TapeEngine::getTrackChorusDepth(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.8f;
+
+    return tracks[(size_t) trackIndex].chorusDepths[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusChorusDepth(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.8f;
+
+    return sendBuses[(size_t) sendIndex].chorusDepths[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackChorusCentreFrequency(int trackIndex, int moduleIndex, float centreFrequency)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].chorusCentreFrequencies[(size_t) moduleIndex].store(clampChorusCentreFrequency(centreFrequency),
+                                                                                    std::memory_order_release);
+}
+
+void TapeEngine::setSendBusChorusCentreFrequency(int sendIndex, int moduleIndex, float centreFrequency)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].chorusCentreFrequencies[(size_t) moduleIndex].store(clampChorusCentreFrequency(centreFrequency),
+                                                                                      std::memory_order_release);
+}
+
+float TapeEngine::getTrackChorusCentreFrequency(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 700.0f;
+
+    return tracks[(size_t) trackIndex].chorusCentreFrequencies[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusChorusCentreFrequency(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 700.0f;
+
+    return sendBuses[(size_t) sendIndex].chorusCentreFrequencies[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackChorusFeedback(int trackIndex, int moduleIndex, float feedback)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].chorusFeedbacks[(size_t) moduleIndex].store(clampChorusFeedback(feedback), std::memory_order_release);
+}
+
+void TapeEngine::setSendBusChorusFeedback(int sendIndex, int moduleIndex, float feedback)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].chorusFeedbacks[(size_t) moduleIndex].store(clampChorusFeedback(feedback), std::memory_order_release);
+}
+
+float TapeEngine::getTrackChorusFeedback(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.3f;
+
+    return tracks[(size_t) trackIndex].chorusFeedbacks[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusChorusFeedback(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.3f;
+
+    return sendBuses[(size_t) sendIndex].chorusFeedbacks[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackChorusMix(int trackIndex, int moduleIndex, float mix)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].chorusMixes[(size_t) moduleIndex].store(clampChorusMix(mix), std::memory_order_release);
+}
+
+void TapeEngine::setSendBusChorusMix(int sendIndex, int moduleIndex, float mix)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].chorusMixes[(size_t) moduleIndex].store(clampChorusMix(mix), std::memory_order_release);
+}
+
+float TapeEngine::getTrackChorusMix(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.5f;
+
+    return tracks[(size_t) trackIndex].chorusMixes[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusChorusMix(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.5f;
+
+    return sendBuses[(size_t) sendIndex].chorusMixes[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
 void TapeEngine::setTrackPhaserSyncEnabled(int trackIndex, int moduleIndex, bool shouldBeEnabled)
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
@@ -1628,9 +1906,11 @@ void TapeEngine::resetModuleState(ModuleChain& track, int moduleIndex, ChainModu
     track.compressorStates[(size_t) moduleIndex].reset();
     track.delayStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].reset();
+    track.chorusStates[(size_t) moduleIndex].reset();
     track.phaserStates[(size_t) moduleIndex].reset();
     track.spectrumAnalyzerStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
+    track.chorusStates[(size_t) moduleIndex].prepare(sampleRate);
     track.phaserStates[(size_t) moduleIndex].prepare(sampleRate);
     track.moduleBlockInputPeaks[(size_t) moduleIndex] = 0.0f;
     track.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
@@ -1662,6 +1942,13 @@ void TapeEngine::resetModuleParameters(ModuleChain& track, int moduleIndex, Chai
     track.reverbSizes[(size_t) moduleIndex].store(0.45f, std::memory_order_relaxed);
     track.reverbDampings[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
     track.reverbMixes[(size_t) moduleIndex].store(0.25f, std::memory_order_relaxed);
+    track.chorusRates[(size_t) moduleIndex].store(0.5f, std::memory_order_relaxed);
+    track.chorusSyncEnableds[(size_t) moduleIndex].store(false, std::memory_order_relaxed);
+    track.chorusSyncIndices[(size_t) moduleIndex].store(2, std::memory_order_relaxed);
+    track.chorusDepths[(size_t) moduleIndex].store(0.8f, std::memory_order_relaxed);
+    track.chorusCentreFrequencies[(size_t) moduleIndex].store(700.0f, std::memory_order_relaxed);
+    track.chorusFeedbacks[(size_t) moduleIndex].store(0.3f, std::memory_order_relaxed);
+    track.chorusMixes[(size_t) moduleIndex].store(0.5f, std::memory_order_relaxed);
     track.phaserRates[(size_t) moduleIndex].store(0.5f, std::memory_order_relaxed);
     track.phaserSyncEnableds[(size_t) moduleIndex].store(false, std::memory_order_relaxed);
     track.phaserSyncIndices[(size_t) moduleIndex].store(2, std::memory_order_relaxed);
@@ -1732,6 +2019,9 @@ float TapeEngine::processChainModule(ModuleChain& track, int moduleIndex, int ch
             break;
         case ChainModuleType::reverb:
             output = processReverbModule(track, moduleIndex, channel, sample);
+            break;
+        case ChainModuleType::chorus:
+            output = processChorusModule(track, moduleIndex, channel, sample);
             break;
         case ChainModuleType::phaser:
             output = processPhaserModule(track, moduleIndex, channel, sample);
@@ -1902,6 +2192,22 @@ float TapeEngine::getResolvedPhaserRateHz(const ModuleChain& track, int moduleIn
     return clampPhaserRate((float) (1.0 / cycleSeconds));
 }
 
+float TapeEngine::getResolvedChorusRateHz(const ModuleChain& track, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.5f;
+
+    if (! track.chorusSyncEnableds[(size_t) moduleIndex].load(std::memory_order_relaxed))
+        return clampChorusRate(track.chorusRates[(size_t) moduleIndex].load(std::memory_order_relaxed));
+
+    const auto beats = delaySyncOptions[(size_t) juce::jlimit(0,
+                                                              getNumDelaySyncOptions() - 1,
+                                                              track.chorusSyncIndices[(size_t) moduleIndex].load(std::memory_order_relaxed))].beats;
+    const auto currentBpm = juce::jmax(30.0, (double) bpm.load(std::memory_order_relaxed));
+    const auto cycleSeconds = juce::jmax(0.001, (60.0 / currentBpm) * beats);
+    return clampChorusRate((float) (1.0 / cycleSeconds));
+}
+
 float TapeEngine::processReverbModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
 {
     const auto channelIndex = juce::jlimit(0, Track::numChannels - 1, channel);
@@ -1914,6 +2220,25 @@ float TapeEngine::processReverbModule(ModuleChain& track, int moduleIndex, int c
     auto wet = sample;
     state.reverbs[(size_t) channelIndex].processMono(&wet, 1);
     return wet * mix + sample * (1.0f - mix);
+}
+
+float TapeEngine::processChorusModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
+{
+    const auto channelIndex = juce::jlimit(0, Track::numChannels - 1, channel);
+    const auto rate = getResolvedChorusRateHz(track, moduleIndex);
+    const auto depth = clampChorusDepth(track.chorusDepths[(size_t) moduleIndex].load(std::memory_order_relaxed));
+    const auto centreDelayMs = mapChorusCentreFrequencyToDelayMs(track.chorusCentreFrequencies[(size_t) moduleIndex].load(std::memory_order_relaxed));
+    const auto feedback = clampChorusFeedback(track.chorusFeedbacks[(size_t) moduleIndex].load(std::memory_order_relaxed));
+    const auto mix = clampChorusMix(track.chorusMixes[(size_t) moduleIndex].load(std::memory_order_relaxed));
+    auto& state = track.chorusStates[(size_t) moduleIndex];
+    state.prepare(sampleRate);
+    state.updateParameters(rate, depth, centreDelayMs, feedback, mix);
+    auto processed = sample;
+    float* channelData[] { &processed };
+    juce::dsp::AudioBlock<float> block(channelData, 1, 1);
+    juce::dsp::ProcessContextReplacing<float> context(block);
+    state.choruses[(size_t) channelIndex].process(context);
+    return processed;
 }
 
 float TapeEngine::processPhaserModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
@@ -1988,6 +2313,8 @@ void TapeEngine::resetTrackRuntimeState(Track& track) noexcept
         track.delayStates[(size_t) moduleIndex].reset();
         track.reverbStates[(size_t) moduleIndex].reset();
         track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
+        track.chorusStates[(size_t) moduleIndex].prepare(sampleRate);
+        track.chorusStates[(size_t) moduleIndex].reset();
         track.phaserStates[(size_t) moduleIndex].prepare(sampleRate);
         track.phaserStates[(size_t) moduleIndex].reset();
         track.spectrumAnalyzerStates[(size_t) moduleIndex].reset();
@@ -2014,6 +2341,8 @@ void TapeEngine::resetSendBusRuntimeState(SendBus& sendBus) noexcept
         sendBus.delayStates[(size_t) moduleIndex].reset();
         sendBus.reverbStates[(size_t) moduleIndex].reset();
         sendBus.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
+        sendBus.chorusStates[(size_t) moduleIndex].prepare(sampleRate);
+        sendBus.chorusStates[(size_t) moduleIndex].reset();
         sendBus.phaserStates[(size_t) moduleIndex].prepare(sampleRate);
         sendBus.phaserStates[(size_t) moduleIndex].reset();
         sendBus.spectrumAnalyzerStates[(size_t) moduleIndex].reset();

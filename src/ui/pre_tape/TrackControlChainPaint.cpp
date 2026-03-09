@@ -22,6 +22,8 @@ juce::String getModuleTitle(ChainModuleType type)
             return "Delay";
         case ChainModuleType::reverb:
             return "Reverb";
+        case ChainModuleType::chorus:
+            return "Chorus";
         case ChainModuleType::phaser:
             return "Phaser";
         case ChainModuleType::spectrumAnalyzer:
@@ -75,6 +77,8 @@ void TrackControlChain::paintContent(juce::Graphics& g)
             paintDelayModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::reverb)
             paintReverbModule(g, accent, slot, bounds);
+        else if (type == ChainModuleType::chorus)
+            paintChorusModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::phaser)
             paintPhaserModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::spectrumAnalyzer)

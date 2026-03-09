@@ -27,6 +27,7 @@ private:
     static constexpr int compressorControlCount = 5;
     static constexpr int delayControlCount = 3;
     static constexpr int reverbControlCount = 3;
+    static constexpr int chorusControlCount = 5;
     static constexpr int phaserControlCount = 5;
     static constexpr int utilityControlCount = 2;
 
@@ -107,12 +108,16 @@ private:
     std::array<std::array<juce::Slider, delayControlCount>, Track::maxChainModules> delaySliders;
     std::array<juce::TextButton, Track::maxChainModules> delayTimeModeButtons;
     std::array<std::array<juce::Slider, reverbControlCount>, Track::maxChainModules> reverbSliders;
+    std::array<std::array<juce::Slider, chorusControlCount>, Track::maxChainModules> chorusSliders;
+    std::array<juce::TextButton, Track::maxChainModules> chorusRateModeButtons;
     std::array<std::array<juce::Slider, phaserControlCount>, Track::maxChainModules> phaserSliders;
     std::array<juce::TextButton, Track::maxChainModules> phaserRateModeButtons;
     std::array<std::array<juce::Slider, utilityControlCount>, Track::maxChainModules> gainModuleSliders;
     std::array<int, Track::maxChainModules> visibleSlots {};
     std::array<ChainModuleType, Track::maxChainModules> visibleTypes {};
     std::array<juce::Rectangle<int>, Track::maxChainModules> moduleBounds {};
+    std::array<float, Track::maxChainModules> chorusVisualPhases {};
+    std::array<float, Track::maxChainModules> chorusVisualRates {};
     std::array<float, Track::maxChainModules> phaserVisualPhases {};
     std::array<float, Track::maxChainModules> phaserVisualRates {};
     int visibleModuleCount = 0;
@@ -170,6 +175,21 @@ private:
     void setReverbDamping(int moduleIndex, float value);
     float getReverbMix(int moduleIndex) const noexcept;
     void setReverbMix(int moduleIndex, float value);
+    float getChorusRate(int moduleIndex) const noexcept;
+    void setChorusRate(int moduleIndex, float value);
+    bool isChorusSyncEnabled(int moduleIndex) const noexcept;
+    void setChorusSyncEnabled(int moduleIndex, bool shouldBeEnabled);
+    int getChorusSyncIndex(int moduleIndex) const noexcept;
+    void setChorusSyncIndex(int moduleIndex, int index);
+    float getResolvedChorusRateHz(int moduleIndex) const noexcept;
+    float getChorusDepth(int moduleIndex) const noexcept;
+    void setChorusDepth(int moduleIndex, float value);
+    float getChorusCentreFrequency(int moduleIndex) const noexcept;
+    void setChorusCentreFrequency(int moduleIndex, float value);
+    float getChorusFeedback(int moduleIndex) const noexcept;
+    void setChorusFeedback(int moduleIndex, float value);
+    float getChorusMix(int moduleIndex) const noexcept;
+    void setChorusMix(int moduleIndex, float value);
     float getPhaserRate(int moduleIndex) const noexcept;
     void setPhaserRate(int moduleIndex, float value);
     bool isPhaserSyncEnabled(int moduleIndex) const noexcept;
@@ -203,6 +223,7 @@ private:
     void layoutSaturationModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutDelayModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutReverbModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutChorusModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutPhaserModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutSpectrumAnalyzerModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutGainModule(int slot, juce::Rectangle<int> moduleArea);
@@ -213,6 +234,7 @@ private:
     void paintSaturationModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintDelayModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintReverbModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintChorusModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintPhaserModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintSpectrumAnalyzerModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintGainModule(juce::Graphics& g, int slot, juce::Rectangle<int> bounds);
