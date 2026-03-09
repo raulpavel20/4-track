@@ -227,6 +227,7 @@ void TapeView::paint(juce::Graphics& g)
     const auto metronomeButtonBounds = getMetronomeButtonBounds().toFloat();
     const auto loopButtonBounds = getLoopButtonBounds().toFloat();
     const auto loopButtonEnabled = engine.canEditLoopMarkers();
+    const auto loopButtonActive = loopButtonEnabled && engine.hasLoopMarkerNearPlayhead();
     const auto drawRoundedButton = [&] (juce::Rectangle<float> bounds, bool active, juce::Colour activeColour)
     {
         g.setColour(active ? activeColour : juce::Colours::black);
@@ -243,7 +244,7 @@ void TapeView::paint(juce::Graphics& g)
     drawRoundedButton(metronomeButtonBounds, metronomeActive, metronomeColour);
     g.saveState();
     g.setOpacity(loopButtonEnabled ? 1.0f : 0.4f);
-    drawRoundedButton(loopButtonBounds, engine.hasLoopMarkerNearPlayhead(), accent);
+    drawRoundedButton(loopButtonBounds, loopButtonActive, accent);
     g.restoreState();
 
     const auto buttonIconColour = [] (bool active)
@@ -259,7 +260,7 @@ void TapeView::paint(juce::Graphics& g)
     g.setColour(buttonIconColour(metronomeActive));
     g.strokePath(createMetronomeIcon(metronomeButtonBounds.reduced(17.0f, 15.0f)),
                  juce::PathStrokeType(1.9f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
-    g.setColour(buttonIconColour(engine.hasLoopMarkerNearPlayhead()).withAlpha(loopButtonEnabled ? 1.0f : 0.4f));
+    g.setColour(buttonIconColour(loopButtonActive).withAlpha(loopButtonEnabled ? 1.0f : 0.4f));
     g.strokePath(createLoopIcon(loopButtonBounds.reduced(18.0f, 15.0f)),
                  juce::PathStrokeType(1.8f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
 
