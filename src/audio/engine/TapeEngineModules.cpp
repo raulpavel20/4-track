@@ -879,6 +879,210 @@ float TapeEngine::getSendBusCompressorMakeupGainDb(int sendIndex, int moduleInde
     return sendBuses[(size_t) sendIndex].compressorMakeupGainsDb[(size_t) moduleIndex].load(std::memory_order_acquire);
 }
 
+void TapeEngine::setTrackNoiseGateThresholdDb(int trackIndex, int moduleIndex, float thresholdDb)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].noiseGateThresholdsDb[(size_t) moduleIndex].store(clampDbGain(thresholdDb, -60.0f, 0.0f),
+                                                                                  std::memory_order_release);
+}
+
+void TapeEngine::setSendBusNoiseGateThresholdDb(int sendIndex, int moduleIndex, float thresholdDb)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].noiseGateThresholdsDb[(size_t) moduleIndex].store(clampDbGain(thresholdDb, -60.0f, 0.0f),
+                                                                                     std::memory_order_release);
+}
+
+float TapeEngine::getTrackNoiseGateThresholdDb(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return -18.0f;
+
+    return tracks[(size_t) trackIndex].noiseGateThresholdsDb[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusNoiseGateThresholdDb(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return -18.0f;
+
+    return sendBuses[(size_t) sendIndex].noiseGateThresholdsDb[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackNoiseGateRatio(int trackIndex, int moduleIndex, float ratio)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].noiseGateRatios[(size_t) moduleIndex].store(juce::jlimit(1.0f, 20.0f, ratio),
+                                                                            std::memory_order_release);
+}
+
+void TapeEngine::setSendBusNoiseGateRatio(int sendIndex, int moduleIndex, float ratio)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].noiseGateRatios[(size_t) moduleIndex].store(juce::jlimit(1.0f, 20.0f, ratio),
+                                                                               std::memory_order_release);
+}
+
+float TapeEngine::getTrackNoiseGateRatio(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 4.0f;
+
+    return tracks[(size_t) trackIndex].noiseGateRatios[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusNoiseGateRatio(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 4.0f;
+
+    return sendBuses[(size_t) sendIndex].noiseGateRatios[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackNoiseGateAttackMs(int trackIndex, int moduleIndex, float attackMs)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].noiseGateAttacksMs[(size_t) moduleIndex].store(juce::jlimit(0.1f, 100.0f, attackMs),
+                                                                               std::memory_order_release);
+}
+
+void TapeEngine::setSendBusNoiseGateAttackMs(int sendIndex, int moduleIndex, float attackMs)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].noiseGateAttacksMs[(size_t) moduleIndex].store(juce::jlimit(0.1f, 100.0f, attackMs),
+                                                                                  std::memory_order_release);
+}
+
+float TapeEngine::getTrackNoiseGateAttackMs(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 10.0f;
+
+    return tracks[(size_t) trackIndex].noiseGateAttacksMs[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusNoiseGateAttackMs(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 10.0f;
+
+    return sendBuses[(size_t) sendIndex].noiseGateAttacksMs[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackNoiseGateReleaseMs(int trackIndex, int moduleIndex, float releaseMs)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].noiseGateReleasesMs[(size_t) moduleIndex].store(juce::jlimit(10.0f, 1000.0f, releaseMs),
+                                                                                std::memory_order_release);
+}
+
+void TapeEngine::setSendBusNoiseGateReleaseMs(int sendIndex, int moduleIndex, float releaseMs)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].noiseGateReleasesMs[(size_t) moduleIndex].store(juce::jlimit(10.0f, 1000.0f, releaseMs),
+                                                                                   std::memory_order_release);
+}
+
+float TapeEngine::getTrackNoiseGateReleaseMs(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 120.0f;
+
+    return tracks[(size_t) trackIndex].noiseGateReleasesMs[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusNoiseGateReleaseMs(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 120.0f;
+
+    return sendBuses[(size_t) sendIndex].noiseGateReleasesMs[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackLimiterThresholdDb(int trackIndex, int moduleIndex, float thresholdDb)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].limiterThresholdsDb[(size_t) moduleIndex].store(clampDbGain(thresholdDb, -60.0f, 0.0f),
+                                                                                std::memory_order_release);
+}
+
+void TapeEngine::setSendBusLimiterThresholdDb(int sendIndex, int moduleIndex, float thresholdDb)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].limiterThresholdsDb[(size_t) moduleIndex].store(clampDbGain(thresholdDb, -60.0f, 0.0f),
+                                                                                   std::memory_order_release);
+}
+
+float TapeEngine::getTrackLimiterThresholdDb(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.0f;
+
+    return tracks[(size_t) trackIndex].limiterThresholdsDb[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusLimiterThresholdDb(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 0.0f;
+
+    return sendBuses[(size_t) sendIndex].limiterThresholdsDb[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+void TapeEngine::setTrackLimiterReleaseMs(int trackIndex, int moduleIndex, float releaseMs)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    tracks[(size_t) trackIndex].limiterReleasesMs[(size_t) moduleIndex].store(juce::jlimit(10.0f, 1000.0f, releaseMs),
+                                                                              std::memory_order_release);
+}
+
+void TapeEngine::setSendBusLimiterReleaseMs(int sendIndex, int moduleIndex, float releaseMs)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return;
+
+    sendBuses[(size_t) sendIndex].limiterReleasesMs[(size_t) moduleIndex].store(juce::jlimit(10.0f, 1000.0f, releaseMs),
+                                                                                 std::memory_order_release);
+}
+
+float TapeEngine::getTrackLimiterReleaseMs(int trackIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 120.0f;
+
+    return tracks[(size_t) trackIndex].limiterReleasesMs[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
+float TapeEngine::getSendBusLimiterReleaseMs(int sendIndex, int moduleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
+        return 120.0f;
+
+    return sendBuses[(size_t) sendIndex].limiterReleasesMs[(size_t) moduleIndex].load(std::memory_order_acquire);
+}
+
 void TapeEngine::setTrackSaturationMode(int trackIndex, int moduleIndex, SaturationMode mode)
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks) || ! juce::isPositiveAndBelow(moduleIndex, Track::maxChainModules))
@@ -1904,12 +2108,16 @@ void TapeEngine::resetModuleState(ModuleChain& track, int moduleIndex, ChainModu
 {
     track.filterStates[(size_t) moduleIndex].reset();
     track.compressorStates[(size_t) moduleIndex].reset();
+    track.noiseGateStates[(size_t) moduleIndex].reset();
+    track.limiterStates[(size_t) moduleIndex].reset();
     track.delayStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].reset();
     track.chorusStates[(size_t) moduleIndex].reset();
     track.phaserStates[(size_t) moduleIndex].reset();
     track.spectrumAnalyzerStates[(size_t) moduleIndex].reset();
     track.reverbStates[(size_t) moduleIndex].prepare(sampleRate);
+    track.noiseGateStates[(size_t) moduleIndex].prepare(sampleRate);
+    track.limiterStates[(size_t) moduleIndex].prepare(sampleRate);
     track.chorusStates[(size_t) moduleIndex].prepare(sampleRate);
     track.phaserStates[(size_t) moduleIndex].prepare(sampleRate);
     track.moduleBlockInputPeaks[(size_t) moduleIndex] = 0.0f;
@@ -1932,6 +2140,12 @@ void TapeEngine::resetModuleParameters(ModuleChain& track, int moduleIndex, Chai
     track.compressorAttacksMs[(size_t) moduleIndex].store(10.0f, std::memory_order_relaxed);
     track.compressorReleasesMs[(size_t) moduleIndex].store(120.0f, std::memory_order_relaxed);
     track.compressorMakeupGainsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
+    track.noiseGateThresholdsDb[(size_t) moduleIndex].store(-18.0f, std::memory_order_relaxed);
+    track.noiseGateRatios[(size_t) moduleIndex].store(4.0f, std::memory_order_relaxed);
+    track.noiseGateAttacksMs[(size_t) moduleIndex].store(10.0f, std::memory_order_relaxed);
+    track.noiseGateReleasesMs[(size_t) moduleIndex].store(120.0f, std::memory_order_relaxed);
+    track.limiterThresholdsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
+    track.limiterReleasesMs[(size_t) moduleIndex].store(120.0f, std::memory_order_relaxed);
     track.saturationModes[(size_t) moduleIndex].store((int) SaturationMode::light, std::memory_order_relaxed);
     track.saturationAmounts[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
     track.delayTimesMs[(size_t) moduleIndex].store(380.0f, std::memory_order_relaxed);
@@ -2010,6 +2224,12 @@ float TapeEngine::processChainModule(ModuleChain& track, int moduleIndex, int ch
             break;
         case ChainModuleType::compressor:
             output = processCompressorModule(track, moduleIndex, channel, sample);
+            break;
+        case ChainModuleType::noiseGate:
+            output = processNoiseGateModule(track, moduleIndex, channel, sample);
+            break;
+        case ChainModuleType::limiter:
+            output = processLimiterModule(track, moduleIndex, channel, sample);
             break;
         case ChainModuleType::saturation:
             output = processSaturationModule(track, moduleIndex, channel, sample);
@@ -2122,6 +2342,40 @@ float TapeEngine::processCompressorModule(ModuleChain& track, int moduleIndex, i
     const auto coeff = targetGain < envelope ? attackCoeff : releaseCoeff;
     envelope = targetGain + (coeff * (envelope - targetGain));
     return sample * envelope * juce::Decibels::decibelsToGain(makeupGainDb);
+}
+
+float TapeEngine::processNoiseGateModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
+{
+    const auto channelIndex = juce::jlimit(0, Track::numChannels - 1, channel);
+    const auto thresholdDb = track.noiseGateThresholdsDb[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto ratio = track.noiseGateRatios[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto attackMs = track.noiseGateAttacksMs[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto releaseMs = track.noiseGateReleasesMs[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    auto& state = track.noiseGateStates[(size_t) moduleIndex];
+    state.prepare(sampleRate);
+    state.updateParameters(thresholdDb, ratio, attackMs, releaseMs);
+    auto processed = sample;
+    float* channelData[] { &processed };
+    juce::dsp::AudioBlock<float> block(channelData, 1, 1);
+    juce::dsp::ProcessContextReplacing<float> context(block);
+    state.gates[(size_t) channelIndex].process(context);
+    return processed;
+}
+
+float TapeEngine::processLimiterModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
+{
+    const auto channelIndex = juce::jlimit(0, Track::numChannels - 1, channel);
+    const auto thresholdDb = track.limiterThresholdsDb[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    const auto releaseMs = track.limiterReleasesMs[(size_t) moduleIndex].load(std::memory_order_relaxed);
+    auto& state = track.limiterStates[(size_t) moduleIndex];
+    state.prepare(sampleRate);
+    state.updateParameters(thresholdDb, releaseMs);
+    auto processed = sample;
+    float* channelData[] { &processed };
+    juce::dsp::AudioBlock<float> block(channelData, 1, 1);
+    juce::dsp::ProcessContextReplacing<float> context(block);
+    state.limiters[(size_t) channelIndex].process(context);
+    return processed;
 }
 
 float TapeEngine::processSaturationModule(ModuleChain& track, int moduleIndex, int channel, float sample) const noexcept
@@ -2309,6 +2563,10 @@ void TapeEngine::resetTrackRuntimeState(Track& track) noexcept
         track.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
         track.filterStates[(size_t) moduleIndex].reset();
         track.compressorStates[(size_t) moduleIndex].reset();
+        track.noiseGateStates[(size_t) moduleIndex].prepare(sampleRate);
+        track.noiseGateStates[(size_t) moduleIndex].reset();
+        track.limiterStates[(size_t) moduleIndex].prepare(sampleRate);
+        track.limiterStates[(size_t) moduleIndex].reset();
         track.delayStates[(size_t) moduleIndex].prepare(sampleRate);
         track.delayStates[(size_t) moduleIndex].reset();
         track.reverbStates[(size_t) moduleIndex].reset();
@@ -2337,6 +2595,10 @@ void TapeEngine::resetSendBusRuntimeState(SendBus& sendBus) noexcept
         sendBus.moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
         sendBus.filterStates[(size_t) moduleIndex].reset();
         sendBus.compressorStates[(size_t) moduleIndex].reset();
+        sendBus.noiseGateStates[(size_t) moduleIndex].prepare(sampleRate);
+        sendBus.noiseGateStates[(size_t) moduleIndex].reset();
+        sendBus.limiterStates[(size_t) moduleIndex].prepare(sampleRate);
+        sendBus.limiterStates[(size_t) moduleIndex].reset();
         sendBus.delayStates[(size_t) moduleIndex].prepare(sampleRate);
         sendBus.delayStates[(size_t) moduleIndex].reset();
         sendBus.reverbStates[(size_t) moduleIndex].reset();

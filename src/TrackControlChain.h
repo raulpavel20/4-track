@@ -25,6 +25,8 @@ public:
 
 private:
     static constexpr int compressorControlCount = 5;
+    static constexpr int noiseGateControlCount = 4;
+    static constexpr int limiterControlCount = 2;
     static constexpr int delayControlCount = 3;
     static constexpr int reverbControlCount = 3;
     static constexpr int chorusControlCount = 5;
@@ -103,6 +105,8 @@ private:
     std::array<std::array<juce::Slider, Track::maxEqBands>, Track::maxChainModules> eqQSliders;
     std::array<std::array<juce::TextEditor, Track::maxEqBands>, Track::maxChainModules> eqFrequencyEditors;
     std::array<std::array<juce::Slider, compressorControlCount>, Track::maxChainModules> compressorSliders;
+    std::array<std::array<juce::Slider, noiseGateControlCount>, Track::maxChainModules> noiseGateSliders;
+    std::array<std::array<juce::Slider, limiterControlCount>, Track::maxChainModules> limiterSliders;
     std::array<SaturationModeButton, Track::maxChainModules> saturationModeButtons;
     std::array<juce::Slider, Track::maxChainModules> saturationAmountSliders;
     std::array<std::array<juce::Slider, delayControlCount>, Track::maxChainModules> delaySliders;
@@ -154,6 +158,18 @@ private:
     void setCompressorReleaseMs(int moduleIndex, float value);
     float getCompressorMakeupGainDb(int moduleIndex) const noexcept;
     void setCompressorMakeupGainDb(int moduleIndex, float value);
+    float getNoiseGateThresholdDb(int moduleIndex) const noexcept;
+    void setNoiseGateThresholdDb(int moduleIndex, float value);
+    float getNoiseGateRatio(int moduleIndex) const noexcept;
+    void setNoiseGateRatio(int moduleIndex, float value);
+    float getNoiseGateAttackMs(int moduleIndex) const noexcept;
+    void setNoiseGateAttackMs(int moduleIndex, float value);
+    float getNoiseGateReleaseMs(int moduleIndex) const noexcept;
+    void setNoiseGateReleaseMs(int moduleIndex, float value);
+    float getLimiterThresholdDb(int moduleIndex) const noexcept;
+    void setLimiterThresholdDb(int moduleIndex, float value);
+    float getLimiterReleaseMs(int moduleIndex) const noexcept;
+    void setLimiterReleaseMs(int moduleIndex, float value);
     SaturationMode getSaturationMode(int moduleIndex) const noexcept;
     void setSaturationMode(int moduleIndex, SaturationMode mode);
     float getSaturationAmount(int moduleIndex) const noexcept;
@@ -220,6 +236,8 @@ private:
     void layoutFilterModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutEqModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutCompressorModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutNoiseGateModule(int slot, juce::Rectangle<int> moduleArea);
+    void layoutLimiterModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutSaturationModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutDelayModule(int slot, juce::Rectangle<int> moduleArea);
     void layoutReverbModule(int slot, juce::Rectangle<int> moduleArea);
@@ -231,6 +249,8 @@ private:
     void paintFilterModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintEqModule(juce::Graphics& g, int slot);
     void paintCompressorModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintNoiseGateModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
+    void paintLimiterModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintSaturationModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintDelayModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);
     void paintReverbModule(juce::Graphics& g, juce::Colour accent, int slot, juce::Rectangle<int> bounds);

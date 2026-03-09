@@ -16,6 +16,10 @@ juce::String getModuleTitle(ChainModuleType type)
             return "EQ";
         case ChainModuleType::compressor:
             return "Compressor";
+        case ChainModuleType::noiseGate:
+            return "Noise Gate";
+        case ChainModuleType::limiter:
+            return "Limiter";
         case ChainModuleType::saturation:
             return "Saturation";
         case ChainModuleType::delay:
@@ -71,6 +75,10 @@ void TrackControlChain::paintContent(juce::Graphics& g)
             paintEqModule(g, slot);
         else if (type == ChainModuleType::compressor)
             paintCompressorModule(g, accent, slot, bounds);
+        else if (type == ChainModuleType::noiseGate)
+            paintNoiseGateModule(g, accent, slot, bounds);
+        else if (type == ChainModuleType::limiter)
+            paintLimiterModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::saturation)
             paintSaturationModule(g, accent, slot, bounds);
         else if (type == ChainModuleType::delay)

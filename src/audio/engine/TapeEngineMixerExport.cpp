@@ -210,6 +210,18 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
                                                                           std::memory_order_relaxed);
             localSendBus.compressorMakeupGainsDb[(size_t) moduleIndex].store(sourceSendBus.compressorMakeupGainsDb[(size_t) moduleIndex].load(std::memory_order_acquire),
                                                                              std::memory_order_relaxed);
+            localSendBus.noiseGateThresholdsDb[(size_t) moduleIndex].store(sourceSendBus.noiseGateThresholdsDb[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                           std::memory_order_relaxed);
+            localSendBus.noiseGateRatios[(size_t) moduleIndex].store(sourceSendBus.noiseGateRatios[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                     std::memory_order_relaxed);
+            localSendBus.noiseGateAttacksMs[(size_t) moduleIndex].store(sourceSendBus.noiseGateAttacksMs[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                        std::memory_order_relaxed);
+            localSendBus.noiseGateReleasesMs[(size_t) moduleIndex].store(sourceSendBus.noiseGateReleasesMs[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                         std::memory_order_relaxed);
+            localSendBus.limiterThresholdsDb[(size_t) moduleIndex].store(sourceSendBus.limiterThresholdsDb[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                         std::memory_order_relaxed);
+            localSendBus.limiterReleasesMs[(size_t) moduleIndex].store(sourceSendBus.limiterReleasesMs[(size_t) moduleIndex].load(std::memory_order_acquire),
+                                                                       std::memory_order_relaxed);
             localSendBus.saturationModes[(size_t) moduleIndex].store(sourceSendBus.saturationModes[(size_t) moduleIndex].load(std::memory_order_acquire),
                                                                      std::memory_order_relaxed);
             localSendBus.saturationAmounts[(size_t) moduleIndex].store(sourceSendBus.saturationAmounts[(size_t) moduleIndex].load(std::memory_order_acquire),
@@ -278,6 +290,12 @@ juce::Result TapeEngine::exportMixToFile(const juce::File& file, const ExportSet
 
             if (type == ChainModuleType::reverb)
                 localSendBus.reverbStates[(size_t) moduleIndex].prepare(targetSampleRate);
+
+            if (type == ChainModuleType::noiseGate)
+                localSendBus.noiseGateStates[(size_t) moduleIndex].prepare(targetSampleRate);
+
+            if (type == ChainModuleType::limiter)
+                localSendBus.limiterStates[(size_t) moduleIndex].prepare(targetSampleRate);
 
             if (type == ChainModuleType::chorus)
                 localSendBus.chorusStates[(size_t) moduleIndex].prepare(targetSampleRate);

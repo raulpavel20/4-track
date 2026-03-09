@@ -7,12 +7,14 @@ constexpr int inputModuleWidth = 120;
 constexpr int filterModuleWidth = 166;
 constexpr int eqModuleWidth = 280;
 constexpr int compressorModuleWidth = 260;
+constexpr int noiseGateModuleWidth = 220;
+constexpr int limiterModuleWidth = 150;
 constexpr int saturationModuleWidth = 140;
 constexpr int delayModuleWidth = 214;
 constexpr int reverbModuleWidth = 214;
 constexpr int chorusModuleWidth = 290;
 constexpr int phaserModuleWidth = 290;
-constexpr int spectrumAnalyzerModuleWidth = 224;
+constexpr int spectrumAnalyzerModuleWidth = 448;
 constexpr int gainModuleWidth = 100;
 constexpr int moduleVerticalInset = 10;
 constexpr int moduleInnerPadding = 10;
@@ -30,6 +32,10 @@ int getModuleWidth(ChainModuleType type)
             return eqModuleWidth;
         case ChainModuleType::compressor:
             return compressorModuleWidth;
+        case ChainModuleType::noiseGate:
+            return noiseGateModuleWidth;
+        case ChainModuleType::limiter:
+            return limiterModuleWidth;
         case ChainModuleType::saturation:
             return saturationModuleWidth;
         case ChainModuleType::delay:
@@ -101,6 +107,10 @@ void TrackControlChain::layoutContent()
             layoutEqModule(slot, moduleArea);
         else if (type == ChainModuleType::compressor)
             layoutCompressorModule(slot, moduleArea);
+        else if (type == ChainModuleType::noiseGate)
+            layoutNoiseGateModule(slot, moduleArea);
+        else if (type == ChainModuleType::limiter)
+            layoutLimiterModule(slot, moduleArea);
         else if (type == ChainModuleType::saturation)
             layoutSaturationModule(slot, moduleArea);
         else if (type == ChainModuleType::delay)

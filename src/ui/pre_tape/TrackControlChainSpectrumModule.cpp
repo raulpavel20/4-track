@@ -1,8 +1,27 @@
 #include "../../TrackControlChain.h"
 
+#include "../../AppFonts.h"
+
 namespace
 {
 constexpr int graphInset = 12;
+
+float getFrequencyLabelRatio(float frequencyHz, float minFrequencyHz, float maxFrequencyHz)
+{
+    const auto safeFrequency = juce::jlimit(minFrequencyHz, maxFrequencyHz, frequencyHz);
+    return std::log(safeFrequency / minFrequencyHz) / std::log(maxFrequencyHz / minFrequencyHz);
+}
+
+juce::String formatFrequencyLabel(float frequencyHz)
+{
+    if (frequencyHz >= 1000.0f)
+    {
+        const auto kiloHertz = frequencyHz / 1000.0f;
+        return juce::String(kiloHertz, kiloHertz < 10.0f ? 1 : 0) + "k";
+    }
+
+    return juce::String((int) std::round(frequencyHz));
+}
 }
 
 void TrackControlChain::layoutSpectrumAnalyzerModule(int, juce::Rectangle<int>)
@@ -13,7 +32,36 @@ void TrackControlChain::paintSpectrumAnalyzerModule(juce::Graphics& g, juce::Col
 {
     auto graphBounds = bounds.reduced(graphInset, 10);
     graphBounds.removeFromTop(30);
-    graphBounds.reduce(2, 4);
+    graphBounds.reduce(2, 6);
+    graphBounds.removeFromTop(18);
+
+    static constexpr std::array<float, 7> frequencyLabels { 30.0f, 100.0f, 300.0f, 1000.0f, 3000.0f, 10000.0f, 20000.0f };
+    constexpr auto minFrequency = 30.0f;
+    constexpr auto maxFrequency = 20000.0f;
+
+    g.setColour(juce::Colours::white.withAlpha(0.65f));
+    g.setFont(AppFonts::getFont(10.0f));
+
+    for (int labelIndex = 0; labelIndex < (int) frequencyLabels.size(); ++labelIndex)
+    {
+        const auto frequency = frequencyLabels[(size_t) labelIndex];
+        const auto ratio = getFrequencyLabelRatio(frequency, minFrequency, maxFrequency);
+        const auto x = juce::jmap(ratio,
+                                  (float) graphBounds.getX() + 8.0f,
+                                  (float) graphBounds.getRight() - 8.0f);
+        const auto labelWidth = 34;
+        auto labelBounds = juce::Rectangle<int>((int) std::round(x) - (labelWidth / 2),
+                                                graphBounds.getY() - 16,
+                                                labelWidth,
+                                                12);
+
+        if (labelIndex == 0)
+            labelBounds.setX(graphBounds.getX());
+        else if (labelIndex == (int) frequencyLabels.size() - 1)
+            labelBounds.setX(graphBounds.getRight() - labelWidth);
+
+        g.drawText(formatFrequencyLabel(frequency), labelBounds, juce::Justification::centred, false);
+    }
 
     g.setColour(juce::Colours::white.withAlpha(0.12f));
     g.drawRoundedRectangle(graphBounds.toFloat(), 10.0f, 1.0f);

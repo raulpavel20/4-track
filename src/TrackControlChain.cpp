@@ -139,13 +139,15 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         menu.addItem(1, "Filter");
         menu.addItem(2, "EQ");
         menu.addItem(3, "Compressor");
-        menu.addItem(4, "Saturation");
-        menu.addItem(5, "Delay");
-        menu.addItem(6, "Reverb");
-        menu.addItem(7, "Utility");
-        menu.addItem(8, "Spectrum Analyzer");
-        menu.addItem(9, "Phaser");
-        menu.addItem(10, "Chorus");
+        menu.addItem(4, "Noise Gate");
+        menu.addItem(5, "Limiter");
+        menu.addItem(6, "Saturation");
+        menu.addItem(7, "Delay");
+        menu.addItem(8, "Reverb");
+        menu.addItem(9, "Utility");
+        menu.addItem(10, "Spectrum Analyzer");
+        menu.addItem(11, "Phaser");
+        menu.addItem(12, "Chorus");
         menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&safeThis->addModuleButton),
                            [safeThis](int result)
                            {
@@ -161,18 +163,22 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                                else if (result == 3)
                                    moduleType = ChainModuleType::compressor;
                                else if (result == 4)
-                                   moduleType = ChainModuleType::saturation;
+                                   moduleType = ChainModuleType::noiseGate;
                                else if (result == 5)
-                                   moduleType = ChainModuleType::delay;
+                                   moduleType = ChainModuleType::limiter;
                                else if (result == 6)
-                                   moduleType = ChainModuleType::reverb;
+                                   moduleType = ChainModuleType::saturation;
                                else if (result == 7)
-                                   moduleType = ChainModuleType::gain;
+                                   moduleType = ChainModuleType::delay;
                                else if (result == 8)
-                                   moduleType = ChainModuleType::spectrumAnalyzer;
+                                   moduleType = ChainModuleType::reverb;
                                else if (result == 9)
-                                   moduleType = ChainModuleType::phaser;
+                                   moduleType = ChainModuleType::gain;
                                else if (result == 10)
+                                   moduleType = ChainModuleType::spectrumAnalyzer;
+                               else if (result == 11)
+                                   moduleType = ChainModuleType::phaser;
+                               else if (result == 12)
                                    moduleType = ChainModuleType::chorus;
 
                                safeThis->addModule(moduleType);
@@ -286,6 +292,60 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
                     setCompressorReleaseMs(moduleIndex, value);
                 else
                     setCompressorMakeupGainDb(moduleIndex, value);
+
+                contentComponent.repaint();
+            };
+            contentComponent.addAndMakeVisible(slider);
+        }
+
+        for (int controlIndex = 0; controlIndex < noiseGateControlCount; ++controlIndex)
+        {
+            auto& slider = noiseGateSliders[(size_t) moduleIndex][(size_t) controlIndex];
+
+            if (controlIndex == 0)
+                configureRotarySlider(slider, -60.0, 0.0, 0.1, -18.0);
+            else if (controlIndex == 1)
+                configureRotarySlider(slider, 1.0, 20.0, 0.1, 4.0);
+            else if (controlIndex == 2)
+                configureRotarySlider(slider, 0.1, 100.0, 0.1, 10.0);
+            else
+                configureRotarySlider(slider, 10.0, 1000.0, 1.0, 120.0);
+
+            slider.onValueChange = [this, moduleIndex, controlIndex]
+            {
+                const auto value = (float) noiseGateSliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
+
+                if (controlIndex == 0)
+                    setNoiseGateThresholdDb(moduleIndex, value);
+                else if (controlIndex == 1)
+                    setNoiseGateRatio(moduleIndex, value);
+                else if (controlIndex == 2)
+                    setNoiseGateAttackMs(moduleIndex, value);
+                else
+                    setNoiseGateReleaseMs(moduleIndex, value);
+
+                contentComponent.repaint();
+            };
+            contentComponent.addAndMakeVisible(slider);
+        }
+
+        for (int controlIndex = 0; controlIndex < limiterControlCount; ++controlIndex)
+        {
+            auto& slider = limiterSliders[(size_t) moduleIndex][(size_t) controlIndex];
+
+            if (controlIndex == 0)
+                configureRotarySlider(slider, -60.0, 0.0, 0.1, 0.0);
+            else
+                configureRotarySlider(slider, 10.0, 1000.0, 1.0, 120.0);
+
+            slider.onValueChange = [this, moduleIndex, controlIndex]
+            {
+                const auto value = (float) limiterSliders[(size_t) moduleIndex][(size_t) controlIndex].getValue();
+
+                if (controlIndex == 0)
+                    setLimiterThresholdDb(moduleIndex, value);
+                else
+                    setLimiterReleaseMs(moduleIndex, value);
 
                 contentComponent.repaint();
             };
@@ -842,6 +902,90 @@ void TrackControlChain::setCompressorMakeupGainDb(int moduleIndex, float value)
         engine.setSendBusCompressorMakeupGainDb(selectedSendBus, moduleIndex, value);
 }
 
+float TrackControlChain::getNoiseGateThresholdDb(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackNoiseGateThresholdDb(selectedTrack, moduleIndex)
+                           : engine.getSendBusNoiseGateThresholdDb(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setNoiseGateThresholdDb(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackNoiseGateThresholdDb(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusNoiseGateThresholdDb(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getNoiseGateRatio(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackNoiseGateRatio(selectedTrack, moduleIndex)
+                           : engine.getSendBusNoiseGateRatio(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setNoiseGateRatio(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackNoiseGateRatio(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusNoiseGateRatio(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getNoiseGateAttackMs(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackNoiseGateAttackMs(selectedTrack, moduleIndex)
+                           : engine.getSendBusNoiseGateAttackMs(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setNoiseGateAttackMs(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackNoiseGateAttackMs(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusNoiseGateAttackMs(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getNoiseGateReleaseMs(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackNoiseGateReleaseMs(selectedTrack, moduleIndex)
+                           : engine.getSendBusNoiseGateReleaseMs(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setNoiseGateReleaseMs(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackNoiseGateReleaseMs(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusNoiseGateReleaseMs(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getLimiterThresholdDb(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackLimiterThresholdDb(selectedTrack, moduleIndex)
+                           : engine.getSendBusLimiterThresholdDb(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setLimiterThresholdDb(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackLimiterThresholdDb(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusLimiterThresholdDb(selectedSendBus, moduleIndex, value);
+}
+
+float TrackControlChain::getLimiterReleaseMs(int moduleIndex) const noexcept
+{
+    return isTrackTarget() ? engine.getTrackLimiterReleaseMs(selectedTrack, moduleIndex)
+                           : engine.getSendBusLimiterReleaseMs(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::setLimiterReleaseMs(int moduleIndex, float value)
+{
+    if (isTrackTarget())
+        engine.setTrackLimiterReleaseMs(selectedTrack, moduleIndex, value);
+    else
+        engine.setSendBusLimiterReleaseMs(selectedSendBus, moduleIndex, value);
+}
+
 SaturationMode TrackControlChain::getSaturationMode(int moduleIndex) const noexcept
 {
     return isTrackTarget() ? engine.getTrackSaturationMode(selectedTrack, moduleIndex)
@@ -1343,6 +1487,12 @@ void TrackControlChain::refreshFromEngine()
         compressorSliders[(size_t) moduleIndex][2].setValue(getCompressorAttackMs(moduleIndex), juce::dontSendNotification);
         compressorSliders[(size_t) moduleIndex][3].setValue(getCompressorReleaseMs(moduleIndex), juce::dontSendNotification);
         compressorSliders[(size_t) moduleIndex][4].setValue(getCompressorMakeupGainDb(moduleIndex), juce::dontSendNotification);
+        noiseGateSliders[(size_t) moduleIndex][0].setValue(getNoiseGateThresholdDb(moduleIndex), juce::dontSendNotification);
+        noiseGateSliders[(size_t) moduleIndex][1].setValue(getNoiseGateRatio(moduleIndex), juce::dontSendNotification);
+        noiseGateSliders[(size_t) moduleIndex][2].setValue(getNoiseGateAttackMs(moduleIndex), juce::dontSendNotification);
+        noiseGateSliders[(size_t) moduleIndex][3].setValue(getNoiseGateReleaseMs(moduleIndex), juce::dontSendNotification);
+        limiterSliders[(size_t) moduleIndex][0].setValue(getLimiterThresholdDb(moduleIndex), juce::dontSendNotification);
+        limiterSliders[(size_t) moduleIndex][1].setValue(getLimiterReleaseMs(moduleIndex), juce::dontSendNotification);
 
         for (int bandIndex = 0; bandIndex < Track::maxEqBands; ++bandIndex)
         {
@@ -1393,6 +1543,18 @@ void TrackControlChain::updateAccentColours()
                 slider.setColour(juce::Slider::thumbColourId, juce::Colours::white);
             }
         }
+    }
+
+    for (auto& slot : noiseGateSliders)
+    {
+        for (auto& slider : slot)
+            slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
+    }
+
+    for (auto& slot : limiterSliders)
+    {
+        for (auto& slider : slot)
+            slider.setColour(juce::Slider::rotarySliderFillColourId, accent);
     }
 
     for (auto& slider : saturationAmountSliders)
@@ -1510,6 +1672,10 @@ void TrackControlChain::updateModuleVisibility()
 
         for (int controlIndex = 0; controlIndex < compressorControlCount; ++controlIndex)
             compressorSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::compressor);
+        for (int controlIndex = 0; controlIndex < noiseGateControlCount; ++controlIndex)
+            noiseGateSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::noiseGate);
+        for (int controlIndex = 0; controlIndex < limiterControlCount; ++controlIndex)
+            limiterSliders[(size_t) moduleIndex][(size_t) controlIndex].setVisible(type == ChainModuleType::limiter);
     }
 }
 

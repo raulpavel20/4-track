@@ -1220,6 +1220,54 @@ src/ui/pre_tape/TrackControlChainLayout.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLayout.cpp.s
 .PHONY : src/ui/pre_tape/TrackControlChainLayout.cpp.s
 
+src/ui/pre_tape/TrackControlChainLimiterModule.o: src/ui/pre_tape/TrackControlChainLimiterModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainLimiterModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainLimiterModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLimiterModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainLimiterModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainLimiterModule.i: src/ui/pre_tape/TrackControlChainLimiterModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainLimiterModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainLimiterModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLimiterModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainLimiterModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainLimiterModule.s: src/ui/pre_tape/TrackControlChainLimiterModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainLimiterModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainLimiterModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainLimiterModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainLimiterModule.cpp.s
+
+src/ui/pre_tape/TrackControlChainNoiseGateModule.o: src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainNoiseGateModule.o
+
+# target to build an object file
+src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.o
+.PHONY : src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.o
+
+src/ui/pre_tape/TrackControlChainNoiseGateModule.i: src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainNoiseGateModule.i
+
+# target to preprocess a source file
+src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.i
+.PHONY : src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.i
+
+src/ui/pre_tape/TrackControlChainNoiseGateModule.s: src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainNoiseGateModule.s
+
+# target to generate assembly for a file
+src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/FourTrackTape.dir/build.make CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.s
+.PHONY : src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp.s
+
 src/ui/pre_tape/TrackControlChainPaint.o: src/ui/pre_tape/TrackControlChainPaint.cpp.o
 .PHONY : src/ui/pre_tape/TrackControlChainPaint.o
 
@@ -1651,6 +1699,12 @@ help:
 	@echo "... src/ui/pre_tape/TrackControlChainLayout.o"
 	@echo "... src/ui/pre_tape/TrackControlChainLayout.i"
 	@echo "... src/ui/pre_tape/TrackControlChainLayout.s"
+	@echo "... src/ui/pre_tape/TrackControlChainLimiterModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainLimiterModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainLimiterModule.s"
+	@echo "... src/ui/pre_tape/TrackControlChainNoiseGateModule.o"
+	@echo "... src/ui/pre_tape/TrackControlChainNoiseGateModule.i"
+	@echo "... src/ui/pre_tape/TrackControlChainNoiseGateModule.s"
 	@echo "... src/ui/pre_tape/TrackControlChainPaint.o"
 	@echo "... src/ui/pre_tape/TrackControlChainPaint.i"
 	@echo "... src/ui/pre_tape/TrackControlChainPaint.s"

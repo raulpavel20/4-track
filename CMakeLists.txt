@@ -46,6 +46,8 @@ target_sources(FourTrackTape
         src/ui/pre_tape/TrackControlChainFilterModule.cpp
         src/ui/pre_tape/TrackControlChainEqModule.cpp
         src/ui/pre_tape/TrackControlChainCompressorModule.cpp
+        src/ui/pre_tape/TrackControlChainNoiseGateModule.cpp
+        src/ui/pre_tape/TrackControlChainLimiterModule.cpp
         src/ui/pre_tape/TrackControlChainSaturationModule.cpp
         src/ui/pre_tape/TrackControlChainDelayModule.cpp
         src/ui/pre_tape/TrackControlChainReverbModule.cpp

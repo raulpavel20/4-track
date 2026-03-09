@@ -29,6 +29,8 @@ enum class ChainModuleType : int
     filter,
     eq,
     compressor,
+    noiseGate,
+    limiter,
     saturation,
     delay,
     reverb,
@@ -122,6 +124,138 @@ struct CompressorModuleState
     void reset() noexcept
     {
         envelopes.fill(0.0f);
+    }
+};
+
+struct NoiseGateModuleState
+{
+    std::array<juce::dsp::NoiseGate<float>, 2> gates;
+    double preparedSampleRate = 0.0;
+    float lastThresholdDb = 1.0f;
+    float lastRatio = -1.0f;
+    float lastAttackMs = -1.0f;
+    float lastReleaseMs = -1.0f;
+
+    void reset() noexcept
+    {
+        for (auto& gate : gates)
+            gate.reset();
+        preparedSampleRate = 0.0;
+        lastThresholdDb = 1.0f;
+        lastRatio = -1.0f;
+        lastAttackMs = -1.0f;
+        lastReleaseMs = -1.0f;
+    }
+
+    void prepare(double sampleRate) noexcept
+    {
+        if (sampleRate <= 0.0)
+            return;
+
+        if (std::abs(preparedSampleRate - sampleRate) < 0.01)
+            return;
+
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = 1;
+        spec.numChannels = 1;
+
+        for (auto& gate : gates)
+        {
+            gate.reset();
+            gate.prepare(spec);
+        }
+
+        preparedSampleRate = sampleRate;
+        lastThresholdDb = 1.0f;
+        lastRatio = -1.0f;
+        lastAttackMs = -1.0f;
+        lastReleaseMs = -1.0f;
+    }
+
+    void updateParameters(float thresholdDb, float ratio, float attackMs, float releaseMs) noexcept
+    {
+        if (preparedSampleRate <= 0.0)
+            return;
+
+        if (std::abs(lastThresholdDb - thresholdDb) < 0.0001f
+            && std::abs(lastRatio - ratio) < 0.0001f
+            && std::abs(lastAttackMs - attackMs) < 0.0001f
+            && std::abs(lastReleaseMs - releaseMs) < 0.0001f)
+            return;
+
+        for (auto& gate : gates)
+        {
+            gate.setThreshold(thresholdDb);
+            gate.setRatio(ratio);
+            gate.setAttack(attackMs);
+            gate.setRelease(releaseMs);
+        }
+
+        lastThresholdDb = thresholdDb;
+        lastRatio = ratio;
+        lastAttackMs = attackMs;
+        lastReleaseMs = releaseMs;
+    }
+};
+
+struct LimiterModuleState
+{
+    std::array<juce::dsp::Limiter<float>, 2> limiters;
+    double preparedSampleRate = 0.0;
+    float lastThresholdDb = 1.0f;
+    float lastReleaseMs = -1.0f;
+
+    void reset() noexcept
+    {
+        for (auto& limiter : limiters)
+            limiter.reset();
+        preparedSampleRate = 0.0;
+        lastThresholdDb = 1.0f;
+        lastReleaseMs = -1.0f;
+    }
+
+    void prepare(double sampleRate) noexcept
+    {
+        if (sampleRate <= 0.0)
+            return;
+
+        if (std::abs(preparedSampleRate - sampleRate) < 0.01)
+            return;
+
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = 1;
+        spec.numChannels = 1;
+
+        for (auto& limiter : limiters)
+        {
+            limiter.reset();
+            limiter.prepare(spec);
+        }
+
+        preparedSampleRate = sampleRate;
+        lastThresholdDb = 1.0f;
+        lastReleaseMs = -1.0f;
+    }
+
+    void updateParameters(float thresholdDb, float releaseMs) noexcept
+    {
+        if (preparedSampleRate <= 0.0)
+            return;
+
+        if (std::abs(lastThresholdDb - thresholdDb) < 0.0001f
+            && std::abs(lastReleaseMs - releaseMs) < 0.0001f)
+            return;
+
+        for (auto& limiter : limiters)
+        {
+            limiter.setThreshold(thresholdDb);
+            limiter.setRelease(releaseMs);
+        }
+
+        lastThresholdDb = thresholdDb;
+        lastReleaseMs = releaseMs;
     }
 };
 
@@ -419,6 +553,12 @@ struct ModuleChain
     std::array<std::atomic<float>, maxChainModules> compressorAttacksMs;
     std::array<std::atomic<float>, maxChainModules> compressorReleasesMs;
     std::array<std::atomic<float>, maxChainModules> compressorMakeupGainsDb;
+    std::array<std::atomic<float>, maxChainModules> noiseGateThresholdsDb;
+    std::array<std::atomic<float>, maxChainModules> noiseGateRatios;
+    std::array<std::atomic<float>, maxChainModules> noiseGateAttacksMs;
+    std::array<std::atomic<float>, maxChainModules> noiseGateReleasesMs;
+    std::array<std::atomic<float>, maxChainModules> limiterThresholdsDb;
+    std::array<std::atomic<float>, maxChainModules> limiterReleasesMs;
     std::array<std::atomic<int>, maxChainModules> saturationModes;
     std::array<std::atomic<float>, maxChainModules> saturationAmounts;
     std::array<std::atomic<float>, maxChainModules> delayTimesMs;
@@ -450,6 +590,8 @@ struct ModuleChain
     std::array<FilterModuleState, maxChainModules> filterStates;
     std::array<std::array<EqBandState, maxEqBands>, maxChainModules> eqStates;
     std::array<CompressorModuleState, maxChainModules> compressorStates;
+    std::array<NoiseGateModuleState, maxChainModules> noiseGateStates;
+    std::array<LimiterModuleState, maxChainModules> limiterStates;
     std::array<DelayModuleState, maxChainModules> delayStates;
     std::array<ReverbModuleState, maxChainModules> reverbStates;
     std::array<ChorusModuleState, maxChainModules> chorusStates;
@@ -472,6 +614,12 @@ struct ModuleChain
             compressorAttacksMs[(size_t) moduleIndex].store(10.0f, std::memory_order_relaxed);
             compressorReleasesMs[(size_t) moduleIndex].store(120.0f, std::memory_order_relaxed);
             compressorMakeupGainsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
+            noiseGateThresholdsDb[(size_t) moduleIndex].store(-18.0f, std::memory_order_relaxed);
+            noiseGateRatios[(size_t) moduleIndex].store(4.0f, std::memory_order_relaxed);
+            noiseGateAttacksMs[(size_t) moduleIndex].store(10.0f, std::memory_order_relaxed);
+            noiseGateReleasesMs[(size_t) moduleIndex].store(120.0f, std::memory_order_relaxed);
+            limiterThresholdsDb[(size_t) moduleIndex].store(0.0f, std::memory_order_relaxed);
+            limiterReleasesMs[(size_t) moduleIndex].store(120.0f, std::memory_order_relaxed);
             saturationModes[(size_t) moduleIndex].store((int) SaturationMode::light, std::memory_order_relaxed);
             saturationAmounts[(size_t) moduleIndex].store(0.35f, std::memory_order_relaxed);
             delayTimesMs[(size_t) moduleIndex].store(380.0f, std::memory_order_relaxed);
@@ -504,6 +652,8 @@ struct ModuleChain
             moduleBlockOutputPeaks[(size_t) moduleIndex] = 0.0f;
             filterStates[(size_t) moduleIndex].reset();
             compressorStates[(size_t) moduleIndex].reset();
+            noiseGateStates[(size_t) moduleIndex].reset();
+            limiterStates[(size_t) moduleIndex].reset();
             delayStates[(size_t) moduleIndex].reset();
             reverbStates[(size_t) moduleIndex].reset();
             chorusStates[(size_t) moduleIndex].reset();

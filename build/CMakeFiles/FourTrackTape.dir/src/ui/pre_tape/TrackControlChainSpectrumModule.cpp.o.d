@@ -1631,4 +1631,6 @@ CMakeFiles/FourTrackTape.dir/src/ui/pre_tape/TrackControlChainSpectrumModule.cpp
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_utils/audio_cd/juce_AudioCDBurner.h \
   /Users/pavel/Documents/Projects/4-track/external/JUCE/modules/juce_audio_utils/audio_cd/juce_AudioCDReader.h \
   /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../TapeEngine.h \
-  /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../Track.h
+  /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../Track.h \
+  /Users/pavel/Documents/Projects/4-track/src/ui/pre_tape/../../AppFonts.h \
+  /Users/pavel/Documents/Projects/4-track/build/juce_binarydata_FourTrackAssets/JuceLibraryCode/FourTrackBinaryData.h
