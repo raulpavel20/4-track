@@ -6,6 +6,8 @@
 
 namespace
 {
+constexpr int noneInputItemId = 1;
+
 juce::String formatSampleRate(double value)
 {
     if (value >= 1000.0)
@@ -133,13 +135,19 @@ void TechnicalSettingsSection::refreshAudioOptions()
     sampleRateBox.clear(juce::dontSendNotification);
     bufferSizeBox.clear(juce::dontSendNotification);
 
+    inputDeviceBox.addItem("None", noneInputItemId);
+
     for (int index = 0; index < inputDeviceNames.size(); ++index)
-        inputDeviceBox.addItem(inputDeviceNames[index], index + 1);
+        inputDeviceBox.addItem(inputDeviceNames[index], index + noneInputItemId + 1);
 
     for (int index = 0; index < outputDeviceNames.size(); ++index)
         outputDeviceBox.addItem(outputDeviceNames[index], index + 1);
 
-    inputDeviceBox.setText(setup.inputDeviceName, juce::dontSendNotification);
+    if (setup.inputDeviceName.isEmpty())
+        inputDeviceBox.setSelectedId(noneInputItemId, juce::dontSendNotification);
+    else
+        inputDeviceBox.setText(setup.inputDeviceName, juce::dontSendNotification);
+
     outputDeviceBox.setText(setup.outputDeviceName, juce::dontSendNotification);
 
     if (auto* device = audioDeviceManager.getCurrentAudioDevice())
@@ -163,7 +171,8 @@ void TechnicalSettingsSection::refreshAudioOptions()
 void TechnicalSettingsSection::applyAudioSetup()
 {
     auto setup = audioDeviceManager.getAudioDeviceSetup();
-    setup.inputDeviceName = inputDeviceBox.getText();
+    setup.inputDeviceName = inputDeviceBox.getSelectedId() == noneInputItemId ? juce::String()
+                                                                              : inputDeviceBox.getText();
     setup.outputDeviceName = outputDeviceBox.getText();
 
     const auto selectedSampleRate = parseSampleRate(sampleRateBox.getText());
@@ -175,5 +184,13 @@ void TechnicalSettingsSection::applyAudioSetup()
     if (selectedBufferSize > 0)
         setup.bufferSize = selectedBufferSize;
 
-    audioDeviceManager.setAudioDeviceSetup(setup, true);
+    const auto error = audioDeviceManager.setAudioDeviceSetup(setup, true);
+
+    if (error.isNotEmpty())
+    {
+        refreshAudioOptions();
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::WarningIcon,
+                                               "Audio Device Unsupported",
+                                               error);
+    }
 }

@@ -84,4 +84,12 @@ target_link_libraries(FourTrackTape
         juce::juce_recommended_warning_flags
 )
 
+if(APPLE)
+    add_custom_command(TARGET FourTrackTape POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+                -DPLIST_PATH=${CMAKE_CURRENT_BINARY_DIR}/FourTrackTape_artefacts/4-Track.app/Contents/Info.plist
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DisableMacWindowRestoration.cmake
+    )
+endif()
+
 juce_generate_juce_header(FourTrackTape)

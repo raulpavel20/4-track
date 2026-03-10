@@ -62,8 +62,23 @@ private:
             setUsingNativeTitleBar(true);
             setContentOwned(new MainComponent(), true);
             setResizable(true, true);
+
+            if (auto* content = getContentComponent())
+                setSize(content->getWidth(), content->getHeight());
+
             centreWithSize(getWidth(), getHeight());
             setVisible(true);
+            toFront(true);
+
+            auto safeThis = juce::Component::SafePointer<MainWindow>(this);
+            juce::MessageManager::callAsync([safeThis]
+            {
+                if (safeThis == nullptr)
+                    return;
+
+                if (auto* component = dynamic_cast<MainComponent*>(safeThis->getContentComponent()))
+                    component->beginInitialiseAudio();
+            });
         }
 
         void closeButtonPressed() override

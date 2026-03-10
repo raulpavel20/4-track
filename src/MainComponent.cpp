@@ -142,22 +142,6 @@ MainComponent::MainComponent()
     send3ControlChain.setSendBusIndex(2);
     setBottomPanelMode(BottomPanelMode::preTape);
 
-    if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
-        && ! juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
-    {
-        auto safeThis = juce::Component::SafePointer<MainComponent>(this);
-        juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
-                                          [safeThis] (bool)
-                                          {
-                                              if (safeThis != nullptr)
-                                                  safeThis->initialiseAudio();
-                                          });
-    }
-    else
-    {
-        initialiseAudio();
-    }
-
     addKeyListenerRecursive(tapeView);
     addKeyListenerRecursive(trackControlChain);
     addKeyListenerRecursive(send1ControlChain);
@@ -204,6 +188,29 @@ void MainComponent::shutdown()
     tapeEngine.stop();
     tapeEngine.stopReversePlayback();
     audioDeviceController.shutdown();
+}
+
+void MainComponent::beginInitialiseAudio()
+{
+    if (shuttingDown || audioInitialisationStarted)
+        return;
+
+    audioInitialisationStarted = true;
+
+    if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
+        && ! juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
+    {
+        auto safeThis = juce::Component::SafePointer<MainComponent>(this);
+        juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
+                                          [safeThis] (bool)
+                                          {
+                                              if (safeThis != nullptr)
+                                                  safeThis->initialiseAudio();
+                                          });
+        return;
+    }
+
+    initialiseAudio();
 }
 
 void MainComponent::paint(juce::Graphics& g)

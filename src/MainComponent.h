@@ -21,6 +21,7 @@ public:
     void resized() override;
     bool keyPressed(const juce::KeyPress& key) override;
     void shutdown();
+    void beginInitialiseAudio();
 
 private:
     class HelpButton : public juce::Button
@@ -56,8 +57,8 @@ private:
         send3
     };
 
-    AudioDeviceController audioDeviceController;
     TapeEngine tapeEngine;
+    AudioDeviceController audioDeviceController;
     TapeView tapeView;
     TrackControlChain trackControlChain;
     TrackControlChain send1ControlChain;
@@ -74,6 +75,7 @@ private:
     BottomPanelMode bottomPanelMode = BottomPanelMode::preTape;
     std::unique_ptr<SettingsWindow> settingsWindow;
     bool shuttingDown = false;
+    bool audioInitialisationStarted = false;
 
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
     void initialiseAudio();

@@ -3,6 +3,31 @@
 #include "../AppSettings.h"
 #include "../TapeEngine.h"
 
+namespace
+{
+void applyBluetoothHeadsetFallback(juce::AudioDeviceManager& audioDeviceManager)
+{
+    auto setup = audioDeviceManager.getAudioDeviceSetup();
+
+    if (setup.inputDeviceName.isEmpty() || setup.outputDeviceName.isEmpty())
+        return;
+
+    if (setup.inputDeviceName != setup.outputDeviceName)
+        return;
+
+    auto* device = audioDeviceManager.getCurrentAudioDevice();
+
+    if (device == nullptr)
+        return;
+
+    if (device->getCurrentSampleRate() > 24000.0)
+        return;
+
+    setup.inputDeviceName = {};
+    audioDeviceManager.setAudioDeviceSetup(setup, true);
+}
+}
+
 AudioDeviceController::AudioDeviceController()
 {
     audioDeviceManager.addChangeListener(this);
@@ -31,6 +56,7 @@ void AudioDeviceController::initialise(TapeEngine& tapeEngineToUse, std::functio
 
     if (error.isEmpty())
     {
+        applyBluetoothHeadsetFallback(audioDeviceManager);
         audioDeviceManager.addAudioCallback(tapeEngine);
         persistAudioDeviceState();
 
