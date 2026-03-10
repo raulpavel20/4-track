@@ -15,6 +15,8 @@ juce_add_binary_data(FourTrackAssets
 )
 
 juce_add_gui_app(FourTrackTape
+    ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/assets/AppIcon.png"
+    ICON_SMALL "${CMAKE_CURRENT_SOURCE_DIR}/assets/AppIcon.png"
     MICROPHONE_PERMISSION_ENABLED TRUE
     MICROPHONE_PERMISSION_TEXT "4-Track needs microphone access to record audio onto the virtual tape."
     PRODUCT_NAME "4-Track"

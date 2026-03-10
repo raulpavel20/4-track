@@ -6,5 +6,7 @@ CXX_DEFINES =
 
 CXX_INCLUDES = 
 
-CXX_FLAGS = -std=c++20 -fPIC
+CXX_FLAGSarm64 = -std=c++20 -arch arm64 -fPIC
+
+CXX_FLAGS = -std=c++20 -arch arm64 -fPIC
 

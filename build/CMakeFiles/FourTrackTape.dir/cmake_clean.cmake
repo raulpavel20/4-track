@@ -112,6 +112,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o"
   "CMakeFiles/FourTrackTape.dir/src/ui/tape/TapeViewPaint.cpp.o.d"
   "FourTrackTape_artefacts/4-Track.app/Contents/MacOS/4-Track"
+  "FourTrackTape_artefacts/4-Track.app/Contents/Resources/Icon.icns"
   "FourTrackTape_artefacts/4-Track.app/Contents/Resources/RecentFilesMenuTemplate.nib"
   "FourTrackTape_artefacts/4-Track.pdb"
   "FourTrackTape_artefacts/JuceLibraryCode/FourTrackTape/PkgInfo"
