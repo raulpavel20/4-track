@@ -101,11 +101,11 @@ jobs:
       - name: Build
         run: cmake --build build-linux
 
-      - name: Download linuxdeploy
+      - name: Download packaging tools
         run: |
           curl -L "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage" -o linuxdeploy.AppImage
-          curl -L "https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage" -o linuxdeploy-plugin-appimage
-          chmod +x linuxdeploy.AppImage linuxdeploy-plugin-appimage
+          curl -L "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage" -o appimagetool.AppImage
+          chmod +x linuxdeploy.AppImage appimagetool.AppImage
 
       - name: Package AppImage
         run: |
@@ -124,15 +124,16 @@ jobs:
           mkdir -p AppDir/usr/share/pixmaps
           cp "$APP_BINARY" "AppDir/usr/bin/4-Track"
           cp "packaging/4-Track.desktop" "AppDir/usr/share/applications/4-Track.desktop"
+          cp "packaging/4-Track.desktop" "AppDir/4-Track.desktop"
           cp "assets/AppIcon.png" "AppDir/usr/share/icons/hicolor/512x512/apps/4-Track.png"
           cp "assets/AppIcon.png" "AppDir/usr/share/pixmaps/4-Track.png"
           cp "assets/AppIcon.png" "AppDir/4-Track.png"
           cp "assets/AppIcon.png" "AppDir/.DirIcon"
+          ln -sf "usr/bin/4-Track" "AppDir/AppRun"
           ./linuxdeploy.AppImage --appimage-extract-and-run \
             --appdir AppDir \
-            --executable "AppDir/usr/bin/4-Track" \
-            --desktop-file "AppDir/usr/share/applications/4-Track.desktop" \
-            --output appimage
+            --executable "AppDir/usr/bin/4-Track"
+          ARCH=x86_64 ./appimagetool.AppImage --appimage-extract-and-run AppDir
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
