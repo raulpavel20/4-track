@@ -119,10 +119,13 @@ jobs:
             exit 1
           fi
           mkdir -p AppDir/usr/bin
+          cp "$APP_BINARY" "AppDir/usr/bin/4-Track"
+          ./linuxdeploy.AppImage --appimage-extract-and-run \
+            --appdir AppDir \
+            --executable "AppDir/usr/bin/4-Track"
           mkdir -p AppDir/usr/share/applications
           mkdir -p AppDir/usr/share/icons/hicolor/512x512/apps
           mkdir -p AppDir/usr/share/pixmaps
-          cp "$APP_BINARY" "AppDir/usr/bin/4-Track"
           cp "packaging/4-Track.desktop" "AppDir/usr/share/applications/4-Track.desktop"
           cp "packaging/4-Track.desktop" "AppDir/4-Track.desktop"
           cp "assets/AppIcon.png" "AppDir/usr/share/icons/hicolor/512x512/apps/4-Track.png"
@@ -130,9 +133,6 @@ jobs:
           cp "assets/AppIcon.png" "AppDir/4-Track.png"
           cp "assets/AppIcon.png" "AppDir/.DirIcon"
           ln -sf "usr/bin/4-Track" "AppDir/AppRun"
-          ./linuxdeploy.AppImage --appimage-extract-and-run \
-            --appdir AppDir \
-            --executable "AppDir/usr/bin/4-Track"
           ARCH=x86_64 ./appimagetool.AppImage --appimage-extract-and-run AppDir
 
       - name: Upload artifact
