@@ -22,7 +22,16 @@ jobs:
         run: cmake --build build-macos --config Release
 
       - name: Package
-        run: ditto -c -k --keepParent "build-macos/FourTrackTape_artefacts/4-Track.app" "4-Track-macos.zip"
+        run: |
+          APP_BUNDLE="build-macos/FourTrackTape_artefacts/4-Track.app"
+          if [ ! -d "$APP_BUNDLE" ]; then
+            APP_BUNDLE="build-macos/FourTrackTape_artefacts/Release/4-Track.app"
+          fi
+          if [ ! -d "$APP_BUNDLE" ]; then
+            echo "Built app bundle not found"
+            exit 1
+          fi
+          ditto -c -k --keepParent "$APP_BUNDLE" "4-Track-macos.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
