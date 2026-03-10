@@ -2,6 +2,6 @@
 Type=Application
 Name=4-Track
 Exec=4-Track
-Icon=4-Track
+Icon=AppIcon
 Categories=AudioVideo;Audio;
 Terminal=false
