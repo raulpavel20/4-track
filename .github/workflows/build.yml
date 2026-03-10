@@ -118,14 +118,20 @@ jobs:
             echo "Built app not found"
             exit 1
           fi
-          cp "assets/AppIcon.png" "4-Track.png"
           mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/512x512/apps
+          mkdir -p AppDir/usr/share/pixmaps
           cp "$APP_BINARY" "AppDir/usr/bin/4-Track"
+          cp "packaging/4-Track.desktop" "AppDir/usr/share/applications/4-Track.desktop"
+          cp "assets/AppIcon.png" "AppDir/usr/share/icons/hicolor/512x512/apps/4-Track.png"
+          cp "assets/AppIcon.png" "AppDir/usr/share/pixmaps/4-Track.png"
+          cp "assets/AppIcon.png" "AppDir/4-Track.png"
+          cp "assets/AppIcon.png" "AppDir/.DirIcon"
           ./linuxdeploy.AppImage --appimage-extract-and-run \
             --appdir AppDir \
             --executable "AppDir/usr/bin/4-Track" \
-            --desktop-file "packaging/4-Track.desktop" \
-            --icon-file "4-Track.png" \
+            --desktop-file "AppDir/usr/share/applications/4-Track.desktop" \
             --output appimage
 
       - name: Upload artifact
