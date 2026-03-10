@@ -10,6 +10,7 @@
 #include "TapeView.h"
 
 class MainComponent : public juce::Component,
+                      public juce::DragAndDropContainer,
                       private juce::KeyListener
 {
 public:

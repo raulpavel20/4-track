@@ -96,6 +96,28 @@ void TrackControlChain::SaturationModeButton::paintButton(juce::Graphics& g, boo
     g.drawText("Heavy", getLocalBounds(), juce::Justification::centred, false);
 }
 
+TrackControlChain::ModuleDragHandle::ModuleDragHandle(TrackControlChain&, int slotIndex)
+    : slot(slotIndex)
+{
+    setMouseCursor(juce::MouseCursor::DraggingHandCursor);
+}
+
+void TrackControlChain::ModuleDragHandle::mouseDown(const juce::MouseEvent& event)
+{
+    dragStartPosition = event.getPosition();
+}
+
+void TrackControlChain::ModuleDragHandle::mouseDrag(const juce::MouseEvent& event)
+{
+    if (event.getDistanceFromDragStart() < 4)
+        return;
+
+    auto* container = juce::DragAndDropContainer::findParentDragContainerFor(this);
+
+    if (container != nullptr)
+        container->startDragging(juce::var(slot), this, juce::ScaledImage(), true, nullptr, &event.source);
+}
+
 TrackControlChain::ContentComponent::ContentComponent(TrackControlChain& ownerToUse)
     : owner(ownerToUse)
 {
@@ -104,4 +126,92 @@ TrackControlChain::ContentComponent::ContentComponent(TrackControlChain& ownerTo
 void TrackControlChain::ContentComponent::paint(juce::Graphics& g)
 {
     owner.paintContent(g);
+
+    const auto insertIndex = getDragOverInsertIndex();
+
+    if (insertIndex >= 0)
+    {
+        const auto x = owner.getInsertionLineX(insertIndex);
+        g.setColour(juce::Colours::white);
+        g.drawLine((float) x, 0.0f, (float) x, (float) getHeight(), 2.0f);
+    }
+}
+
+bool TrackControlChain::ContentComponent::isInterestedInDragSource(const SourceDetails& dragSourceDetails)
+{
+    if (! dragSourceDetails.description.isInt())
+        return false;
+
+    const auto slotIndex = (int) dragSourceDetails.description;
+    return slotIndex >= 0 && slotIndex < Track::maxChainModules;
+}
+
+void TrackControlChain::ContentComponent::itemDragEnter(const SourceDetails& dragSourceDetails)
+{
+    const auto x = dragSourceDetails.localPosition.getX();
+    dragOverInsertIndex = owner.computeInsertIndexFromX(x);
+    repaint();
+}
+
+void TrackControlChain::ContentComponent::itemDragMove(const SourceDetails& dragSourceDetails)
+{
+    const auto x = dragSourceDetails.localPosition.getX();
+    const auto newIndex = owner.computeInsertIndexFromX(x);
+
+    if (newIndex != dragOverInsertIndex)
+    {
+        dragOverInsertIndex = newIndex;
+        repaint();
+    }
+}
+
+void TrackControlChain::ContentComponent::itemDragExit(const SourceDetails&)
+{
+    dragOverInsertIndex = -1;
+    repaint();
+}
+
+void TrackControlChain::ContentComponent::itemDropped(const SourceDetails& dragSourceDetails)
+{
+    const auto fromSlot = (int) dragSourceDetails.description;
+    const auto x = dragSourceDetails.localPosition.getX();
+    const auto moduleCount = owner.getModuleCount();
+
+    if (moduleCount == 0)
+    {
+        dragOverInsertIndex = -1;
+        repaint();
+        return;
+    }
+
+    auto sourceVisibleIndex = -1;
+
+    for (int visibleIndex = 0; visibleIndex < moduleCount; ++visibleIndex)
+    {
+        if (owner.getVisibleSlot(visibleIndex) == fromSlot)
+        {
+            sourceVisibleIndex = visibleIndex;
+            break;
+        }
+    }
+
+    if (sourceVisibleIndex < 0)
+    {
+        dragOverInsertIndex = -1;
+        repaint();
+        return;
+    }
+
+    auto targetVisibleIndex = owner.computeInsertIndexFromX(x);
+
+    if (targetVisibleIndex > sourceVisibleIndex)
+        --targetVisibleIndex;
+
+    targetVisibleIndex = juce::jlimit(0, moduleCount - 1, targetVisibleIndex);
+
+    const auto toSlot = owner.getVisibleSlot(targetVisibleIndex);
+    owner.reorderModule(fromSlot, toSlot);
+    owner.refreshFromEngine();
+    dragOverInsertIndex = -1;
+    repaint();
 }

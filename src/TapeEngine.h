@@ -93,6 +93,7 @@ public:
 
     int addTrackModule(int trackIndex, ChainModuleType type);
     void removeTrackModule(int trackIndex, int moduleIndex);
+    void reorderTrackModules(int trackIndex, int fromSlot, int toSlot);
     int getTrackModuleCount(int trackIndex) const noexcept;
     ChainModuleType getTrackModuleType(int trackIndex, int moduleIndex) const noexcept;
     bool isTrackModulePresent(int trackIndex, int moduleIndex) const noexcept;
@@ -191,6 +192,7 @@ public:
 
     int addSendBusModule(int sendIndex, ChainModuleType type);
     void removeSendBusModule(int sendIndex, int moduleIndex);
+    void reorderSendBusModules(int sendIndex, int fromSlot, int toSlot);
     int getSendBusModuleCount(int sendIndex) const noexcept;
     ChainModuleType getSendBusModuleType(int sendIndex, int moduleIndex) const noexcept;
     bool isSendBusModulePresent(int sendIndex, int moduleIndex) const noexcept;

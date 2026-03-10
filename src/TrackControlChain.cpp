@@ -205,6 +205,9 @@ TrackControlChain::TrackControlChain(TapeEngine& engineToUse)
         };
         contentComponent.addAndMakeVisible(removeButton);
 
+        dragHandles[(size_t) moduleIndex] = std::make_unique<ModuleDragHandle>(*this, moduleIndex);
+        contentComponent.addAndMakeVisible(*dragHandles[(size_t) moduleIndex]);
+
         auto& filterSlider = filterSliders[(size_t) moduleIndex];
         configureRotarySlider(filterSlider, -1.0, 1.0, 0.01, 0.0);
         filterSlider.onValueChange = [this, moduleIndex]
@@ -748,6 +751,17 @@ void TrackControlChain::removeModule(int moduleIndex)
         engine.removeTrackModule(selectedTrack, moduleIndex);
     else
         engine.removeSendBusModule(selectedSendBus, moduleIndex);
+}
+
+void TrackControlChain::reorderModule(int fromSlot, int toSlot)
+{
+    if (fromSlot == toSlot)
+        return;
+
+    if (isTrackTarget())
+        engine.reorderTrackModules(selectedTrack, fromSlot, toSlot);
+    else
+        engine.reorderSendBusModules(selectedSendBus, fromSlot, toSlot);
 }
 
 int TrackControlChain::getModuleCount() const noexcept

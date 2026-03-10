@@ -431,6 +431,165 @@ void TapeEngine::removeSendBusModule(int sendIndex, int moduleIndex)
     sendBus.moduleResetRequested[(size_t) moduleIndex].store(true, std::memory_order_release);
 }
 
+namespace
+{
+void swapModuleChainSlots(Track::ModuleChain& chain, int a, int b)
+{
+    if (a == b)
+        return;
+
+    const auto sa = (size_t) a;
+    const auto sb = (size_t) b;
+
+    auto swapAtomicInt = [sa, sb](auto& arr)
+    {
+        const auto va = arr[sa].load(std::memory_order_acquire);
+        const auto vb = arr[sb].load(std::memory_order_acquire);
+        arr[sa].store(vb, std::memory_order_release);
+        arr[sb].store(va, std::memory_order_release);
+    };
+    auto swapAtomicBool = [sa, sb](auto& arr)
+    {
+        const auto va = arr[sa].load(std::memory_order_acquire);
+        const auto vb = arr[sb].load(std::memory_order_acquire);
+        arr[sa].store(vb, std::memory_order_release);
+        arr[sb].store(va, std::memory_order_release);
+    };
+    auto swapAtomicFloat = [sa, sb](auto& arr)
+    {
+        const auto va = arr[sa].load(std::memory_order_acquire);
+        const auto vb = arr[sb].load(std::memory_order_acquire);
+        arr[sa].store(vb, std::memory_order_release);
+        arr[sb].store(va, std::memory_order_release);
+    };
+
+    swapAtomicInt(chain.moduleTypes);
+    swapAtomicBool(chain.moduleBypassed);
+    swapAtomicFloat(chain.filterMorphs);
+    for (int band = 0; band < Track::maxEqBands; ++band)
+    {
+        const auto vga = chain.eqBandGainsDb[sa][band].load(std::memory_order_acquire);
+        const auto vgb = chain.eqBandGainsDb[sb][band].load(std::memory_order_acquire);
+        chain.eqBandGainsDb[sa][band].store(vgb, std::memory_order_release);
+        chain.eqBandGainsDb[sb][band].store(vga, std::memory_order_release);
+    }
+    for (int band = 0; band < Track::maxEqBands; ++band)
+    {
+        const auto vqa = chain.eqBandQs[sa][band].load(std::memory_order_acquire);
+        const auto vqb = chain.eqBandQs[sb][band].load(std::memory_order_acquire);
+        chain.eqBandQs[sa][band].store(vqb, std::memory_order_release);
+        chain.eqBandQs[sb][band].store(vqa, std::memory_order_release);
+    }
+    for (int band = 0; band < Track::maxEqBands; ++band)
+    {
+        const auto vfa = chain.eqBandFrequencies[sa][band].load(std::memory_order_acquire);
+        const auto vfb = chain.eqBandFrequencies[sb][band].load(std::memory_order_acquire);
+        chain.eqBandFrequencies[sa][band].store(vfb, std::memory_order_release);
+        chain.eqBandFrequencies[sb][band].store(vfa, std::memory_order_release);
+    }
+    swapAtomicFloat(chain.compressorThresholdsDb);
+    swapAtomicFloat(chain.compressorRatios);
+    swapAtomicFloat(chain.compressorAttacksMs);
+    swapAtomicFloat(chain.compressorReleasesMs);
+    swapAtomicFloat(chain.compressorMakeupGainsDb);
+    swapAtomicFloat(chain.noiseGateThresholdsDb);
+    swapAtomicFloat(chain.noiseGateRatios);
+    swapAtomicFloat(chain.noiseGateAttacksMs);
+    swapAtomicFloat(chain.noiseGateReleasesMs);
+    swapAtomicFloat(chain.limiterThresholdsDb);
+    swapAtomicFloat(chain.limiterReleasesMs);
+    swapAtomicInt(chain.saturationModes);
+    swapAtomicFloat(chain.saturationAmounts);
+    swapAtomicFloat(chain.delayTimesMs);
+    swapAtomicBool(chain.delaySyncEnableds);
+    swapAtomicInt(chain.delaySyncIndices);
+    swapAtomicFloat(chain.delayFeedbacks);
+    swapAtomicFloat(chain.delayMixes);
+    swapAtomicFloat(chain.reverbSizes);
+    swapAtomicFloat(chain.reverbDampings);
+    swapAtomicFloat(chain.reverbMixes);
+    swapAtomicFloat(chain.chorusRates);
+    swapAtomicBool(chain.chorusSyncEnableds);
+    swapAtomicInt(chain.chorusSyncIndices);
+    swapAtomicFloat(chain.chorusDepths);
+    swapAtomicFloat(chain.chorusCentreFrequencies);
+    swapAtomicFloat(chain.chorusFeedbacks);
+    swapAtomicFloat(chain.chorusMixes);
+    swapAtomicFloat(chain.phaserRates);
+    swapAtomicBool(chain.phaserSyncEnableds);
+    swapAtomicInt(chain.phaserSyncIndices);
+    swapAtomicFloat(chain.phaserDepths);
+    swapAtomicFloat(chain.phaserCentreFrequencies);
+    swapAtomicFloat(chain.phaserFeedbacks);
+    swapAtomicFloat(chain.phaserMixes);
+    swapAtomicFloat(chain.gainModuleGainsDb);
+    swapAtomicFloat(chain.gainModulePans);
+    chain.moduleInputMeters[sa].store(0.0f, std::memory_order_release);
+    chain.moduleInputMeters[sb].store(0.0f, std::memory_order_release);
+    chain.moduleOutputMeters[sa].store(0.0f, std::memory_order_release);
+    chain.moduleOutputMeters[sb].store(0.0f, std::memory_order_release);
+
+    chain.moduleResetRequested[sa].store(true, std::memory_order_release);
+    chain.moduleResetRequested[sb].store(true, std::memory_order_release);
+}
+}
+
+void TapeEngine::reorderTrackModules(int trackIndex, int fromSlot, int toSlot)
+{
+    if (! juce::isPositiveAndBelow(trackIndex, numTracks))
+        return;
+
+    if (! juce::isPositiveAndBelow(fromSlot, Track::maxChainModules))
+        return;
+
+    if (! juce::isPositiveAndBelow(toSlot, Track::maxChainModules))
+        return;
+
+    if (fromSlot == toSlot)
+        return;
+
+    auto& chain = tracks[(size_t) trackIndex];
+
+    if (fromSlot < toSlot)
+    {
+        for (int slot = fromSlot; slot < toSlot; ++slot)
+            swapModuleChainSlots(chain, slot, slot + 1);
+    }
+    else
+    {
+        for (int slot = fromSlot; slot > toSlot; --slot)
+            swapModuleChainSlots(chain, slot, slot - 1);
+    }
+}
+
+void TapeEngine::reorderSendBusModules(int sendIndex, int fromSlot, int toSlot)
+{
+    if (! juce::isPositiveAndBelow(sendIndex, numSendBuses))
+        return;
+
+    if (! juce::isPositiveAndBelow(fromSlot, Track::maxChainModules))
+        return;
+
+    if (! juce::isPositiveAndBelow(toSlot, Track::maxChainModules))
+        return;
+
+    if (fromSlot == toSlot)
+        return;
+
+    auto& chain = sendBuses[(size_t) sendIndex];
+
+    if (fromSlot < toSlot)
+    {
+        for (int slot = fromSlot; slot < toSlot; ++slot)
+            swapModuleChainSlots(chain, slot, slot + 1);
+    }
+    else
+    {
+        for (int slot = fromSlot; slot > toSlot; --slot)
+            swapModuleChainSlots(chain, slot, slot - 1);
+    }
+}
+
 int TapeEngine::getTrackModuleCount(int trackIndex) const noexcept
 {
     if (! juce::isPositiveAndBelow(trackIndex, numTracks))

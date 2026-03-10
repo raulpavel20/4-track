@@ -84,6 +84,12 @@ void TrackControlChain::layoutContent()
     if (showsInputModule())
         layoutInputModule(inputBounds);
 
+    for (int i = 0; i < Track::maxChainModules; ++i)
+    {
+        if (auto* handle = dragHandles[(size_t) i].get())
+            handle->setVisible(false);
+    }
+
     for (int visibleIndex = 0; visibleIndex < visibleModuleCount; ++visibleIndex)
     {
         const auto slot = visibleSlots[(size_t) visibleIndex];
@@ -100,6 +106,16 @@ void TrackControlChain::layoutContent()
                                                moduleArea.getY() + 1,
                                                closeButtonSize,
                                                closeButtonSize);
+
+        const auto dragHandleX = moduleArea.getX() + bypassCircleSize + 4;
+        const auto dragHandleWidth = moduleArea.getWidth() - bypassCircleSize - 4 - closeButtonSize - 8;
+        const auto dragHandleHeight = 28;
+
+        if (auto* handle = dragHandles[(size_t) slot].get())
+        {
+            handle->setBounds(dragHandleX, moduleArea.getY(), dragHandleWidth, dragHandleHeight);
+            handle->setVisible(true);
+        }
 
         if (type == ChainModuleType::filter)
             layoutFilterModule(slot, moduleArea);
@@ -156,4 +172,46 @@ juce::Rectangle<int> TrackControlChain::getAddButtonBounds() const
         x += getModuleWidth(visibleTypes[(size_t) visibleIndex]) + moduleGap;
 
     return juce::Rectangle<int>(x, (contentComponent.getHeight() - addButtonSize) / 2, addButtonSize, addButtonSize);
+}
+
+int TrackControlChain::getInsertionLineX(int insertIndex) const
+{
+    if (visibleModuleCount == 0)
+        return 0;
+
+    if (insertIndex <= 0)
+        return juce::jmax(0, moduleBounds[0].getX() - moduleGap / 2);
+
+    if (insertIndex >= visibleModuleCount)
+        return moduleBounds[(size_t) visibleModuleCount - 1].getRight() + moduleGap / 2;
+
+    const auto prev = moduleBounds[(size_t) insertIndex - 1];
+    const auto curr = moduleBounds[(size_t) insertIndex];
+    return (prev.getRight() + curr.getX()) / 2;
+}
+
+int TrackControlChain::computeInsertIndexFromX(int x) const
+{
+    if (visibleModuleCount == 0)
+        return 0;
+
+    auto result = 0;
+
+    for (int i = 0; i <= visibleModuleCount; ++i)
+    {
+        if (x < getInsertionLineX(i))
+            return result;
+
+        result = i;
+    }
+
+    return result;
+}
+
+int TrackControlChain::getVisibleSlot(int visibleIndex) const noexcept
+{
+    if (! juce::isPositiveAndBelow(visibleIndex, visibleModuleCount))
+        return -1;
+
+    return visibleSlots[(size_t) visibleIndex];
 }

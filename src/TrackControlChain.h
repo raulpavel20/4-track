@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 
 #include <array>
+#include <memory>
 
 #include "TapeEngine.h"
 
@@ -68,14 +69,34 @@ private:
         juce::Colour accentColour { juce::Colours::white };
     };
 
-    class ContentComponent : public juce::Component
+    class ModuleDragHandle : public juce::Component
+    {
+    public:
+        explicit ModuleDragHandle(TrackControlChain&, int slotIndex);
+        void mouseDown(const juce::MouseEvent& event) override;
+        void mouseDrag(const juce::MouseEvent& event) override;
+
+    private:
+        int slot;
+        juce::Point<int> dragStartPosition;
+    };
+
+    class ContentComponent : public juce::Component, public juce::DragAndDropTarget
     {
     public:
         explicit ContentComponent(TrackControlChain& ownerToUse);
         void paint(juce::Graphics& g) override;
+        bool isInterestedInDragSource(const SourceDetails& dragSourceDetails) override;
+        void itemDragEnter(const SourceDetails& dragSourceDetails) override;
+        void itemDragMove(const SourceDetails& dragSourceDetails) override;
+        void itemDragExit(const SourceDetails& dragSourceDetails) override;
+        void itemDropped(const SourceDetails& dragSourceDetails) override;
+
+        int getDragOverInsertIndex() const noexcept { return dragOverInsertIndex; }
 
     private:
         TrackControlChain& owner;
+        int dragOverInsertIndex = -1;
     };
 
     class InputSourceComboBox : public juce::ComboBox
@@ -100,6 +121,7 @@ private:
     juce::TextButton addModuleButton { "+" };
     std::array<BypassButton, Track::maxChainModules> bypassButtons;
     std::array<CloseButton, Track::maxChainModules> removeButtons;
+    std::array<std::unique_ptr<ModuleDragHandle>, Track::maxChainModules> dragHandles;
     std::array<juce::Slider, Track::maxChainModules> filterSliders;
     std::array<std::array<juce::Slider, Track::maxEqBands>, Track::maxChainModules> eqGainSliders;
     std::array<std::array<juce::Slider, Track::maxEqBands>, Track::maxChainModules> eqQSliders;
@@ -136,6 +158,7 @@ private:
     juce::Colour getAccentColour() const;
     int addModule(ChainModuleType type);
     void removeModule(int moduleIndex);
+    void reorderModule(int fromSlot, int toSlot);
     int getModuleCount() const noexcept;
     ChainModuleType getModuleType(int moduleIndex) const noexcept;
     bool isModuleBypassed(int moduleIndex) const noexcept;
@@ -264,4 +287,8 @@ private:
     juce::Rectangle<int> getViewportBounds() const;
     juce::Rectangle<int> getInputModuleBounds() const;
     juce::Rectangle<int> getAddButtonBounds() const;
+    int getInsertionLineX(int insertIndex) const;
+    int getDragOverInsertIndex() const noexcept { return contentComponent.getDragOverInsertIndex(); }
+    int computeInsertIndexFromX(int x) const;
+    int getVisibleSlot(int visibleIndex) const noexcept;
 };
