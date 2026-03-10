@@ -101,8 +101,16 @@ jobs:
       - name: Package AppImage
         run: |
           export PATH="$PWD:$PATH"
+          APP_BINARY="build-linux/FourTrackTape_artefacts/4-Track"
+          if [ ! -f "$APP_BINARY" ]; then
+            APP_BINARY="build-linux/FourTrackTape_artefacts/Release/4-Track"
+          fi
+          if [ ! -f "$APP_BINARY" ]; then
+            echo "Built app not found"
+            exit 1
+          fi
           mkdir -p AppDir/usr/bin
-          cp "build-linux/FourTrackTape_artefacts/4-Track" "AppDir/usr/bin/4-Track"
+          cp "$APP_BINARY" "AppDir/usr/bin/4-Track"
           ./linuxdeploy.AppImage --appimage-extract-and-run \
             --appdir AppDir \
             --executable "AppDir/usr/bin/4-Track" \

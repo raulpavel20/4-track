@@ -89,7 +89,7 @@ target_link_libraries(FourTrackTape
 if(APPLE)
     add_custom_command(TARGET FourTrackTape POST_BUILD
         COMMAND ${CMAKE_COMMAND}
-                -DPLIST_PATH=${CMAKE_CURRENT_BINARY_DIR}/FourTrackTape_artefacts/4-Track.app/Contents/Info.plist
+                -DBUILD_DIR=${CMAKE_CURRENT_BINARY_DIR}
                 -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DisableMacWindowRestoration.cmake
     )
 endif()
