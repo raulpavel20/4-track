@@ -177,7 +177,7 @@ MainComponent::MainComponent()
 
 MainComponent::~MainComponent()
 {
-    closeSettingsWindow();
+    shutdown();
     removeKeyListenerRecursive(tapeView);
     removeKeyListenerRecursive(trackControlChain);
     removeKeyListenerRecursive(send1ControlChain);
@@ -191,6 +191,19 @@ MainComponent::~MainComponent()
     removeKeyListenerRecursive(send3TabButton);
     removeKeyListenerRecursive(settingsButton);
     removeKeyListenerRecursive(shortcutsHelpButton);
+}
+
+void MainComponent::shutdown()
+{
+    if (shuttingDown)
+        return;
+
+    shuttingDown = true;
+    juce::ModalComponentManager::getInstance()->cancelAllModalComponents();
+    closeSettingsWindow();
+    tapeEngine.stop();
+    tapeEngine.stopReversePlayback();
+    audioDeviceController.shutdown();
 }
 
 void MainComponent::paint(juce::Graphics& g)
@@ -503,6 +516,9 @@ void MainComponent::showSettingsWindow()
 
 void MainComponent::closeSettingsWindow()
 {
+    if (settingsWindow != nullptr)
+        settingsWindow->exitModalState(0);
+
     settingsWindow.reset();
 }
 

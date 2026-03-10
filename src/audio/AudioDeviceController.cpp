@@ -11,11 +11,7 @@ AudioDeviceController::AudioDeviceController()
 AudioDeviceController::~AudioDeviceController()
 {
     audioDeviceManager.removeChangeListener(this);
-
-    if (tapeEngine != nullptr)
-        audioDeviceManager.removeAudioCallback(tapeEngine);
-
-    audioDeviceManager.closeAudioDevice();
+    shutdown();
 }
 
 void AudioDeviceController::initialise(TapeEngine& tapeEngineToUse, std::function<void()> onDeviceChangeToUse)
@@ -41,6 +37,16 @@ void AudioDeviceController::initialise(TapeEngine& tapeEngineToUse, std::functio
         if (onDeviceChange != nullptr)
             onDeviceChange();
     }
+}
+
+void AudioDeviceController::shutdown()
+{
+    if (tapeEngine != nullptr)
+        audioDeviceManager.removeAudioCallback(tapeEngine);
+
+    tapeEngine = nullptr;
+    onDeviceChange = nullptr;
+    audioDeviceManager.closeAudioDevice();
 }
 
 juce::AudioDeviceManager& AudioDeviceController::getDeviceManager() noexcept

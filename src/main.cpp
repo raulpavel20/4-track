@@ -68,6 +68,10 @@ private:
 
         void closeButtonPressed() override
         {
+            if (auto* component = dynamic_cast<MainComponent*>(getContentComponent()))
+                component->shutdown();
+
+            setVisible(false);
             juce::JUCEApplication::getInstance()->systemRequestedQuit();
         }
     };

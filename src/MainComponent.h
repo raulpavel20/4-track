@@ -20,6 +20,7 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
     bool keyPressed(const juce::KeyPress& key) override;
+    void shutdown();
 
 private:
     class HelpButton : public juce::Button
@@ -72,6 +73,7 @@ private:
     HelpButton shortcutsHelpButton;
     BottomPanelMode bottomPanelMode = BottomPanelMode::preTape;
     std::unique_ptr<SettingsWindow> settingsWindow;
+    bool shuttingDown = false;
 
     bool keyPressed(const juce::KeyPress& key, juce::Component* originatingComponent) override;
     void initialiseAudio();

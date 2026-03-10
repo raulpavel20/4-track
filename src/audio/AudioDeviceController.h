@@ -13,6 +13,7 @@ public:
     ~AudioDeviceController() override;
 
     void initialise(TapeEngine& tapeEngineToUse, std::function<void()> onDeviceChangeToUse);
+    void shutdown();
     juce::AudioDeviceManager& getDeviceManager() noexcept;
     const juce::AudioDeviceManager& getDeviceManager() const noexcept;
     juce::StringArray getHardwareInputNames() const;
