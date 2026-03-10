@@ -16,13 +16,13 @@ jobs:
           submodules: recursive
 
       - name: Configure
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build-macos -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build-macos --config Release
 
       - name: Package
-        run: ditto -c -k --keepParent "build/FourTrackTape_artefacts/4-Track.app" "4-Track-macos.zip"
+        run: ditto -c -k --keepParent "build-macos/FourTrackTape_artefacts/4-Track.app" "4-Track-macos.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -39,14 +39,14 @@ jobs:
           submodules: recursive
 
       - name: Configure
-        run: cmake -S . -B build
+        run: cmake -S . -B build-windows
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build-windows --config Release
 
       - name: Package
         shell: pwsh
-        run: Compress-Archive -Path "build/FourTrackTape_artefacts/Release/4-Track.exe" -DestinationPath "4-Track-windows.zip" -Force
+        run: Compress-Archive -Path "build-windows/FourTrackTape_artefacts/Release/4-Track.exe" -DestinationPath "4-Track-windows.zip" -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -87,10 +87,10 @@ jobs:
             mesa-common-dev
 
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build-linux -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build
+        run: cmake --build build-linux
 
       - name: Download linuxdeploy
         run: |
@@ -102,7 +102,7 @@ jobs:
         run: |
           export PATH="$PWD:$PATH"
           mkdir -p AppDir/usr/bin
-          cp "build/FourTrackTape_artefacts/4-Track" "AppDir/usr/bin/4-Track"
+          cp "build-linux/FourTrackTape_artefacts/4-Track" "AppDir/usr/bin/4-Track"
           ./linuxdeploy.AppImage --appimage-extract-and-run \
             --appdir AppDir \
             --executable "AppDir/usr/bin/4-Track" \
