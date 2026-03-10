@@ -118,13 +118,14 @@ jobs:
             echo "Built app not found"
             exit 1
           fi
+          cp "assets/AppIcon.png" "4-Track.png"
           mkdir -p AppDir/usr/bin
           cp "$APP_BINARY" "AppDir/usr/bin/4-Track"
           ./linuxdeploy.AppImage --appimage-extract-and-run \
             --appdir AppDir \
             --executable "AppDir/usr/bin/4-Track" \
             --desktop-file "packaging/4-Track.desktop" \
-            --icon-file "assets/AppIcon.png" \
+            --icon-file "4-Track.png" \
             --output appimage
 
       - name: Upload artifact
