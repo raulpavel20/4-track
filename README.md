@@ -37,22 +37,11 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
 
-**Linux** — Install dependencies first:
-
-```bash
-sudo apt-get install -y ninja-build patchelf libasound2-dev libjack-jackd2-dev \
-  libfreetype6-dev libx11-dev libxcomposite-dev libxcursor-dev libxext-dev \
-  libxfixes-dev libxi-dev libxinerama-dev libxkbcommon-dev libxkbcommon-x11-dev \
-  libxrandr-dev libxrender-dev libglu1-mesa-dev mesa-common-dev
-```
-
-Then configure with Ninja:
-
-```bash
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-```
-
 ## License
 
 GNU Affero General Public License v3.0 — see [LICENSE](LICENSE).
+
+---
+
+4-TRACK is open source and free to use. If you enjoy the project and want to support its development, donations are very appreciated.  
+You can support the project on [Ko-fi](https://ko-fi.com/raulpavel). Thank you!
