@@ -43,5 +43,4 @@ GNU Affero General Public License v3.0 — see [LICENSE](LICENSE).
 
 ---
 
-4-TRACK is open source and free to use. If you enjoy the project and want to support its development, donations are very appreciated.  
-You can support the project on [Ko-fi](https://ko-fi.com/raulpavel). Thank you!
+4-TRACK is open source and free to use. If you enjoy the project, you can support it on [Ko-fi](https://ko-fi.com/raulpavel). Thank you!
