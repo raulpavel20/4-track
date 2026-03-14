@@ -37,6 +37,11 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
 
+## Codebase Notes
+
+The internal structure of this project is not as clean as it could be. 4-track started as a small experiment and gradually grew in scope. Because of this, the codebase and some parts of the architecture are not as well organized as they would be in a project designed with the current feature set from the beginning. It could use a good refactoring, but for now I prefer to focus my time on building new tools and experiments. 
+If you explore the code, expect rough edges.
+
 ## License
 
 GNU Affero General Public License v3.0 — see [LICENSE](LICENSE).
